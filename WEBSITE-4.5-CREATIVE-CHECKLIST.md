@@ -8,13 +8,13 @@
 >
 > **Base obrigatória:** WEBSITE-4.5-CREATIVE-BRIEF, WEBSITE 1, WEBSITE 2, WEBSITE 2.5, WEBSITE 3, WEBSITE 4
 >
-> **Finalidade:** Validar qualquer proposta visual contra a estratégia oficial, com clareza e sem ambiguidade
+> **Finalidade:** Validar objetivamente se uma proposta visual respeita o DNA do Hub, com clareza e sem ambiguidade
 
 ---
 
 ## 1. Como Usar
 
-Toda proposta de design passa por este checklist antes da aprovação.
+Toda proposta de design — conceito, direção, protótipo ou implementação — passa por este checklist antes da aprovação.
 
 | Veredito | Condição |
 |---|---|
@@ -22,71 +22,71 @@ Toda proposta de design passa por este checklist antes da aprovação.
 | **Aprovado com ressalvas** | Obrigatórios OK; ajustes menores pendentes |
 | **Reprovado** | Qualquer item obrigatório não atendido ou qualquer anti-padrão presente |
 
+Itens marcados com ⛔ são **eliminatórios** — uma única falha reprova a proposta.
+
 ---
 
-## 2. Checklist Oficial de Validação
+## 2. Checklists Oficiais de Validação
 
-### 2.1 Estratégia (obrigatório)
+### 2.1 Percepção e identidade
 
-- [ ] ✓ **Arquitetura preservada** — as nove seções da Landing Page existem, na ordem oficial (Hero → Problema → Solução → Como Funciona → Benefícios → Segurança → Demonstração → FAQ → Contato)?
-- [ ] ✓ **DNA preservado** — a proposta transmite o especialista sereno (calmo, preciso, sóbrio, seguro)?
-- [ ] ✓ **Narrativa preservada** — cada seção responde uma pergunta e prepara a seguinte; o fluxo emocional está intacto?
-- [ ] ✓ **Benchmark respeitado** — a influência das referências é conceitual, sem cópia de layout, componente ou identidade?
-- [ ] ✓ **Design system preservado** — tokens, escala de espaço, grid, tipografia, raios e elevação seguem o sistema?
-- [ ] ✓ **Motion preservado** — durações entre 120–600 ms, easing orgânico, movimento com propósito?
-- [ ] ✓ **Identidade própria** — não lembra outra marca, template ou referência?
-- [ ] ✓ **Sem estética IA** — nada de visual genérico de geração automática?
-- [ ] ✓ **Foco em confiança** — a página transmite solidez, segurança e seriedade?
-- [ ] ✓ **Foco em conversão** — demonstração como ação principal, CTA consultivo e acessível?
-
-### 2.2 Caráter e Postura Visual (obrigatório)
-
-- [ ] Parece um produto **enterprise**?
+- [ ] ⛔ Parece um produto **enterprise**, sério e maduro?
 - [ ] Parece **premium** (acabamento impecável)?
-- [ ] É **atemporal** (resistiria a cinco anos)?
-- [ ] O conteúdo **respira** (respiro generoso)?
-- [ ] A **hierarquia é visível** em segundos (tamanho, peso, espaço)?
+- [ ] Parece **artesanal** (cada decisão parece intencional e cuidada)?
+- [ ] ⛔ **Não parece "gerada por IA"** nem template para um avaliador crítico?
+- [ ] Possui **identidade própria** (não lembra outra marca)?
+- [ ] É **atemporal** (continuaria adequada daqui a cinco anos)?
+- [ ] Seria reconhecível como Hub Tributário por si só?
+
+### 2.2 DNA e narrativa
+
+- [ ] ⛔ **DNA preservado** — transmite o especialista sereno (calmo, preciso, sóbrio, seguro)?
+- [ ] ⛔ **Arquitetura preservada** — nove seções na ordem oficial (Hero → Problema → Solução → Como Funciona → Benefícios → Segurança → Demonstração → FAQ → Contato)?
+- [ ] ⛔ **Narrativa preservada** — cada seção responde uma única pergunta e prepara a seguinte?
+- [ ] **O conteúdo continua protagonista** — o design não compete com o texto?
+- [ ] **Benchmark respeitado** — nenhuma referência é reconhecível na proposta?
+- [ ] A confiança cresce antes de qualquer pedido?
+
+### 2.3 Confiança e conversão
+
+- [ ] ⛔ **Foco em confiança** — solidez e seriedade percebidas antes da venda?
+- [ ] **Foco em conversão** — a Demonstração é a única ação principal e está acessível?
+- [ ] O Contato existe como alternativa, sem competir?
+- [ ] ⛔ Nenhuma urgência falsa, contador ou pressão comercial?
+- [ ] O visitante sabe exatamente o que acontece ao clicar no CTA?
+
+### 2.4 Design system e clareza
+
+- [ ] ⛔ **Design system preservado** — tokens, grid, escala de espaço e hierarquia respeitados?
+- [ ] Existe **clareza visual** (hierarquia visível em segundos)?
+- [ ] O conteúdo **respira** (espaçamento generoso e uniforme)?
 - [ ] Título e apoio se distinguem **sem depender de cor**?
-- [ ] O **grid** é respeitado (12/8/4)?
-- [ ] **Cor é ênfase**, não decoração; neutros dominam?
-- [ ] **Contraste AA** em todo texto?
-- [ ] **Cor nunca é o único sinal de estado**?
+- [ ] **Contraste AA** cumprido em todo texto e interface?
+- [ ] Nenhum estado é comunicado **apenas por cor**?
+- [ ] Foco de teclado visível em todos os elementos interativos?
 
-### 2.3 Tipografia (obrigatório)
+### 2.5 Motion
 
-- [ ] Sans-serif, precisa, sóbria; sem fontes de display decorativas?
-- [ ] Máximo de **dois pesos por seção visível**?
-- [ ] Coluna de leitura com **45–75 caracteres**?
-- [ ] Texto alinhado à esquerda (sem justificação)?
-- [ ] Entrelinha confortável (~1,5–1,6 no corpo)?
+- [ ] ⛔ **Motion preservado** — todo movimento dentro do teto de 600 ms?
+- [ ] As **animações possuem propósito** (funcional ou emocional)?
+- [ ] Easing orgânico — "chega rápido, assenta suave", sem linear em destaque?
+- [ ] ⛔ Nenhum loop decorativo, parallax dramático, glow animado ou bounce?
+- [ ] **Scroll é do usuário** — sem scroll forçado?
+- [ ] O scroll reveal é discreto e ocorre uma única vez por visita?
+- [ ] A página permanece compreensível com `prefers-reduced-motion` ativo?
 
-### 2.4 Motion (obrigatório)
+### 2.6 Acessibilidade e responsividade
 
-- [ ] Durações dentro de **120–600 ms**?
-- [ ] **"Chega rápido, assenta suave"** — sem movimento linear em destaque?
-- [ ] **Nenhum loop decorativo** ou animação contínua?
-- [ ] **Scroll do usuário** — sem parallax dramático, sem scroll forçado?
-- [ ] Hover, foco e clique com **resposta imediata** e estados claros?
-- [ ] **Todo movimento tem propósito** funcional ou emocional?
-
-### 2.5 Conteúdo e Conversão (obrigatório)
-
-- [ ] **CTA consultivo** — convida a conversa, jamais pressiona?
-- [ ] Nenhuma **urgência artificial** (prazo, escassez)?
-- [ ] Rótulos dizem **o que acontece ao clicar**?
-- [ ] Principais **objeções respondidas** antes da ação?
-- [ ] Sem superlativos e promessas **não verificáveis**?
-
-### 2.6 Acessibilidade (obrigatório)
-
-- [ ] **Contraste AA** garantido?
-- [ ] **Foco de teclado visível** em todos os elementos interativos?
+- [ ] ⛔ Contraste AA garantido?
 - [ ] Alvos de toque confortáveis?
-- [ ] Legível em todas as larguras de tela?
+- [ ] A ordem de leitura da narrativa preservada em mobile, tablet e desktop?
+- [ ] O CTA principal permanece acessível em todas as faixas?
+- [ ] Legibilidade e hierarquia mantidas em qualquer largura?
 
 ### 2.7 Implementação (opcional — quando há solução técnica)
 
 - [ ] Valores via **tokens** (nada de valores soltos)?
+- [ ] Tipografia, espaço, raio e cor usam **os tokens do sistema**?
 - [ ] Motion centralizado em **variáveis** de duração e curva?
 
 ---
@@ -97,23 +97,28 @@ Toda proposta de design passa por este checklist antes da aprovação.
 
 - [ ] Excesso de **glow / brilho**?
 - [ ] **Gradientes exagerados** ou decorativos animados?
+- [ ] **Glassmorphism** pesado?
 - [ ] Visual **cyberpunk**?
-- [ ] Excesso de **glassmorphism**?
-- [ ] **Excesso de animações** (loops, movimento contínuo)?
+- [ ] **Estética típica de IA**?
 - [ ] **Landing page genérica de SaaS** (telas flutuantes, painéis prontos)?
-- [ ] **Visual típico de IA**?
-- [ ] **Excesso de efeitos** sem propósito?
-- [ ] Elementos flutuantes decorativos (blobs, partículas)?
+- [ ] **Elementos flutuantes** decorativos (blobs, partículas)?
 - [ ] **Hero extremamente carregado**?
 - [ ] Excesso de **texto acima da dobra**?
 - [ ] **Parallax dramático**?
-- [ ] **Bounce exagerado** ou transições que atrasam a resposta?
+- [ ] **Excesso de animações** (loops, movimento contínuo, bounce)?
+- [ ] **Efeitos que competem com o conteúdo**?
 - [ ] **Cópia de componente, layout ou identidade** de referências?
 - [ ] **Urgência artificial** em chamadas?
 
 ---
 
-## 4. Resultado da Validação
+## 4. Teste final de remoção
+
+- [ ] Para cada elemento da proposta: se fosse removido, a comunicação pioraria? Se a resposta for "não", o elemento sai.
+
+---
+
+## 5. Resultado da Validação
 
 | Veredito | Condição |
 |---|---|
@@ -121,4 +126,4 @@ Toda proposta de design passa por este checklist antes da aprovação.
 | **Aprovado com ressalvas** | Obrigatórios OK; ajustes menores pendentes |
 | **Reprovado** | Qualquer obrigatório falho ou qualquer anti-padrão presente |
 
-**Observação:** este checklist é a porta de entrada da validação. Propostas aprovadas seguem para análise profunda com o WEBSITE-4.5-CREATIVE-BRIEF. Propostas reprovadas em qualquer item obrigatório são devolvidas antes de avançar.
+**Observação:** este checklist é a porta de entrada da validação. Proposta aprovada segue para análise profunda com o WEBSITE-4.5-CREATIVE-BRIEF e para o congelamento do WEBSITE-4.5-CREATIVE-FREEZE. Proposta reprovada em qualquer item eliminatório é devolvida antes de avançar.

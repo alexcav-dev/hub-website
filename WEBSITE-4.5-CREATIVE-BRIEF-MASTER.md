@@ -1,5 +1,9 @@
 # WEBSITE 4.5 — Creative Brief Master v1.0
 
+> ⛔ **DEPRECATED — ARQUIVO SUPERSEDIDO**
+>
+> Este documento foi substituído pelo **WEBSITE-4.5-CREATIVE-BRIEF.md** (v1.0, novo padrão de 10 capítulos, com checklist e freeze oficiais). Mantido apenas como referência histórica. **Não utilize para a criação.**
+
 > **Status:** Oficial — único briefing de criação
 >
 > **Escopo:** Consolidação integral da estratégia do Website Institucional do Hub Tributário
