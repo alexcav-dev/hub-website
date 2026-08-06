@@ -1,74 +1,33 @@
 # WEBSITE 4.5 — Creative Brief Master v1.0
 
-> **Status:** Oficial — única fonte de verdade para a criação visual
+> **Status:** Oficial — referência master para qualquer trabalho futuro de Design, UX, Motion ou Direção de Arte
 >
-> **Escopo:** Consolidação integral da inteligência das Sprints WEBSITE 1, 2, 2.5, 3 e 4
+> **Escopo:** consolidação integral da estratégia do Website Institucional do Hub Tributário (WEBSITE 1, 2, 2.5, 3 e 4)
 >
-> **Formato:** Documentação (Markdown) — não cria layout, wireframes, componentes, HTML, CSS, JavaScript ou design final
+> **Formato:** Documentação (Markdown) — este documento NÃO cria layout, telas, componentes, HTML, CSS ou JavaScript
 >
 > **Base obrigatória:** WEBSITE 1 · WEBSITE 2 · WEBSITE 2.5 · WEBSITE 3 · WEBSITE 4 · Executive Overview · Commercial Framework
 >
-> **Regra geral:** este documento **consolida e organiza**, nada inventa e nada contradiz. Em divergência de detalhe, o documento de origem prevalece.
+> **Regra:** este documento consolida e organiza decisões já aprovadas — **não cria decisões novas** e jamais contradiz qualquer documento anterior. Em divergência de detalhe, o documento de origem prevalece.
 >
-> **Finalidade:** orientar integralmente qualquer Designer, Diretor de Arte, IA ou equipe de desenvolvimento na criação do Website, **sem necessidade de consultar os documentos anteriores**. Após a aprovação deste documento, inicia-se o Creative Freeze.
+> **Finalidade:** orientar integralmente o Claude e qualquer designer na criação de conceitos visuais premium, preservando integralmente a identidade do Hub Tributário.
 
 ---
 
-## 1. Visão Geral
+## 1. Missão
 
-### 1.1 Quem é o Hub
-
-O **Hub Tributário** é uma plataforma de **organização e inteligência tributária** para empresas que levam conformidade a sério. Ele devolve **controle, ordem e tranquilidade** a quem responde pela área tributária — contabilidade, consultoria, gestores, sócios e diretores.
-
-### 1.2 O que o Website representa
-
-O Website Institucional é a **representação oficial da plataforma na web**: uma **Landing Page única**, de rolagem contínua, com **nove seções em ordem fixa**, separada do repositório principal do Hub.
-
-### 1.3 O que o Website deve transmitir
-
-O Website transmite, em toda interação:
-
-- **Inovação** — modernidade pelo comportamento, não pela decoração.
-- **Confiança** — solidez, sobriedade e acabamento impecável.
-- **Simplicidade** — clareza absoluta em segundos.
-- **Profissionalismo** — identidade própria, premium, elegante e atemporal, feita por um Product Designer Sênior.
-
-Nasce de uma visão de qualidade: o resultado **não** parece template, **não** parece gerado por IA e **não** imita nenhuma referência.
-
----
-
-## 2. Missão
-
-### 2.1 Objetivo da Landing Page
-
-- Despertar interesse pela plataforma em poucos segundos.
+- Despertar interesse pela plataforma em poucos segundos (menos de 10).
 - Transmitir credibilidade por clareza, organização e acabamento.
 - Apresentar o Hub — o que é, para quem é, por que existe.
 - Explicar o propósito — organização e inteligência tributária.
 - Gerar contatos qualificados.
 - Converter visitantes em **demonstrações** — a única ação principal.
 
-**Ação principal:** Agendar Demonstração. **Ação secundária:** Entrar em Contato.
+**Missão transversal do conteúdo:** *o Website constrói confiança antes de vender.* O Website **não vende sozinho** — constrói confiança antes de qualquer pedido.
 
-### 2.2 Missão transversal
+## 2. Público
 
-- **Do conteúdo (WEBSITE 4):** *o Website constrói confiança antes de vender.*
-- **Da experiência (WEBSITE 2):** transmitir confiança, inovação, organização, maturidade, qualidade e simplicidade em toda interação.
-
-### 2.3 O que a Landing Page NÃO deve fazer
-
-- Não vender sozinha; não pressionar; não criar urgência ou escassez.
-- Não conter: blog, área do cliente, login, páginas administrativas, múltiplas páginas ou documentação técnica.
-- Não parecer um material comercial agressivo nem um site genérico de SaaS.
-- Não enganar: nenhuma promessa que a demonstração não possa confirmar.
-
----
-
-## 3. Público
-
-### 3.1 Quem visita
-
-Visitantes são decisores e influenciadores do mundo tributário e financeiro. Perfis principais:
+Visitantes são decisores e influenciadores do mundo tributário e financeiro:
 
 | Perfil | Dor principal | Busca |
 |---|---|---|
@@ -79,84 +38,69 @@ Visitantes são decisores e influenciadores do mundo tributário e financeiro. P
 | **Diretores** | Risco reputacional e financeiro | Confiança institucional |
 | **Empresas em organização tributária** | Desorganização, multas | Solução clara e adotável |
 
-### 3.2 Quem decide
+- **Decisores:** sócios e diretores — decidem por segurança, conformidade e risco.
+- **Influenciadores:** gestores e consultores — decidem por controle, eficiência e padrão.
+- **Expectativas transversais:** clareza imediata, linguagem acessível, prova de solidez, caminho curto para a ação.
 
-Sócios e Diretores decidem pela **segurança, conformidade e risco**. Precisam de prova de solidez e maturidade institucional.
+## 3. Arquitetura
 
-### 3.3 Quem influencia
-
-Gestores e consultores influenciam pelo **controle, eficiência e padrão**. Avaliam se a plataforma simplifica o dia a dia.
-
-### 3.4 Expectativas transversais
-
-- **Clareza imediata** — entender o Hub em segundos.
-- **Linguagem acessível** — sem jargão técnico nem profundidade fiscal.
-- **Prova de solidez** — a plataforma parece madura, segura e confiável.
-- **Caminho curto para a ação** — a demonstração acessível em qualquer ponto.
-
----
-
-## 4. Narrativa
-
-### 4.1 A jornada completa, do primeiro segundo ao contato
-
-A página responde, em ordem fixa, cinco perguntas naturais:
+Landing Page única, **9 seções em ordem fixa e imutável** (em qualquer tamanho de tela):
 
 ```
-"O que é?"          → Hero
-"Por que existe?"   → Problema → Solução
-"Como funciona?"    → Como Funciona → Benefícios
-"Por que confiar?"  → Segurança
-"Como conhecer?"    → Demonstração → FAQ → Contato
+1. Hero            2. Problema          3. Solução
+4. Como Funciona   5. Benefícios        6. Segurança
+7. Demonstração    8. FAQ               9. Contato
 ```
 
-### 4.2 Ordem oficial das seções (imutável)
+- Cada seção responde **uma pergunta natural** e prepara a seguinte.
+- **Princípios:** Simplicidade · Velocidade · Clareza · Confiança · Elegância · Foco em conversão.
+- **Fora de escopo:** blog, área do cliente, login, admin, múltiplas páginas, documentação técnica.
+- Reflow mobile-first: empilha, nunca encolhe; ordem narrativa imutável em todos os breakpoints.
 
-1. Hero
-2. Problema
-3. Solução
-4. Como Funciona
-5. Benefícios
-6. Segurança
-7. Demonstração
-8. FAQ
-9. Contato
+## 4. Experiência
 
-### 4.3 Jornada por seção
+- **Sensação geral:** calma operacional — tudo responde imediatamente, tudo se move suavemente, nada corre e nada espera. Emoção-alvo: **tranquilidade confiante**, não entusiasmo.
+- **Sinais a transmitir:** Confiança · Inovação · Organização · Maturidade · Qualidade · Simplicidade.
+- **Princípios:** a experiência nunca compete com o conteúdo; motion reforça o entendimento; elegância sobre espetáculo; suavidade sobre velocidade; simplicidade sobre quantidade; consistência absoluta; nada sem propósito.
+- **Ritmo em 3 atos:** início (Hero, contido) → desenvolvimento (fluido) → encerramento (culminância e repouso). Macro-ritmo uniforme; respiro extra antes da Demonstração.
+- **Microinterações:** botões (hover/ativo claros), cards (elevação sutil), links (transição elegante), FAQ (expansão fluida), navegação (destaque discreto do CTA), ícones (movimento curto e preciso), todo interativo com feedback visual; preferência por transformações de posição/escala/opacidade.
 
-| Seção | Pergunta | Emoção-alvo | Ação esperada |
-|---|---|---|---|
-| **Hero** | "O que é e me interessa?" | Acolhimento, curiosidade confiante | Continuar leitura |
-| **Problema** | "Isso acontece comigo?" | Reconhecimento, alívio | Buscar solução |
-| **Solução** | "Existe um caminho melhor?" | Esperança, clareza | Entender o funcionamento |
-| **Como Funciona** | "Vai dar muito trabalho?" | Simplicidade, segurança | Avaliar benefícios |
-| **Benefícios** | "O que eu ganho?" | Desejo fundamentado | Considerar o Hub |
-| **Segurança** | "É seguro?" | Tranquilidade | Avançar |
-| **Demonstração** | "Como conheço?" | Prontidão | Agendar (ação principal) |
-| **FAQ** | "E quanto a...?" | Acolhimento | Avançar ou contatar |
-| **Contato** | "E se eu quiser só conversar?" | Fechamento tranquilo | Contatar |
+## 5. Narrativa
 
-### 4.4 Regras da narrativa
+Arco: **DESCONHECIMENTO (Hero) → RECONHECIMENTO (Problema) → INTERESSE (Solução · Como Funciona) → CONFIANÇA (Benefícios · Segurança) → AÇÃO (Demonstração · FAQ · Contato).**
 
-- Progressão lógica; cada seção responde **uma pergunta** e prepara a seguinte.
-- Confiança crescente: a prova (Segurança) vem depois do valor (Solução e Benefícios).
-- Atrito zero: o CTA está acessível sem interromper a leitura.
-- **Ordem imutável** em qualquer tamanho de tela.
-- A página conduz da curiosidade à prontidão; o clímax é a Demonstração.
+| Seção | Pergunta | Emoção-alvo |
+|---|---|---|
+| **Hero** | "O que é e me interessa?" | Acolhimento, curiosidade confiante |
+| **Problema** | "Isso acontece comigo?" | Reconhecimento, alívio |
+| **Solução** | "Existe um caminho melhor?" | Esperança, clareza |
+| **Como Funciona** | "Vai dar muito trabalho?" | Simplicidade, segurança |
+| **Benefícios** | "O que eu ganho?" | Desejo fundamentado |
+| **Segurança** | "É seguro?" | Tranquilidade |
+| **Demonstração** | "Como conheço?" | Prontidão |
+| **FAQ** | "E quanto a...?" | Acolhimento |
+| **Contato** | "E se eu quiser só conversar?" | Fechamento tranquilo |
 
----
+**Promessa central:** *o Hub devolve organização, controle e confiança para a área tributária da empresa.* Cada seção é uma variação da promessa. Regras: ordem imutável; confiança crescente (a prova vem depois do valor); atrito zero; sem reviravoltas.
 
-## 5. Experiência
+## 6. Design System
 
-### 5.1 Sensações
+**Princípios:** Consistência · Previsibilidade · Reutilização · Simplicidade · Escalabilidade. **Tokens antes de valores; padrão antes de exceção.**
 
-- **Chegada (Hero):** contida e confiante — o primeiro impacto não grita.
-- **Desenvolvimento:** fluida e progressiva — a página conduz o olhar.
-- **Encerramento:** concentrada (CTA) e acolhedora (FAQ e Contato).
-- Sensação geral: **calma operacional** — tudo responde imediatamente, tudo se move suavemente, nada corre e nada espera.
-- Emoção-alvo: **tranquilidade confiante**, não entusiasmo.
+- **Tokens:** `<categoria>-<papel>-<intensidade ou estado>`; **todo valor visual é um token; valores soltos são proibidos.**
+- **Tipografia (protagonista):** sans-serif precisa, sóbria, perene; pesos Regular/Medium/Semibold/Bold; **máx. 2 pesos e 3 níveis visíveis por seção** (Display só no Hero → H1 → H2 → Corpo → Rótulo → Micro); leitura 45–75 caracteres; parágrafos 2–4 linhas; texto à esquerda; nada de leitura abaixo de ~14 px; escala fluida com clamp.
+- **Layout:** container único ~1120–1200 px; grid 12/8/4 colunas; gutters fixos por faixa; centralização só em Hero e Demonstração; containers página → leitura (~2/3) → superfície; máx. 2 ritmos de largura por seção.
+- **Espaçamento:** escala única (scale-1 a scale-6) em micro/meso/macro; macrorritmo uniforme; respiro extra antes da Demonstração; nenhum valor arbitrário.
+- **Cor e contraste:** **AA (WCAG 2.1) inegociável**; cor = ênfase (neutros dominam, primária sóbria e rara, acento exclusivo da conversão); estados nunca só por cor; gradientes decorativos, glow e glassmorphism proibidos.
+- **Elevação:** 4 níveis invariantes (0 Base → 1 Superfícies → 2 Interação → 3 Sobreposição); hover move 1→2 sem pular; sombra comunica elevação, nunca decoração.
+- **Raios:** pequenos/médios/superfície/full (full só em circulares); hover nunca muda raio.
+- **Iconografia:** line-style consistente; ícone por função; sem loops; decorativos sem função proibidos.
+- **Ilustração:** só para conceitos abstratos; máx. 1 por seção; clichês proibidos (nuvens, foguetes, escudos, cubos 3D).
+- **Imagens:** editoriais e raras; fotografia sóbria; conteúdo e velocidade antes de imagens.
+- **Vídeo:** apenas na Demonstração, acionado pelo usuário; sem autoplay decorativo.
+- **Densidade:** "densidade calma" — nunca comprimir; o conteúdo é reduzido.
 
-### 5.2 Princípios de Motion
+## 7. Motion
 
 | Tipo | Duração | Sensação |
 |---|---|---|
@@ -165,37 +109,17 @@ A página responde, em ordem fixa, cinco perguntas naturais:
 | Entrada de seção no scroll | 300 – 500 ms | Revelação natural |
 | Deslocamento de destaque | 400 – 600 ms | Elegante e segura |
 
-- **Teto absoluto: 600 ms.**
-- **Easing:** entradas com ease-out ("chega rápido, assenta suave"); saídas com ease-in curto; deslocamentos contínuos com ease-in-out. Linear em destaque é proibido.
-- **Entradas:** fade + deslocamento vertical curto; uma revelação por visita.
-- **Scroll:** sempre do usuário; sem parallax dramático; sem scroll forçado.
+- **Teto absoluto: 600 ms.** Linear em destaque e bounce proibidos.
+- **Easing:** entradas ease-out ("chega rápido, assenta suave"); saídas ease-in curto; deslocamentos ease-in-out.
+- **Entradas:** fade + deslocamento vertical curto; uma revelação por visita; nunca entrada lateral.
+- **Scroll:** do usuário — sem parallax dramático, sem scroll forçado; scroll reveal discreto, uma vez por visita.
+- **Hover:** resposta ≤ 180 ms, mudança sutil, só em interativos.
+- **Carregamento:** sem splash, sem barras decorativas; progresso honesto e curto.
+- **Regra de ouro:** toda animação responde a justificativa funcional ou emocional; senão, não existe.
 
-### 5.3 Microinterações
+## 8. Benchmark
 
-- Hover: resposta até 180 ms, sutil, significativa, consistente — nunca em elemento não interativo.
-- Hover, foco, clique e estados ativos com distinção visual clara.
-- Carregamento: rápido, sem splash, sem animações decorativas.
-- Foco de teclado sempre visível — acessibilidade nunca se sacrifica por estética.
-
-### 5.4 Ritmo
-
-- Macro-ritmo uniforme e generoso entre seções, com respiro extra antes da Demonstração (momento de decisão).
-- Escala de espaço única aplicada em micro, meso e macro ritmo.
-- O ritmo acompanha a narrativa; nenhuma seção apressa o visitante.
-
----
-
-## 6. Design DNA
-
-### 6.1 Personalidade visual
-
-O Website fala com a voz de um **especialista sereno**: calmo, preciso, sóbrio, moderno sem modismo, acessível, seguro. Um consultor tributário sênior que domina tecnologia — não precisa provar nada em voz alta.
-
-### 6.2 Postura visual
-
-Um espaço ordenado onde **a informação é o luxo**: superfícies calmas, hierarquia forte, respiro generoso, cor como ênfase, tipografia protagonista, movimento discreto, acabamento impecável.
-
-### 6.3 Benchmark (referências conceituais)
+Influência conceitual, **jamais cópia**:
 
 | Referência | O que ensina |
 |---|---|
@@ -207,89 +131,47 @@ Um espaço ordenado onde **a informação é o luxo**: superfícies calmas, hier
 | Vercel | Performance percebida |
 | Resend · Figma · Mercury · Framer · 1Password | Elegância, sistema, solidez, intenção, segurança |
 
-**Regra:** influência conceitual, jamais cópia de layout, componente, cor, fonte ou identidade.
+**Alvos do Hub:** motion 8 · tipografia 9 · hierarquia 9 · espaçamento 9 · narrativa 8 · **conversão 9** · clareza 9 · minimalismo 8 · performance 9.
 
-### 6.4 Anti-padrões (proibição absoluta)
+**Governança:** catálogo enxuto (8–15 referências ativas); referência que ensina anti-padrão é rejeitada; admissão por justificativa arquitetural + compatibilidade com DNA + triagem + ficha + aprovação.
 
-- Excesso de glow/brilho; gradientes exagerados; glassmorphism pesado.
-- Visual cyberpunk; estética típica de IA; Landing Page genérica de SaaS.
-- Excesso de animações, loops, bounce, parallax dramático.
-- Elementos flutuantes decorativos; hero extremamente carregado; excesso de texto acima da dobra.
-- Cópia de componente, layout ou identidade de referências; urgência artificial em CTAs.
+## 9. DNA
 
-**Regra de ouro:** se um efeito pode ser removido sem perda de comunicação, ele deve ser removido.
+**Personalidade:** o **especialista sereno** — calmo, preciso, sóbrio, moderno sem modismo, acessível, seguro. Um consultor tributário sênior que domina tecnologia: sabe do que fala e não precisa provar em voz alta.
 
-### 6.5 Qualidades permanentes
+**Postura visual:** um espaço ordenado onde **a informação é o luxo** — superfícies calmas, hierarquia forte, respiro generoso, cor como ênfase, tipografia protagonista, movimento discreto, acabamento impecável.
 
-Organização, clareza, confiança, elegância, solidez. O que se lembra é a mensagem e a sensação; o que se esquece é o design.
+**Declaração de independência:** o Hub não é uma mistura das referências; é um produto próprio.
 
----
+**Testes de DNA:** identidade · sobriedade · sênior · marca · temporalidade · coerência.
 
-## 7. Design System
+**Qualidades permanentes:** organização, clareza, confiança, elegância, solidez. O que se lembra é a mensagem e a sensação; o design é esquecido.
 
-### 7.1 Princípios
+## 10. Tom de Voz
 
-Consistência · Previsibilidade · Reutilização · Simplicidade · Escalabilidade. **Tokens antes de valores; padrão antes de exceção.**
+**Voz:** o especialista sereno — Profissional · Humano · Claro · Seguro · Especialista · sem arrogância · sem exageros.
 
-### 7.2 Tokens
-
-Estrutura `<categoria>-<papel>-<intensidade ou estado>`. Categorias: cor, espaço, tipografia, layout, raio, sombra, motion, z-index. **Todo valor visual é um token; valores soltos são proibidos.**
-
-### 7.3 Tipografia
-
-- Sans-serif, precisa, sóbria, rica em pesos, perene (atemporal).
-- Pesos: Regular (corpo), Medium (destaques/rótulos), Semibold (títulos/CTA), Bold (raro). Máximo **dois pesos por seção visível**.
-- Hierarquia por **tamanho → peso → espaço → cor** (cor por último).
-- Níveis: Display (só no Hero) → H1 → H2 → Corpo → Rótulo → Micro. Máximo três níveis visíveis por seção.
-- Leitura: coluna de 45–75 caracteres; texto à esquerda; parágrafos curtos (2–4 linhas).
-- Uma família principal; entrelinha ~1,5–1,6 no corpo.
-
-### 7.4 Layout
-
-- **Container único** (~1120–1200 px); conteúdo sempre dentro do container.
-- **Grid:** 12 colunas (desktop) / 8 (tablet) / 4 (mobile); gutters fixos por faixa.
-- **Reflow mobile-first:** empilha, nunca encolhe; narrativa em ordem fixa.
-- Centralização apenas em Hero e Demonstração; alinhamento à esquerda como padrão.
-- Containers: página → leitura (~2/3) → superfície.
-
-### 7.5 Espaçamento
-
-- Escala de espaço única (degreus), aplicada em micro, meso e macro ritmo.
-- Respiro generoso; densidade calma; nenhum valor arbitrário.
-- Respiro extra antes da Demonstração.
-
-### 7.6 Contraste e cor
-
-- Contraste **AA (WCAG 2.1)** inegociável em texto e interface.
-- **A cor nunca é o único sinal de estado** (estado = cor + texto/ícone).
-- Cor é ênfase, não decoração: neutros dominam, primária sóbria, acento exclusivo da conversão.
-- Foco de teclado visível; tema claro com tema escuro futuro derivado dos mesmos tokens.
-- Superfícies: elevação em 4 níveis (base, superfície, interação, sobreposição); raios pequenos; sombras discretas.
-
----
-
-## 8. Storytelling
-
-### 8.1 Promessa central
-
-> **O Hub devolve organização, controle e confiança para a área tributária da empresa.**
-
-Cada seção é uma variação da promessa, da existência (Hero) ao convite (Demonstração). Nenhuma promessa absoluta, nenhuma garantia inflada, nenhum número inventado.
-
-### 8.2 Objeções e onde são respondidas
-
-| Objeção | Respondida em |
+| É | Não é |
 |---|---|
-| "Isso serve para mim?" | Problema + Solução |
-| "Vai dar muito trabalho?" | Como Funciona |
-| "É seguro?" | Segurança |
-| "Quanto tempo leva?" | Como Funciona + FAQ |
-| "Vale o investimento?" | Benefícios + FAQ |
-| "Não vou virar refém do vendedor?" | Demonstração + Contato |
+| "A organização tributária pode ser simples." | "A melhor plataforma do mercado!" |
+| "Uma conversa, sem compromisso." | "Não perca essa oportunidade única!" |
+| "Você tem visão do que acontece." | "Solução perfeita para todos!" |
 
-A página **antecipa** as perguntas e responde com a seção certa, no momento certo — nunca de forma defensiva.
+**Regras:** uma frase, uma ideia; verbos ativos; sem superlativos, sem comparação com concorrentes, sem urgência artificial; nunca culpar o visitante; nenhuma promessa que a demonstração não confirme; visitante tratado como profissional experiente; vocabulário do mundo do visitante (organização, controle, prazos, segurança, conformidade).
 
-### 8.3 CTAs
+**Filtros de revisão de texto (obrigatórios):** dor · promessa · exagero · respeito · pressão · voz — falhar em qualquer um = reescrever.
+
+## 11. Conversão
+
+**Filosofia:** conversão é uma conversa, não uma venda. Caminho em 4 estágios: Chegada (Hero) → Leitura (Problema→Segurança) → Decisão (Demonstração) → Pós-decisão (FAQ + Contato).
+
+- Nunca: compra direta, pressão, urgência, escassez, culpa.
+- Sempre: previsível, consistente, confiança antes do pedido.
+- Formulário: campos mínimos com propósito; privacidade visível; confirmação imediata; sem opt-ins pré-marcados.
+- **Regra:** *se uma objeção não foi respondida, o visitante não clica — e isso é defeito de arquitetura, não do visitante.*
+- **Pós-ação:** confirmação imediata → próximo passo claro → entrega do prometido (o que a página prometeu = o que a empresa entrega).
+
+## 12. CTA
 
 | Princípio | Aplicação |
 |---|---|
@@ -299,125 +181,107 @@ A página **antecipa** as perguntas e responde com a seção certa, no momento c
 | Sem urgência falsa | Sem contadores, sem "vagas limitadas" |
 | Posição de confiança | CTA aparece depois da confiança construída |
 
-### 8.4 Tom de voz
+**Ação principal:** Agendar Demonstração. **Ação secundária:** Entrar em Contato.
 
-Voz: **especialista sereno** — profissional, humano, claro, seguro, sem arrogância e sem exageros.
+## 13. Restrições
 
-| É | Não é |
-|---|---|
-| "A organização tributária pode ser simples." | "A melhor plataforma do mercado!" |
-| "Uma conversa, sem compromisso." | "Não perca essa oportunidade única!" |
-| "Você tem visão do que acontece." | "Solução perfeita para todos!" |
+- **Nenhuma decisão nova; nenhuma decisão existente alterada** — este documento apenas consolida.
+- **Nunca contradizer documento oficial**; em divergência, a origem prevalece.
+- **Nenhum layout/tela/componente/código** nesta sprint — tudo em Markdown.
+- Landing Page única; escopo limitado (sem blog, login, admin, múltiplas páginas).
+- Sem venda agressiva, sem urgência/escassez, sem promessas não verificáveis.
+- **Identidade própria:** sem cópia de referências, sem visual "gerado por IA", sem template.
+- **Acessibilidade inegociável:** WCAG 2.1 AA, foco de teclado visível, estados nunca só por cor, `prefers-reduced-motion` respeitado.
+- Mudanças estruturais em blocos congelados exigem **revisão arquitetural documentada**; execução é livre dentro do sistema.
 
-Regras: uma frase/uma ideia; sem jargão; promessas verificáveis; o visitante é tratado como profissional experiente; nunca se culpa o visitante pela dor.
+## 14. Anti-padrões (proibição absoluta)
 
----
-
-## 9. Critérios de Qualidade
-
-### 9.1 Como avaliar se uma proposta respeita o DNA do Hub
-
-Uma proposta visual é aceita somente se **toda** ela estiver coerente com este documento. A avaliação cobre percepção, identidade, narrativa, sistema, motion, acessibilidade e ausência de anti-padrões. Uma única falha eliminatória reprova a proposta.
-
-### 9.2 Checklist Oficial de Validação
-
-> Instrumento operacional detalhado: **WEBSITE-4.5-CREATIVE-CHECKLIST.md** — documento oficial de validação eliminatória. Em caso de divergência, o checklist em documento próprio prevalece.
-
-**Percepção e caráter**
-
-- [ ] Parece um produto **enterprise**, sério e maduro?
-- [ ] Parece **premium** e **artesanal** (acabamento intencional)?
-- [ ] **Evita estética típica de IA** e visual de template?
-- [ ] Possui **identidade própria** (não lembra outra marca)?
-- [ ] É **atemporal** (adequada daqui a cinco anos)?
-
-**DNA e narrativa**
-
-- [ ] **DNA preservado** — transmite o especialista sereno (calmo, preciso, sóbrio)?
-- [ ] **Arquitetura preservada** — nove seções, ordem fixa?
-- [ ] **Narrativa preservada** — cada seção responde uma pergunta e prepara a seguinte?
-- [ ] O **conteúdo continua protagonista** (o design não compete com o texto)?
-- [ ] **Benchmark respeitado** — nenhuma referência é reconhecível na proposta?
-
-**Confiança e conversão**
-
-- [ ] **Foco em confiança** — solidez e seriedade visíveis antes de qualquer pedido?
-- [ ] **Foco em conversão** — CTA consultivo, acessível e sem urgência falsa?
-- [ ] O visitante sabe exatamente o que acontece ao clicar?
-
-**Design system e clareza**
-
-- [ ] **Design system preservado** — tokens, grid, escala de espaço e hierarquia respeitados?
-- [ ] Existe **clareza visual** (hierarquia visível em segundos)?
-- [ ] O conteúdo **respira** (espaçamento generoso)?
-- [ ] **Contraste AA** garantido e estados nunca apenas por cor?
-
-**Motion**
-
-- [ ] **Motion preservado** — durações de 120–600 ms, movimento com propósito?
-- [ ] As **animações possuem propósito** (funcional ou emocional)?
-- [ ] Nenhum loop decorativo, parallax, bounce ou movimento contínuo?
-
-**Ausência de anti-padrões**
-
-- [ ] Nenhum dos anti-padrões da seção 6.4 está presente?
-- [ ] Teste de remoção: nenhum elemento pode ser removido sem perda de comunicação?
-
-### 9.3 Veredito
-
-| Veredito | Condição |
-|---|---|
-| **Aprovado** | Todos os itens obrigatórios atendidos; nenhum anti-padrão presente |
-| **Aprovado com ressalvas** | Obrigatórios OK; ajustes menores pendentes |
-| **Reprovado** | Qualquer item obrigatório falho ou qualquer anti-padrão presente |
+- **Estética:** excesso de glow/brilho; gradientes exagerados ou decorativos; glassmorphism pesado; cyberpunk; estética típica de IA; template.
+- **Estrutura:** hero extremamente carregado; excesso de texto acima da dobra; landing SaaS genérica (telas flutuantes, painéis prontos); elementos flutuantes decorativos; parallax dramático.
+- **Comportamento:** loops decorativos, animações contínuas, bounce/springs; transições que atrasam resposta; efeitos que competem com o conteúdo; urgência artificial; cópia de componente/layout/identidade.
+- **Regra de ouro:** se um efeito pode ser removido sem perda de comunicação, ele deve ser removido.
 
 ---
 
-## 10. Creative Freeze
+## 15. Moodboards Conceituais
 
-### 10.1 Declaração
+Três direções criativas conceituais — **Mood A, Mood B e Mood C** — cada uma com sensação, personalidade, ritmo, iluminação, contraste, densidade e impacto emocional. Sem layout. Documento completo: **WEBSITE-4.5-MOODBOARDS.md**.
 
-> Instrumento formal detalhado: **WEBSITE-4.5-CREATIVE-FREEZE.md** — documento oficial de congelamento e revisão arquitetural. Em caso de divergência, o congelamento em documento próprio prevalece.
+| Mood | Essência |
+|---|---|
+| **A — Respiração Absoluta** | O silêncio como mensagem de solidez |
+| **B — Contexto Qualificado** | Clareza imediata de "para quem" é o Hub |
+| **C — Marca de Precisão** | O acabamento como assinatura |
 
-Após a aprovação deste documento, **nenhuma decisão estrutural poderá ser alterada sem revisão arquitetural**.
+---
 
-Ficam congelados:
+## 16. Diretrizes para Exploração Criativa
 
-- **Arquitetura** (WEBSITE 1) — nove seções, ordem fixa.
-- **Experiência** (WEBSITE 2) — princípios de experiência e motion.
-- **Benchmark** (WEBSITE 2.5) — referências e regras de influência.
-- **Design System** (WEBSITE 3) — foundation, tipografia e layout.
-- **Storytelling** (WEBSITE 4) — narrativa, conversão e tom de voz.
+### 16.1 O que o Claude pode explorar
 
-### 10.2 O que isso significa
+- Direções visuais completas e conceitos (identidade, composição, paleta, tipografia, componente, motion) **dentro** dos limites deste documento.
+- Decisões de **execução**: paleta, fonte, raio, elevação, composição de seções, estilo de microinterações — livres dentro do sistema congelado.
+- As três moods conceituais (WEBSITE-4.5-MOODBOARDS.md) como matéria-prima de exploração, incluindo variações e combinações, desde que respeitando os princípios imutáveis.
+- Propostas de texto (headlines, rótulos, microcopy) desde que passem nos seis filtros de revisão do Tom de Voz.
 
-- A exploração visual acontece **dentro** dos limites congelados.
-- Decisões de execução (paleta, fonte escolhida, composição) são livres dentro do sistema — não exigem revisão.
-- Mudança em bloco congelado, **somente** mediante revisão arquitetural documentada.
+### 16.2 O que nunca poderá alterar
 
-### 10.3 Processo de revisão arquitetural
+- **Arquitetura:** as 9 seções e a ordem fixa (Hero → Problema → Solução → Como Funciona → Benefícios → Segurança → Demonstração → FAQ → Contato).
+- **Narrativa:** uma pergunta por seção; arco DESCONHECIMENTO → RECONHECIMENTO → INTERESSE → CONFIANÇA → AÇÃO; promessa central.
+- **DNA e tom:** especialista sereno; sem superlativos, sem urgência, sem culpa.
+- **Filosofia comercial:** confiança antes da venda; Demonstração = única ação principal; Contato = alternativa humilde.
+- **Design system:** tokens, grid (12/8/4), escala única de espaço, hierarquia tipográfica (máx. 3 níveis e 2 pesos por seção), contraste AA, estados nunca só por cor.
+- **Motion:** teto de 600 ms; entradas com ease-out; scroll do usuário; sem loops, parallax, bounce.
+- **Anti-padrões e restrições** (seções 13 e 14) — proibição absoluta.
+- **Escopo:** Landing Page única; nada fora do escopo.
 
-1. **Solicitação** — registrar a mudança com justificativa clara.
-2. **Impacto** — mapear os blocos congelados afetados.
-3. **Revisão** — avaliar contra o DNA, princípios e anti-padrões.
-4. **Decisão** — aprovar, recusar ou propor alternativa.
-5. **Registro** — documentar a decisão e atualizar os documentos com nova versão.
+### 16.3 Documentos obrigatórios
 
-### 10.4 Regras da revisão
+1. **WEBSITE-4.5-CREATIVE-BRIEF.md** (este documento — referência master).
+2. **WEBSITE-4.5-MOODBOARDS.md** (direções conceituais).
+3. **WEBSITE-4.5-CLAUDE-DESIGN-BRIEF.md** (contrato de trabalho da exploração).
+4. **WEBSITE-4.5-DESIGN-CHECKLIST.md** (validação eliminatória — ⛔ reprova).
+5. Documentos de origem (WEBSITE 1–4, Executive Overview, Commercial Framework) apenas para resolver divergência — a origem prevalece.
 
-- Mudança **sem justificativa arquitetural** é recusada.
-- Mudança que **fere o DNA** ou **introduz anti-padrão** é recusada.
-- **Mudança de execução** não exige revisão; basta validação pelo checklist (seção 9).
-- Toda mudança aprovada gera **nova versão documentada** — nunca alteração silenciosa.
+### 16.4 Princípios imutáveis
+
+- Confiança primeiro — nada de pressão, urgência ou promessas não verificáveis.
+- Simplicidade é arquitetura — menos é mais; a remoção é validação.
+- Conteúdo é o protagonista; o design é o cenário.
+- Identidade própria — nunca inspiração vira cópia, nunca parece IA/template.
+- Acessibilidade nunca se sacrifica por estética.
+- Estratégia é congelada; execução é livre dentro do sistema.
+
+---
+
+## 17. Checklist de Aprovação
+
+Checklist a ser utilizado **antes da aprovação de qualquer proposta visual**. Instrumento operacional completo e eliminatório: **WEBSITE-4.5-DESIGN-CHECKLIST.md** — itens ⛔ reprovam a proposta; uma única falha devolve a proposta antes de avançar. Resumo dos itens obrigatórios:
+
+- [ ] ⛔ Parece um produto **enterprise**, sério e maduro?
+- [ ] ⛔ **Não parece "gerada por IA"** nem template?
+- [ ] ⛔ **DNA preservado** — especialista sereno?
+- [ ] ⛔ **Arquitetura preservada** — 9 seções na ordem oficial?
+- [ ] ⛔ **Narrativa preservada** — uma pergunta por seção?
+- [ ] ⛔ **Nenhum anti-padrão** presente?
+- [ ] ⛔ **Motion dentro do teto de 600 ms**, com propósito?
+- [ ] ⛔ **Contraste AA** garantido em texto e interface?
+- [ ] Identidade própria, premium, elegante, atemporal?
+- [ ] Clareza imediata; tipografia protagonista; conteúdo respira?
+- [ ] Foco em confiança; CTA consultivo; foco em conversão?
+- [ ] Landing page única; 9 seções; ordem imutável?
+- [ ] Simplicidade — teste de remoção aprovado?
+
+**Veredito:** Aprovado · Aprovado com ressalvas · **Reprovado** (qualquer falha obrigatória ou anti-padrão).
 
 ---
 
 ## Critérios de Aceite
 
-- [ ] Existir um Creative Brief Master oficial do Website do Hub Tributário.
-- [ ] O documento consolidar integralmente WEBSITE 1, 2, 2.5, 3 e 4, Executive Overview e Commercial Framework, **sem contradizer qualquer documento oficial**.
-- [ ] Os dez capítulos obrigatórios estarem presentes e completos.
-- [ ] O checklist oficial de validação existir (na seção 9 e no WEBSITE-4.5-CREATIVE-CHECKLIST.md).
-- [ ] O Creative Freeze estar formalizado (na seção 10 e no WEBSITE-4.5-CREATIVE-FREEZE.md).
-- [ ] O documento orientar integralmente qualquer Designer, IA ou equipe de desenvolvimento, **sem consultar a documentação anterior**.
-- [ ] Este documento encerrar oficialmente a **fase de planejamento** do Website.
+- [ ] Existir um Creative Brief Master completo, consolidando missão, público, arquitetura, experiência, narrativa, design system, motion, benchmark, DNA, tom de voz, conversão, CTA, restrições e anti-padrões.
+- [ ] Existir o documento de moodboards conceituais (Mood A, B, C) sem criar layout.
+- [ ] Existir o capítulo "Diretrizes para Exploração Criativa" (o que explorar, o que nunca alterar, documentos obrigatórios, princípios imutáveis).
+- [ ] Existir o checklist de aprovação de propostas visuais.
+- [ ] Existir o contrato de trabalho do Claude (WEBSITE-4.5-CLAUDE-DESIGN-BRIEF.md).
+- [ ] Nenhum documento anterior contradito; nenhuma decisão nova.
+- [ ] O conjunto orientar o Claude na criação de conceitos visuais premium, preservando integralmente a identidade do Hub Tributário.

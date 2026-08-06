@@ -29,7 +29,7 @@ O **Creative Brief Master** é a única fonte de verdade para a criação visual
 1. **Nenhum bloco congelado pode ser alterado, reinterpretado ou substituído** durante a exploração visual, o design, o conteúdo ou a implementação.
 2. O design visual é **explorado dentro** dos limites congelados — nunca fora deles.
 3. Decisões de exploração (paleta, tipografia escolhida, composição) são **decisões de execução** dentro do sistema congelado, não alterações de estratégia.
-4. O **WEBSITE-4.5-CREATIVE-CHECKLIST** é o instrumento que garante o respeito ao congelamento.
+4. O **WEBSITE-4.5-DESIGN-CHECKLIST** é o instrumento que garante o respeito ao congelamento.
 5. Este documento **encerra oficialmente a fase de planejamento** do Website.
 
 ---

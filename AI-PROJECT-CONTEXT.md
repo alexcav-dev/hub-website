@@ -95,7 +95,9 @@ As Sprints são cumulativas e **não podem se contradizer**: cada documento novo
 | WEBSITE 2.5 — Benchmark + Catálogo + DNA | Referências (governança), anti-padrões, personalidade |
 | WEBSITE 3 — Design System Foundation + Layout + Tipografia | Tokens, grid, escala, contraste, tipografia |
 | WEBSITE 4 — Conteúdo + Conversão + Storytelling + Tom | Jornada, promessa central, voz, CTA |
-| WEBSITE 4.5 — Creative Brief + Checklist + Freeze | Documento mestre da criação, validação eliminatória, congelamento |
+| WEBSITE 4.5 — Creative Brief Master + Moodboards + Claude Design Brief + Design Checklist | Documento mestre da criação, direções conceituais (A/B/C), contrato do Claude, validação eliminatória |
+| WEBSITE 5 — Creative Brief | Briefing executivo consolidado — base oficial da etapa de Design |
+| WEBSITE 6 — Art Direction Master | Baseline de Direção de Arte — ensina a pensar antes de desenhar (entre o Brief e o Claude) |
 | AI-* (este grupo) — Contexto para IA | Resumo, instruções, workflow, hierarquia |
 
 **Documentos externos de origem (repositório principal do Hub):** **Executive Overview** (posicionamento institucional e promessa central do Hub) e **Commercial Framework** (a oferta comercial, limite das promessas e dos CTAs). Consultar somente o necessário.

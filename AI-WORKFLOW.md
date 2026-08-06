@@ -28,7 +28,7 @@ Arquitetura → Documentação → Review → Design → Implementação → Val
 
 **Regras:** não contradizer o que já é oficial; não inventar; cada sprint produz seus próprios documentos; sem documentação aprovada, a fase seguinte não começa.
 
-**Evidência no projeto:** WEBSITE 1 → 2 → 2.5 → 3 → 4 → 4.5.
+**Evidência no projeto:** WEBSITE 1 → 2 → 2.5 → 3 → 4 → 5 → 6.
 
 ## 3. Review
 
@@ -42,7 +42,7 @@ Arquitetura → Documentação → Review → Design → Implementação → Val
 
 **O que é:** exploração visual **dentro** dos limites congelados pelo Creative Freeze — identidade, layout, componentes, motion, conteúdo visual.
 
-**Regras:** explora-se dentro do sistema; decisões de execução (paleta, fonte, composição) são livres dentro do sistema; mudar bloco congelado (arquitetura, experiência, benchmark, design system, storytelling) exige revisão arquitetural documentada (6 etapas); toda proposta é validada pelo checklist eliminatório (WEBSITE-4.5-CREATIVE-CHECKLIST.md) — um item ⛔ reprova.
+**Regras:** explora-se dentro do sistema; decisões de execução (paleta, fonte, composição) são livres dentro do sistema; mudar bloco congelado (arquitetura, experiência, benchmark, design system, storytelling) exige revisão arquitetural documentada (6 etapas); toda proposta é validada pelo checklist eliminatório (WEBSITE-4.5-DESIGN-CHECKLIST.md) — um item ⛔ reprova.
 
 ## 5. Implementação
 

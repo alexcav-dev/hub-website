@@ -2,7 +2,7 @@
 
 > ⛔ **DEPRECATED — ARQUIVO SUPERSEDIDO**
 >
-> Versão anterior do checklist. Substituída pelo **WEBSITE-4.5-CREATIVE-CHECKLIST.md** (v1.0, validação eliminatória oficial). Mantida apenas como referência histórica. **Não utilize para validação.**
+> Versão anterior do checklist. Substituída pelo **WEBSITE-4.5-DESIGN-CHECKLIST.md** (v1.0, validação eliminatória oficial). Mantida apenas como referência histórica. **Não utilize para validação.**
 
 > **Status:** Oficial
 >

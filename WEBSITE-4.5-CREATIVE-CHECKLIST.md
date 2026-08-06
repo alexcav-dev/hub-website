@@ -1,5 +1,9 @@
 # WEBSITE 4.5 — Creative Checklist v1.0
 
+> ⛔ **DEPRECATED — ARQUIVO SUPERSEDIDO**
+>
+> Substituído pelo **WEBSITE-4.5-DESIGN-CHECKLIST.md** (v1.0, checklist oficial de validação eliminatória). Mantido apenas como referência histórica. **Não utilize para validação.**
+
 > **Status:** Oficial
 >
 > **Escopo:** Checklist de validação para qualquer proposta de design do Website Institucional do Hub Tributário

@@ -2,7 +2,7 @@
 
 > ⛔ **DEPRECATED — ARQUIVO SUPERSEDIDO**
 >
-> Handoff de uma sprint anterior. O padrão oficial atual é o **WEBSITE-4.5-CREATIVE-BRIEF.md** em conjunto com **WEBSITE-4.5-CREATIVE-CHECKLIST.md** e **WEBSITE-4.5-CREATIVE-FREEZE.md**. Mantido apenas como referência histórica. **Não utilize para orientar a exploração visual.**
+> Handoff de uma sprint anterior. O padrão oficial atual é o **WEBSITE-4.5-CREATIVE-BRIEF.md** em conjunto com **WEBSITE-4.5-CLAUDE-BRIEF.md** e **WEBSITE-4.5-DESIGN-CHECKLIST.md**. Mantido apenas como referência histórica. **Não utilize para orientar a exploração visual.**
 
 > **Status:** Oficial — instruções diretas para o Claude durante a exploração visual
 >
