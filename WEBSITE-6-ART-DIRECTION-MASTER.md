@@ -16,6 +16,8 @@ Website Architecture → Experience → DNA → Design System → Storytelling
         → Explorações → Figma → OpenCode → Implementação
 ```
 
+> **Dependência obrigatória:** este documento ensina **COMO pensar**; o Creative Brief define **O QUE existe**. Ambos são obrigatórios e complementares — nenhum substitui o outro.
+
 > **Formato em dois níveis:** cada capítulo apresenta Nível 1 (objetivo, regra ou princípio — a decisão) e Nível 2 (explicação, porquê e exemplos — o pensamento).
 
 ---
@@ -277,6 +279,32 @@ Website Architecture → Experience → DNA → Design System → Storytelling
 **Nível 2 — Explicação:** o melhor design do Hub é o que desaparece depois de cumprir seu papel: a mensagem fica, a confiança fica, o convite fica — o design some. Cada pixel desenhado deve trabalhar para ser esquecido: servindo à mensagem, ao entendimento e à confiança. Quando o visitante fechar a página pensando no Hub — e não no site — a direção de arte foi perfeita.
 
 **Exemplo:** ninguém lembra do layout da recepção de um consultório de alto padrão; lembra da tranquilidade, da competência e de sair com um próximo passo claro. A recepção foi projetada para ser esquecida — e foi por isso que funcionou.
+
+---
+
+## Fluxo Pós-Aprovação
+
+**Nível 1 — Regra:** a aprovação de uma direção de arte não encerra o trabalho — inicia a materialização.
+
+**Nível 2 — Explicação:** após a aprovação pelos critérios do capítulo 14, o fluxo segue na ordem oficial abaixo. Cada etapa recebe da anterior uma decisão aprovada — nenhuma etapa reinventa, todas materializam:
+
+```
+Architecture Review
+        ↓
+Creative Approval
+        ↓
+Moodboards
+        ↓
+Visual Exploration
+        ↓
+Figma
+        ↓
+OpenCode
+        ↓
+Implementação
+```
+
+**Exemplo:** o Art Direction Master ensina a pensar (Architecture Review e Creative Approval) — o que permite que Moodboards, Explorações, Figma, OpenCode e Implementação apenas **materializem** o que já foi decidido, sem delegar ao Claude ou à ferramenta a responsabilidade de pensar.
 
 ---
 
