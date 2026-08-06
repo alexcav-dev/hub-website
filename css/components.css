@@ -36,7 +36,7 @@ nav a:hover::after{transform:scaleX(1)}
   display:flex;align-items:center;gap:12px;
   font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);
 }
-.eyebrow i{display:block;width:26px;height:1px;background:var(--gold);font-style:normal}
+.eyebrow i{display:block;width:26px;height:1px;background:var(--gold-soft);font-style:normal}
 
 h1{
   font-family:"Archivo",serif;font-weight:500;
@@ -57,7 +57,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   background:var(--ink);color:var(--paper-high);
   font-size:14px;letter-spacing:.01em;
   padding:15px 26px;border-radius:3px;text-decoration:none;
-  box-shadow:var(--shadow-rest), inset 0 1px 0 rgba(255,255,255,.10);
+  box-shadow:0 14px 30px -24px rgba(15,30,53,.24), 0 2px 6px rgba(15,30,53,.04), inset 0 1px 0 rgba(255,255,255,.08);
   transition:transform .5s var(--ease),box-shadow .5s var(--ease),background .6s var(--ease);
 }
 /* luz da sala que percorre o botão — o CTA herda a luz do ambiente
@@ -71,12 +71,12 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 /* fio dourado na base */
 .cta::after{
   content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:linear-gradient(90deg, rgba(176,141,62,0), var(--gold), rgba(176,141,62,0));
-  transform:scaleX(.28);opacity:.55;transform-origin:center;
-  transition:transform .7s var(--ease),opacity .7s var(--ease);
+  background:linear-gradient(90deg, rgba(176,141,62,0), var(--gold-soft), rgba(176,141,62,0));
+  transform:scaleX(.18);opacity:.4;transform-origin:center;
+  transition:transform .7s var(--ease),opacity .7s var(--ease),background .7s var(--ease);
 }
 .cta:hover{background:var(--ink-2);transform:translateY(-1px);box-shadow:var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,.14)}
-.cta:hover::after{transform:scaleX(1);opacity:1}
+.cta:hover::after{transform:scaleX(1);opacity:1;background:linear-gradient(90deg, rgba(176,141,62,0), var(--gold), rgba(176,141,62,0))}
 .cta:active{transform:translateY(0);transition-duration:.12s}
 .cta span{color:var(--gold);transition:transform .5s var(--ease)}
 .cta:hover span{transform:translateX(3px)}
@@ -117,7 +117,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   --px:var(--pa,0); --py:var(--qa,0);
   --btx:var(--btx-a,0px); --bty:var(--bty-a,0px); --bsc:var(--bsc-a,0);
   --rot:var(--rot-a,0deg);
-  inset:6% -6% 10% 14%;opacity:.66;
+  inset:6% -6% 10% 14%;opacity:.52;
   box-shadow:0 40px 80px -50px rgba(15,30,53,.40);
 }
 .plate.mid {
@@ -125,7 +125,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   --px:var(--pb,0); --py:var(--qb,0);
   --btx:var(--btx-b,0px); --bty:var(--bty-b,0px); --bsc:var(--bsc-b,0);
   --rot:var(--rot-b,0deg);
-  inset:11% 2% 15% 6%;
+  inset:11% 2% 15% 6%;opacity:.82;
   box-shadow:0 56px 100px -56px rgba(15,30,53,.44), inset 0 1px 0 rgba(255,255,255,.7);
 }
 .plate.front{
@@ -137,6 +137,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   box-shadow:
     var(--shadow-deep),
     0 12px 28px -14px rgba(15,30,53,.22),
+    0 4px 10px -6px rgba(15,30,53,.16),
     inset 0 1px 0 rgba(255,255,255,.85),
     inset 0 -1px 0 rgba(15,30,53,.05);
   display:grid;place-items:center;overflow:hidden;
@@ -151,7 +152,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
     70% 60% at calc(4% + var(--lx,0.5) * 82% + var(--px,0) * .20%)
         calc(20% + var(--ly,0.5) * 48% + var(--py,0) * .10%),
     rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 70%);
-  opacity:calc(.80 + var(--day,0) * .12 + var(--anchor,0) * .20);
+  opacity:calc(.84 + var(--day,0) * .12 + var(--anchor,0) * .26);
   will-change:background-position,opacity;
 }
 /* segundo plano de luz: reflexo raso, mais frio, no sentido contrário */
@@ -184,8 +185,8 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   background:radial-gradient(circle, rgba(29,53,87,.085) 0%, rgba(29,53,87,0) 62%);
   /* o halo é a luz da sala encontrando o monograma: respira com ele e
      se adensa quando o sol passa por ali (--anchor) */
-  opacity:calc(.60 + var(--breath,0) * .26 + var(--anchor,0) * .32);
-  transform:translate(-50%,-50%) scale(calc(.968 + var(--breath,0) * .05 + var(--anchor,0) * .05));
+  opacity:calc(.68 + var(--breath,0) * .24 + var(--anchor,0) * .38);
+  transform:translate(-50%,-50%) scale(calc(.968 + var(--breath,0) * .05 + var(--anchor,0) * .06));
   will-change:opacity,transform;
 }
 
@@ -201,7 +202,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   display:flex;align-items:center;gap:16px;
   font-size:13.5px;font-weight:300;line-height:1.6;color:var(--ink-soft);max-width:62ch;
 }
-.statement i{display:block;width:26px;height:1px;background:var(--gold);flex:none;font-style:normal}
+.statement i{display:block;width:26px;height:1px;background:var(--gold-soft);opacity:.6;flex:none;font-style:normal}
 .scroll{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:10px;flex:none}
 .scroll i{display:block;width:1px;height:26px;background:linear-gradient(var(--ink-faint),rgba(133,147,167,0));
   animation:scroll-hint 6s var(--ease-soft) infinite;transform-origin:top;will-change:transform,opacity}

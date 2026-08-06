@@ -21,7 +21,7 @@
   /* estado contínuo — tudo interpolado, nada em degraus */
   var px=0, py=0, tpx=0, tpy=0;           /* olhar do observador (inércia) */
   var day=0.5, breath=0, floatY=0;         /* ciclo claro, respiro do monograma */
-  var tide=0, lx=0.5, ly=0.5, anchor=0;    /* AMBIENTE, LUZ, luz no monograma */
+  var tide=0.5, lx=0.5, ly=0.5, anchor=0.32;    /* AMBIENTE, LUZ, luz no monograma — já presente na chegada */
   var airX=0, airY=0;                      /* corrente lentíssima da sala */
   var dx=0, dy=0, mx=0, my=0, bx=0, by=0;  /* 3 tempos de leitura (profundidade) */
   var t0 = performance.now();
@@ -220,7 +220,7 @@
     root.style.setProperty('--tide',   '0.5');
     root.style.setProperty('--lx',     '0.5');
     root.style.setProperty('--ly',     '0.5');
-    root.style.setProperty('--anchor', '0');
+    root.style.setProperty('--anchor', '0.32');
     root.style.setProperty('--px',     '0');
     root.style.setProperty('--py',     '0');
   }
