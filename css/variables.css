@@ -1,0 +1,32 @@
+/* ——————————————————————————————————————————————
+   Tokens — a única fonte de verdade de decisão visual.
+   Nada de cores, sombras ou ritmos fora daqui.
+—————————————————————————————————————————————— */
+:root{
+  /* ambiente — azul institucional mais presente, sem saturar */
+  --paper:        #e7ecf4;
+  --paper-high:   #f2f5fa;
+  --paper-low:    #d8e0ec;
+  --paper-deep:   #ccd6e6;
+  --surface:      #f6f8fc;
+  --surface-2:    #eef2f8;
+
+  /* tinta institucional */
+  --ink:          #0f1e35;
+  --ink-2:        #1d3557;
+  --ink-soft:     #55657c;
+  --ink-faint:    #8593a7;
+
+  --gold:         #b08d3e;
+  --gold-soft:    rgba(176,141,62,.45);
+  --line:         rgba(15,30,53,.10);
+  --line-soft:    rgba(15,30,53,.065);
+
+  --shadow-near:  0 1px 2px rgba(15,30,53,.06);
+  --shadow-rest:  0 18px 40px -24px rgba(15,30,53,.30), 0 2px 6px rgba(15,30,53,.05);
+  --shadow-deep:  0 70px 130px -64px rgba(15,30,53,.46);
+
+  --s1: 8px; --s2: 16px; --s3: 28px; --s4: 48px; --s5: 80px; --s6: 128px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-soft: cubic-bezier(.4,.14,.3,1);
+}

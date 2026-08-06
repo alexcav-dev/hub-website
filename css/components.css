@@ -1,0 +1,199 @@
+/* ——————————————————————————————————————————————
+   Components — Header · Botões · Hero (campo + placas).
+   Responsivo por componente ao final.
+—————————————————————————————————————————————— */
+
+/* ——— cabeçalho ——— */
+header{position:relative;z-index:2}
+.bar{
+  display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s3) 0;border-bottom:1px solid var(--line-soft);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{display:block;height:26px;width:auto}
+.brand .name{font-family:"Archivo";font-weight:500;font-size:15px;letter-spacing:.01em}
+nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3)}
+nav a{
+  position:relative;
+  font-size:13.5px;color:var(--ink-soft);text-decoration:none;letter-spacing:.01em;
+  transition:color .45s var(--ease);
+}
+nav a::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  opacity:.7;transition:transform .55s var(--ease);
+}
+nav a:hover{color:var(--ink)}
+nav a:hover::after{transform:scaleX(1)}
+
+/* ——— hero ——— */
+.hero{
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:var(--s6);align-items:center;
+  padding:var(--s6) 0 calc(var(--s6) + var(--s3));
+}
+.eyebrow{
+  display:flex;align-items:center;gap:12px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);
+}
+.eyebrow i{display:block;width:26px;height:1px;background:var(--gold);font-style:normal}
+
+h1{
+  font-family:"Archivo",serif;font-weight:500;
+  font-size:clamp(38px,4.6vw,62px);line-height:1.08;letter-spacing:-.022em;
+  margin-top:var(--s3);max-width:14ch;
+}
+h1 em{font-style:normal;color:var(--ink-2);position:relative}
+.lede{
+  margin-top:var(--s3);max-width:46ch;
+  font-size:16.5px;line-height:1.72;font-weight:300;color:var(--ink-soft);
+}
+.actions{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+
+/* ——— CTA principal: luz interna, fio dourado, reação mínima ——— */
+.cta{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--ink);color:var(--paper-high);
+  font-size:14px;letter-spacing:.01em;
+  padding:15px 26px;border-radius:3px;text-decoration:none;
+  box-shadow:var(--shadow-rest), inset 0 1px 0 rgba(255,255,255,.10);
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),background .6s var(--ease);
+}
+/* luz interna que percorre lentamente — sempre ativa, quase invisível */
+.cta::before{
+  content:"";position:absolute;inset:-40% -60%;z-index:-1;
+  background:linear-gradient(100deg, rgba(255,255,255,0) 40%, rgba(255,255,255,.10) 50%, rgba(255,255,255,0) 60%);
+  animation:cta-light 11s linear infinite;
+  will-change:transform;
+}
+/* fio dourado na base */
+.cta::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg, rgba(176,141,62,0), var(--gold), rgba(176,141,62,0));
+  transform:scaleX(.28);opacity:.55;transform-origin:center;
+  transition:transform .7s var(--ease),opacity .7s var(--ease);
+}
+.cta:hover{background:var(--ink-2);transform:translateY(-1px);box-shadow:var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,.14)}
+.cta:hover::after{transform:scaleX(1);opacity:1}
+/* energia sem glow: ao investir, a luz interna caminha mais viva */
+.cta:hover::before{animation-duration:3.6s}
+.cta:active{transform:translateY(0);transition-duration:.12s}
+.cta span{color:var(--gold);transition:transform .5s var(--ease)}
+.cta:hover span{transform:translateX(3px)}
+
+.ghost{position:relative;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;transition:color .45s var(--ease),border-color .45s var(--ease)}
+.ghost:hover{color:var(--ink);border-color:var(--ink-faint)}
+
+/* ——— campo de composição: geometria do monograma ——— */
+.field{position:relative;aspect-ratio:1/1.02;min-height:420px;perspective:1600px;perspective-origin:50% 42%}
+.plate{
+  position:absolute;border-radius:4px;
+  background:linear-gradient(158deg, var(--surface) 0%, var(--surface-2) 100%);
+  border:1px solid var(--line-soft);
+  /* deslocamento paralático: cada plano responde ao ambiente com seu próprio peso */
+  transform:
+    translate3d(calc(var(--px,0) * var(--depth,1) * 1px), calc(var(--py,0) * var(--depth,1) * 1px), 0)
+    rotateX(calc(var(--py,0) * var(--tilt,1) * -0.035deg))
+    rotateY(calc(var(--px,0) * var(--tilt,1) * 0.045deg));
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+/* sombra de contato: curta, densa, logo abaixo de cada placa — respira com a luz */
+.plate::after{
+  content:"";position:absolute;left:4%;right:4%;bottom:-10px;height:18px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(15,30,53,.20) 0%, rgba(15,30,53,0) 72%);
+  filter:blur(5px);pointer-events:none;
+  opacity:calc(.86 + var(--day,0) * .18);
+  transform:translate3d(calc(var(--px,0) * var(--depth,1) * -.35px),0,0) scaleX(calc(1 + var(--day,0) * .02));
+}
+.plate.back{
+  --depth:.35; --tilt:.5;
+  /* cada placa flutua pela própria corrente — massa individual */
+  --px:var(--pa,0); --py:var(--qa,0);
+  inset:6% -6% 10% 14%;opacity:.66;
+  box-shadow:0 40px 80px -50px rgba(15,30,53,.40);
+}
+.plate.mid {
+  --depth:.7; --tilt:.8;
+  --px:var(--pb,0); --py:var(--qb,0);
+  inset:11% 2% 15% 6%;
+  box-shadow:0 56px 100px -56px rgba(15,30,53,.44), inset 0 1px 0 rgba(255,255,255,.7);
+}
+.plate.front{
+  --depth:1.25; --tilt:1.15;
+  --px:var(--pc,0); --py:var(--qc,0);
+  inset:17% 10% 21% -2%;
+  box-shadow:
+    var(--shadow-deep),
+    0 12px 28px -14px rgba(15,30,53,.22),
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 -1px 0 rgba(15,30,53,.05);
+  display:grid;place-items:center;overflow:hidden;
+  transition:box-shadow 1.2s var(--ease-soft);
+}
+/* luz da sala atravessando a placa: posição segue o ciclo do dia e o ponto de vista */
+.plate.front::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(
+    70% 60% at calc(30% + var(--day,0) * 22% + var(--px,0) * .22%) calc(18% + var(--day,0) * 6%),
+    rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 70%);
+  opacity:calc(.84 + var(--day,0) * .16);
+  will-change:background-position,opacity;
+}
+/* segundo plano de luz: reflexo raso, mais frio, no sentido contrário */
+.plate.front::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(
+    calc(112deg + var(--day,0) * 8deg),
+    rgba(255,255,255,0) 42%,
+    rgba(255,255,255,.34) 50%,
+    rgba(255,255,255,0) 58%);
+  opacity:calc(.22 + var(--day,0) * .2);
+  transform:translate3d(calc(var(--day,0) * 4%),0,0);
+  filter:blur(1px);
+}
+
+.mono{position:relative;width:34%;max-width:150px;
+  /* o objeto repousa: micro-deslocamento e sombra que acompanha a luz da sala */
+  transform:translate3d(calc(var(--px,0) * .22px), calc(var(--py,0) * .22px + var(--float,0) * .5px), 0);
+  filter:drop-shadow(
+    calc(var(--day,0) * -3px + 1px) calc(2.5px + var(--float,0) * 1.2px)
+    calc(4px + var(--day,0) * 5px) rgba(15,30,53,calc(.11 + var(--day,0) * .05)));
+  will-change:transform,filter;
+}
+.mono svg{display:block;width:100%;height:auto;overflow:visible}
+.mono .stem{fill:var(--ink);}
+.mono .cross{fill:var(--gold)}
+.mono .halo{
+  position:absolute;left:50%;top:50%;width:190%;aspect-ratio:1;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(29,53,87,.085) 0%, rgba(29,53,87,0) 62%);
+  opacity:calc(.62 + var(--breath,0) * .38);
+  transform:translate(-50%,-50%) scale(calc(.975 + var(--breath,0) * .05));
+  will-change:opacity,transform;
+}
+
+.rules{position:absolute;inset:0;pointer-events:none}
+.rules i{position:absolute;left:0;right:0;height:1px;background:var(--line-soft);display:block}
+
+/* ——— rodapé da dobra ——— */
+.fold{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+  padding-bottom:var(--s5);border-top:1px solid var(--line-soft);padding-top:var(--s3);
+}
+.statement{
+  display:flex;align-items:center;gap:16px;
+  font-size:13.5px;font-weight:300;line-height:1.6;color:var(--ink-soft);max-width:62ch;
+}
+.statement i{display:block;width:26px;height:1px;background:var(--gold);flex:none;font-style:normal}
+.scroll{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:10px;flex:none}
+.scroll i{display:block;width:1px;height:26px;background:linear-gradient(var(--ink-faint),rgba(133,147,167,0));
+  animation:scroll-hint 6s var(--ease-soft) infinite;transform-origin:top;will-change:transform,opacity}
+
+@media (max-width:960px){
+  .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0}
+  .field{min-height:340px;order:2}
+  nav a:nth-child(-n+2){display:none}
+  .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
+}
