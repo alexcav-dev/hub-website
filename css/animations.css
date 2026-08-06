@@ -1,21 +1,9 @@
 /* ——————————————————————————————————————————————
-   Motion — todos os keyframes, a revelação única e o
-   comportamento ambiental dirigido pelo motor (--day/--px).
-   Teto absoluto: 600ms. Entradas ease-out.
+   Motion — keyframes mínimos, a revelação única e o
+   comportamento ambiental dirigido pelo motor da sala
+   (--tide/--lx/--day). Teto absoluto: 600ms.
+   Entradas ease-out. Nada aqui é decorativo.
 —————————————————————————————————————————————— */
-@keyframes drift{
-  from{transform:translate3d(0,0,0) scale(1)}
-  to  {transform:translate3d(-1.4%,1.1%,0) scale(1.045)}
-}
-@keyframes drift-2{
-  from{transform:translate3d(1.2%,-.8%,0) scale(1.03);opacity:.62}
-  to  {transform:translate3d(-.9%,1.4%,0) scale(1);opacity:.86}
-}
-@keyframes sweep{
-  from{transform:translate3d(-28%,0,0)}
-  to  {transform:translate3d(28%,0,0)}
-}
-@keyframes cta-light{from{transform:translate3d(-32%,0,0)}to{transform:translate3d(32%,0,0)}}
 @keyframes scroll-hint{
   0%,100%{transform:scaleY(.72);opacity:.55}
   50%{transform:scaleY(1);opacity:1}
@@ -27,16 +15,21 @@
 .r4{animation-delay:.44s}.r5{animation-delay:.24s}.r6{animation-delay:.58s}
 @keyframes rise{to{opacity:1;transform:none}}
 
-/* ——— comportamento ambiental: a sala muda, o objeto responde ——— */
+/* ——— a sala: camadas que respiram com a maré (--tide).
+     Gradientes permanecem imóveis — a profundidade nasce do
+     tempo, não do deslocamento —; apenas a luz varia. ——— */
 .atmosphere .lift{
-  opacity:calc(.88 + var(--day,0) * .12);
-  transform:translate3d(calc(var(--px,0) * -.06px), calc(var(--py,0) * -.05px), 0);
+  opacity:calc(.84 + var(--tide,0) * .18);
 }
 .atmosphere .lift-2{
-  opacity:calc(.66 + var(--day,0) * .2);
-  transform:translate3d(calc(var(--px,0) * .04px), calc(var(--py,0) * .035px), 0);
+  opacity:calc(.58 + var(--tide,0) * .18);
 }
-.atmosphere .sweep{opacity:calc(.36 + var(--day,0) * .22)}
+/* a faixa de luz da sala acompanha o sol (--lx): deslocamento
+   pequeno e contínuo — nunca um loop, nunca um vaivém */
+.atmosphere .sweep{
+  opacity:calc(.26 + var(--tide,0) * .16);
+  transform:translate3d(calc((var(--lx,0.5) - .5) * 60 + var(--px,0) * .6),0,0);
+}
 .atmosphere .vignette{opacity:calc(.9 + (1 - var(--day,0)) * .18)}
 .rules i{opacity:calc(.7 + var(--day,0) * .3)}
 
