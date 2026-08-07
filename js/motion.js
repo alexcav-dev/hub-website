@@ -1,18 +1,23 @@
-/* ——————————————————————————————————————————————
-   Living Room — o motor não anima placas: ele anima
-   o ambiente. As placas apenas respondem à sala.
+/* ==========================================================
+   HUB WEBSITE
+   MOTION ENGINE
+   Arquitetura Oficial · motion.js
+   ==========================================================
 
-   Hierarquia: Ambiente → Luz → Profundidade → Placas →
-   Monograma → Partículas → CTA.
+   Este arquivo contém EXCLUSIVAMENTE o motor de movimento do site:
 
-   A física das placas foi redesenhada: cada uma é uma
-   massa com personalidade própria (ritmo, massa, inércia),
-   nenhuma sincronizada com a outra, nenhuma completa um
-   ciclo perceptível, nenhuma inverte direção com a vizinha.
-   Profundidade nasce do tempo entre as camadas.
+   · Ambiente  (maré / dia / corrente de ar)
+   · Luz       (sol da sala, --lx / --ly)
+   · Profundidade (3 tempos de leitura do mundo)
+   · Placas     (personalidades, física, inércia)
+   · Monograma  (respiração, âncora da luz)
+   · CTA        (luz passando pelo botão, --cta-x)
 
-   Expõe HubMotion. Consome apenas o rAF (ver main.js).
-—————————————————————————————————————————————— */
+   NENHUMA lógica de interface vive aqui. Bootstrap, eventos,
+   partículas e o requestAnimationFrame ficam em app.js.
+   Consome apenas o rAF (ver app.js).
+   Expõe HubMotion e MotionCalibration.
+   ========================================================== */
 (function(global){
   'use strict';
 
@@ -21,8 +26,8 @@
   /* estado contínuo — tudo interpolado, nada em degraus */
   var px=0, py=0, tpx=0, tpy=0;           /* olhar do observador (inércia) */
   var day=0.5, breath=0, floatY=0;         /* ciclo claro, respiro do monograma */
-  var tide=0.5, lx=0.5, ly=0.5, anchor=0.32;    /* AMBIENTE, LUZ, luz no monograma — já presente na chegada */
-  var airX=0, airY=0;                      /* corrente lentíssima da sala */
+  var tide=0.5, lx=0.5, ly=0.5, anchor=0.32;    /* AMBIENTE, LUZ, luz no monograma — já presentes na chegada */
+  var airX=0, airY=0;                      /* corrente lenta da sala */
   var dx=0, dy=0, mx=0, my=0, bx=0, by=0;  /* 3 tempos de leitura (profundidade) */
   var t0 = performance.now();
   var initPh = Math.random()*6.283;
@@ -54,20 +59,20 @@
 
   /* personalidades: cada placa é uma massa própria repousando.
      u = ritmo próprio (nunca batem ciclo juntas), amp = alcance
-     curto em px, sc = respiração (escala em fração), react = tempo
+     em px, sc = respiração (escala em fração), react = tempo
      de resposta ao ambiente, weight = peso (importância da leitura
-     do mundo), rot = rotação microscópica em graus.
-     Front: leve, responde primeiro, elegante, curto.
-     Mid:   mais pesado, lento, menos deslocamento.
-     Back:  praticamente imóvel — estabilidade. */
+     do mundo), rot = rotação em graus. */
   var plates = [
-    { name:'back',  ph:0.9,  u:0.045, ampX:0.90, ampY:0.70, sc:0.009,
-      react:0.050, weight:0.40, rot:0.045, x:0, y:0, z:0, rz:0 },
-    { name:'mid',   ph:2.4,  u:0.120, ampX:1.55, ampY:1.25, sc:0.012,
-      react:0.065, weight:0.72, rot:0.080, x:0, y:0, z:0, rz:0 },
-    { name:'front', ph:4.1,  u:0.210, ampX:2.10, ampY:1.70, sc:0.015,
-      react:0.085, weight:1.00, rot:0.135, x:0, y:0, z:0, rz:0 }
+    { name:'back',  ph:0.9,  u:0.11,  ampX:1.8,  ampY:1.4,  sc:0.016,
+      react:0.065, weight:0.40, rot:0.09,  x:0.6, y:-0.4, z:0.006, rz:0 },
+    { name:'mid',   ph:2.4,  u:0.30,  ampX:3.2,  ampY:2.6,  sc:0.024,
+      react:0.090, weight:0.72, rot:0.18,  x:-1.4, y:1.0, z:0.010, rz:0 },
+    { name:'front', ph:4.1,  u:0.52,  ampX:4.6,  ampY:3.8,  sc:0.032,
+      react:0.120, weight:1.00, rot:0.32,  x:2.2, y:-1.6, z:0.016, rz:0 }
   ];
+
+  /* ——— API do motor ——— */
+
   function init(){ t0 = performance.now(); }
 
   /* o observador desloca minimamente o ponto de vista da sala */
@@ -88,20 +93,20 @@
     var cal = MotionCalibration;
 
     /* 1 — AMBIENTE · a maré. Frequências próximas porém nunca iguais
-       (0.213 e 0.047, mais ruído): varia sem repetir, sem fechar ciclo
+       (0.52 e 0.115, mais ruído): varia sem repetir, sem fechar ciclo
        inteiro diante dos olhos. */
     var tideRaw = 0.5
-      + 0.13*Math.sin(t*0.213 + 1.4)
-      + 0.08*Math.sin(t*0.047 + 4.1)
-      + 0.04*vn(t*0.031 + 8.3);
+      + 0.13*Math.sin(t*0.52 + 1.4)
+      + 0.08*Math.sin(t*0.115 + 4.1)
+      + 0.04*vn(t*0.075 + 8.3);
     tide += (Math.max(0.24, Math.min(0.76, tideRaw)) - tide) * 0.08;
 
-    /* 2 — LUZ. O sol da sala caminha lentamente; jamais volta à
+    /* 2 — LUZ. O sol da sala caminha lentamente, sem voltar à
        mesma posição durante a visita. */
-    lx = 0.5 + 0.24*Math.sin(t*0.059 + 0.5)*cal.lightWalk
-             + 0.05*Math.sin(t*0.0138 + 2.0);
-    ly = 0.5 + 0.17*Math.cos(t*0.052 + 1.1)*cal.lightWalk
-             + 0.04*Math.cos(t*0.0111 + 3.3);
+    lx = 0.5 + 0.24*Math.sin(t*0.16 + 0.5)*cal.lightWalk
+             + 0.05*Math.sin(t*0.04 + 2.0);
+    ly = 0.5 + 0.17*Math.cos(t*0.14 + 1.1)*cal.lightWalk
+             + 0.04*Math.cos(t*0.035 + 3.3);
     lx = Math.max(0.05, Math.min(0.95, lx));
     ly = Math.max(0.15, Math.min(0.85, ly));
 
@@ -110,17 +115,17 @@
     var nearM = Math.max(0, 1 - Math.abs(lx - 0.58)*1.5) * cal.anchorGlow;
     anchor += Math.max(0, Math.min(1, nearM) - anchor) * 0.14;
 
-    /* corrente de ar — visível sobretudo na poeira suspendida */
-    airX = Math.sin(t*0.026 + 0.8)*0.55 + Math.sin(t*0.009 + 2.2)*0.35;
-    airY = Math.cos(t*0.021 + 1.9)*0.55 + Math.sin(t*0.011 + 0.4)*0.35;
+    /* corrente de ar — visível sobretudo na poeira suspensa */
+    airX = Math.sin(t*0.07 + 0.8)*0.85 + Math.sin(t*0.024 + 2.2)*0.55;
+    airY = Math.cos(t*0.055 + 1.9)*0.85 + Math.sin(t*0.03 + 0.4)*0.55;
 
     /* dia — a densidade do azul muda aos poucos (~4min) */
     var d = 0.5 + 0.28*Math.sin(t*0.0262) + 0.12*Math.sin(t*0.0091 + 1.7);
     day += (Math.max(0.45, Math.min(0.95, d)) - day) * 0.05;
 
     /* respiração do monograma e o repouso do objeto (âncora) */
-    breath = 0.5 + 0.5*Math.sin(t*0.2244);        /* ~28s — solo do monograma */
-    floatY = Math.sin(t*0.24 + 1.7);
+    breath = 0.5 + 0.5*Math.sin(t*0.34);
+    floatY = Math.sin(t*0.30 + 1.7);
 
     /* 3 — PROFUNDIDADE por tempo: cada camada lê o mundo em seu
        próprio ritmo. A frente responde primeiro, o fundo por último —
@@ -131,8 +136,8 @@
 
     /* 4 — PLACAS: objetos repousando sobre a mesa, cada um com seu
        peso. Sua própria corrente (pulso), mais a leitura do mundo
-       com peso e tempo próprios. Fases patenteadas: nunca simultâneas,
-       nunca um ciclo fechado, nunca loop. */
+       com peso e tempo próprios. Fases nunca simultâneas, nunca um
+       ciclo fechado. */
     for(var i=0;i<plates.length;i++){
       var p = plates[i];
       var ph = t*p.u + p.ph*initPh;
@@ -145,11 +150,11 @@
       var bZ = Math.sin(ph*0.71 + 1.0)*0.5 + 0.5;   /* 0..1 para escala */
 
       /* o mundo chega a esta placa: olhar + corrente, amortecido
-         pelo seu peso (weight) e o leva pelo seu próprio tempo */
+         pelo seu peso (weight) e levado pelo seu tempo */
       var wX = (dx + airX)*p.weight*0.5;
       var wY = (dy + airY)*p.weight*0.5;
 
-      /* alvos — o "outdoor" da personalidade:
+      /* alvos — o "fotograma" da personalidade:
          tx = deslocamento (curto), tz = respiração em escala */
       var tx = bX*p.ampX*cal.plateLife + wX;
       var ty = bY*p.ampY*cal.plateLife + wY;

@@ -1,9 +1,28 @@
+/* ==========================================================
+   HUB WEBSITE
+   APPLICATION
+   Arquitetura Oficial · app.js
+   ==========================================================
+
+   Tudo que não é o motor de movimento (motion.js):
+
+   · 01 · Partículas  — a poeira da sala (HubDust)
+   · 02 · Eventos     — pointer, resize, visibilidade (HubInteractions)
+   · 03 · Orquestração — bootstrap, gate de reduced motion e o
+                          requestAnimationFrame único do site
+
+   Carregar SEMPRE depois de js/motion.js.
+   ========================================================== */
+
+/* ==========================================================
+   01 · PARTÍCULAS
+   ========================================================== */
 /* ——————————————————————————————————————————————
    Particles — poeira de verdade suspendida numa sala
    iluminada, não um efeito. Pouca, pequena, suave.
 
    · cada grão tem profundidade (z), velocidade própria e vida;
-   · alguns somem (ciclo), outros surgem — reposição hestaria;
+   · alguns somem (ciclo), outros surgem — reposição;
    · só brilham quando atravessam a luz da sala (env.lx);
    · nunca parecem estrelas (sem cintilação rápida) nem neve
      (sem queda uniforme).
@@ -43,7 +62,7 @@
     if(!c) return;
     w = c.clientWidth; h = c.clientHeight;
     c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    /* pouca poeira: densidade menor que antes */
+    /* pouca poeira: densidade baixa */
     var n = Math.max(10, Math.round((w*h)/62000));
     p = [];
     for(var i=0;i<n;i++) p.push(makeP());
@@ -132,3 +151,82 @@
     render: render
   };
 })(window);
+
+/* ==========================================================
+   02 · EVENTOS
+   ========================================================== */
+/* ——————————————————————————————————————————————
+   Interações — cursor, resize e visibilidade.
+   Apenas costura os eventos nos sistemas certos:
+   aponta para o Motion Engine (motion.js) e
+   redimensiona as Partículas. Expõe HubInteractions.
+—————————————————————————————————————————————— */
+(function(global){
+  'use strict';
+
+  function init(core){
+    window.addEventListener('resize', function(){
+      if(core.dust) core.dust.resize();
+    }, {passive:true});
+
+    window.addEventListener('pointermove', function(e){
+      if(core.motion) core.motion.setPointer(e.clientX, e.clientY);
+    }, {passive:true});
+
+    window.addEventListener('pointerleave', function(){
+      if(core.motion) core.motion.releasePointer();
+    }, {passive:true});
+
+    document.addEventListener('visibilitychange', function(){
+      if(core.setRunning) core.setRunning(!document.hidden);
+    }, {passive:true});
+  }
+
+  global.HubInteractions = { init: init };
+})(window);
+
+/* ==========================================================
+   03 · ORQUESTRAÇÃO
+   ========================================================== */
+/* ——————————————————————————————————————————————
+   Bootstrap — inicialização e orquestração.
+   Respeita prefers-reduced-motion, monta os sistemas
+   e conduz o único requestAnimationFrame do site.
+—————————————————————————————————————————————— */
+(function(){
+  'use strict';
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motion = window.HubMotion;
+  var dust = window.HubDust;
+
+  if(reduce){
+    motion.setStatic();
+    return;
+  }
+
+  motion.init();
+  dust.init(document.getElementById('dust'));
+
+  var running = true;
+
+  /* a troca de visibilidade é o único item no estado que o bootstrap
+     governa — partículas e física são chamadas apenas quando vivo */
+  window.HubInteractions.init({
+    motion: motion,
+    dust: dust,
+    setRunning: function(r){
+      running = r;
+      motion.setRunning(r);
+    }
+  });
+
+  function loop(now){
+    if(running){
+      dust.render(motion.update(now));
+    }
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+})();

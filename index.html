@@ -8,10 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/variables.css">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/components.css">
-<link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
 
@@ -19,6 +16,11 @@
   <div class="lift"></div>
   <div class="lift-2"></div>
   <div class="sweep"></div>
+  <div class="mesh-grid"></div>
+  <div class="mesh-scan"></div>
+  <div class="mesh-nodes">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
   <canvas id="dust"></canvas>
   <div class="grain"></div>
   <div class="vignette"></div>
@@ -53,7 +55,7 @@
         entende o que está em jogo.
       </p>
       <div class="actions r r6">
-        <a class="cta" href="#">Solicitar demonstração <span>→</span></a>
+        <a class="cta" href="#"><span class="cta-ring" aria-hidden="true"><span class="cta-ring-spin"></span></span>Solicitar demonstração <span>→</span></a>
         <a class="ghost" href="#">Conhecer o Hub</a>
       </div>
     </div>
@@ -62,16 +64,18 @@
       <div class="rules" aria-hidden="true">
         <i style="top:26%"></i><i style="top:50%"></i><i style="top:74%"></i>
       </div>
-      <div class="plate back"></div>
-      <div class="plate mid"></div>
-      <div class="plate front">
-        <div class="mono">
-          <div class="halo"></div>
-          <svg viewBox="0 0 78 100" aria-label="Monograma Hub Tributário">
-            <path class="stem" d="M0 0 L14 0 L14 40 L28 40 L28 0 L42 0 L42 100 L28 100 L28 54 L14 54 L14 100 L0 100 Z"/>
-            <rect class="stem" x="50" y="0" width="14" height="100"/>
-            <rect class="cross" x="36" y="43" width="42" height="14"/>
-          </svg>
+      <div class="plate-wrap back"><div class="plate back"></div></div>
+      <div class="plate-wrap mid"><div class="plate mid"></div></div>
+      <div class="plate-wrap front">
+        <div class="plate front">
+          <div class="mono">
+            <div class="halo"></div>
+            <svg viewBox="0 0 78 100" aria-label="Monograma Hub Tributário">
+              <path class="stem" d="M0 0 L14 0 L14 40 L28 40 L28 0 L42 0 L42 100 L28 100 L28 54 L14 54 L14 100 L0 100 Z"/>
+              <rect class="stem" x="50" y="0" width="14" height="100"/>
+              <rect class="cross" x="36" y="43" width="42" height="14"/>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -87,10 +91,8 @@
   </div>
 </div>
 
-<script src="js/motion-engine.js"></script>
-<script src="js/particles.js"></script>
-<script src="js/interactions.js"></script>
-<script src="js/main.js"></script>
+<script src="js/motion.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>

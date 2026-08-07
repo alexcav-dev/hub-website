@@ -1,9 +1,70 @@
+/* ==========================================================
+   HUB WEBSITE
+   FOLHA DE ESTILOS BASE
+   Arquitetura Oficial
+   ==========================================================
+
+   Arquivo único de estilo do website — consolidação
+   arquitetural (W10.2). Tokens, base, ambiente, componentes,
+   motion e responsividade vivem num único documento, no padrão
+   documental do Hub Tributário.
+
+   Nenhum outro arquivo de CSS é carregado pelo index.html.
+   Ordem das seções: tokens → reset → base → layout →
+   atmosfera → header → hero → placas → monograma → CTA →
+   motion (keyframes/reduced motion) → responsividade.
+   ========================================================== */
+
+/* ==========================================================
+   01 · DESIGN TOKENS
+   ========================================================== */
+
 /* ——————————————————————————————————————————————
-   Layout geral — base, ambiente e o container do site.
-   Componentes vivem em components.css; motion em animations.css.
+   Tokens — a única fonte de verdade de decisão visual.
+   Nada de cores, sombras ou ritmos fora daqui.
 —————————————————————————————————————————————— */
+:root{
+  /* ambiente — azul institucional mais presente, sem saturar
+     (temporariamente mais escuro para testar o contraste com a
+     luz da janela — ver nota abaixo) */
+  --paper:        #c7d4e9;
+  --paper-high:   #d1dcf0;
+  --paper-low:    #b8c8e1;
+  --paper-deep:   #abbedb;
+  --surface:      #d4def3;
+  --surface-2:    #cddaed;
+
+  /* tinta institucional */
+  --ink:          #0f1e35;
+  --ink-2:        #1d3557;
+  --ink-soft:     #55657c;
+  --ink-faint:    #8593a7;
+
+  --gold:         #b08d3e;
+  --gold-soft:    rgba(176,141,62,.45);
+  --line:         rgba(15,30,53,.10);
+  --line-soft:    rgba(15,30,53,.065);
+
+  --shadow-near:  0 1px 2px rgba(15,30,53,.06);
+  --shadow-rest:  0 18px 40px -24px rgba(15,30,53,.30), 0 2px 6px rgba(15,30,53,.05);
+  --shadow-deep:  0 70px 130px -64px rgba(15,30,53,.46);
+
+  --s1: 8px; --s2: 16px; --s3: 28px; --s4: 48px; --s5: 80px; --s6: 128px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --ease-soft: cubic-bezier(.4,.14,.3,1);
+}
+
+/* ==========================================================
+   02 · RESET
+   ========================================================== */
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+/* ==========================================================
+   03 · BODY
+   ========================================================== */
+
 body{
   font-family:"Inter",system-ui,sans-serif;
   color:var(--ink);
@@ -12,13 +73,45 @@ body{
   overflow-x:hidden;
 }
 
+/* ==========================================================
+   04 · LAYOUT
+   ========================================================== */
+
+.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 var(--s4)}
+
+@media (max-width:960px){
+  .wrap{padding:0 var(--s3)}
+}
+
+/* ——— rodapé da dobra ——— */
+.fold{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+  padding-bottom:var(--s5);border-top:1px solid var(--line-soft);padding-top:var(--s3);
+}
+.statement{
+  display:flex;align-items:center;gap:16px;
+  font-size:13.5px;font-weight:300;line-height:1.6;color:var(--ink-soft);max-width:62ch;
+}
+.statement i{display:block;width:26px;height:1px;background:var(--gold-soft);opacity:.6;flex:none;font-style:normal}
+.scroll{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:10px;flex:none}
+.scroll i{display:block;width:1px;height:26px;background:linear-gradient(var(--ink-faint),rgba(133,147,167,0));
+  animation:scroll-hint 6s var(--ease-soft) infinite;transform-origin:top;will-change:transform,opacity}
+
+/* ==========================================================
+   05 · ATMOSFERA
+   ========================================================== */
+
 /* ——— atmosfera: luz indireta em camadas, nunca glow ——— */
 .atmosphere{position:fixed;inset:0;pointer-events:none;z-index:0}
 .atmosphere .lift,
 .atmosphere .lift-2{position:absolute;inset:-25%;will-change:transform,opacity}
+/* o "poço de luz" principal da sala segue a janela (--lx/--ly):
+   um deslocamento pequeno e contínuo do centro do gradiente —
+   a sala não pisca, ela só recebe a luz de um ângulo levemente
+   diferente ao longo dos minutos */
 .atmosphere .lift{
   background:
-    radial-gradient(56% 44% at 64% 14%, var(--paper-high) 0%, rgba(242,245,250,0) 64%),
+    radial-gradient(56% 44% at calc(64% - (var(--lx,0.5) - .5) * 22%) calc(14% + (var(--ly,0.5) - .5) * 14%), var(--paper-high) 0%, rgba(242,245,250,0) 64%),
     radial-gradient(72% 62% at 10% 98%, var(--paper-low) 0%, rgba(216,224,236,0) 62%),
     radial-gradient(140% 46% at 22% 0%, rgba(29,53,87,.06) 0%, rgba(29,53,87,0) 58%);
 }
@@ -29,16 +122,24 @@ body{
     radial-gradient(122% 34% at 30% 2%, rgba(29,53,87,.10) 0%, rgba(29,53,87,0) 62%);
   opacity:.78;
 }
-/* vinheta: fecha o ambiente nas bordas, como uma sala */
+/* vinheta: fecha o ambiente nas bordas, como uma sala — o lado
+   oposto à janela fica sutilmente mais fechado que o lado da luz */
 .atmosphere .vignette{
   position:absolute;inset:0;
   background:
-    radial-gradient(120% 90% at 50% 40%, rgba(15,30,53,0) 42%, rgba(15,30,53,.055) 78%, rgba(15,30,53,.10) 100%);
+    radial-gradient(120% 90% at calc(50% - (var(--lx,0.5) - .5) * 14%) calc(40% - (var(--ly,0.5) - .5) * 10%), rgba(15,30,53,0) 42%, rgba(15,30,53,.055) 78%, rgba(15,30,53,.10) 100%);
 }
-/* varredura de luz muito lenta — como a luz do dia mudando */
+/* o feixe da janela: uma faixa de luz diagonal que atravessa a
+   sala de verdade ao longo dos minutos — núcleo branco, bordas
+   com um leve calor dourado, nunca frio, nunca neon */
 .atmosphere .sweep{
   position:absolute;inset:-40% -60%;
-  background:linear-gradient(104deg, rgba(255,255,255,0) 38%, rgba(255,255,255,.42) 50%, rgba(255,255,255,0) 62%);
+  background:linear-gradient(104deg,
+    rgba(255,255,255,0) 34%,
+    rgba(255,248,232,.26) 44%,
+    rgba(255,255,255,.52) 50%,
+    rgba(255,248,232,.26) 56%,
+    rgba(255,255,255,0) 66%);
   opacity:.5;
   will-change:transform;
 }
@@ -48,8 +149,465 @@ body{
 }
 #dust{position:absolute;inset:0;width:100%;height:100%}
 
-.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 var(--s4)}
+/* ——— respiração do ambiente pelo motor (--tide/--lx/--day).
+     Gradientes permanecem imóveis — a profundidade nasce do
+     tempo, não do deslocamento —; apenas a luz varia. ——— */
+.atmosphere .lift{
+  opacity:calc(.84 + var(--tide,0) * .18);
+}
+.atmosphere .lift-2{
+  opacity:calc(.58 + var(--tide,0) * .18);
+}
+/* a faixa de luz da sala acompanha o sol (--lx): deslocamento
+   pequeno e contínuo — nunca um loop, nunca um vaivém */
+.atmosphere .sweep{
+  opacity:calc(.30 + var(--tide,0) * .18);
+  transform:translate3d(calc((var(--lx,0.5) - .5) * 240 + var(--px,0) * .6),0,0);
+}
+.atmosphere .vignette{opacity:calc(.9 + (1 - var(--day,0)) * .18)}
 
+/* ==========================================================
+   06 · HEADER
+   ========================================================== */
+
+header{position:relative;z-index:2}
+.bar{
+  display:flex;align-items:center;gap:var(--s3);
+  padding:var(--s3) 0;border-bottom:1px solid var(--line-soft);
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand svg{display:block;height:26px;width:auto}
+.brand .name{font-family:"Archivo";font-weight:500;font-size:15px;letter-spacing:.01em}
+nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3)}
+nav a{
+  position:relative;
+  font-size:13.5px;color:var(--ink-soft);text-decoration:none;letter-spacing:.01em;
+  transition:color .45s var(--ease);
+}
+nav a::after{
+  content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
+  background:var(--gold);transform:scaleX(0);transform-origin:left;
+  opacity:.7;transition:transform .55s var(--ease);
+}
+nav a:hover{color:var(--ink)}
+nav a:hover::after{transform:scaleX(1)}
+
+/* ==========================================================
+   07 · HERO
+   ========================================================== */
+
+.hero{
+  position:relative;
+  display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+  gap:var(--s6);align-items:center;
+  padding:var(--s6) 0 calc(var(--s6) + var(--s3));
+}
+.hero > *{position:relative;z-index:1}
+
+.eyebrow{
+  display:flex;align-items:center;gap:12px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);
+}
+.eyebrow i{display:block;width:26px;height:1px;background:var(--gold-soft);font-style:normal}
+
+h1{
+  font-family:"Archivo",serif;font-weight:500;
+  font-size:clamp(38px,4.6vw,62px);line-height:1.08;letter-spacing:-.022em;
+  margin-top:var(--s3);max-width:14ch;
+}
+h1 em{font-style:normal;color:var(--ink-2);position:relative}
+.lede{
+  margin-top:var(--s3);max-width:46ch;
+  font-size:16.5px;line-height:1.72;font-weight:300;color:var(--ink-soft);
+}
+.actions{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+
+/* ==========================================================
+   08 · CAMPO DAS PLACAS
+   ========================================================== */
+
+/* ——— campo de composição: geometria do monograma ——— */
+.field{position:relative;aspect-ratio:1/1.02;min-height:420px;perspective:1600px;perspective-origin:50% 42%}
+.plate{
+  position:absolute;inset:0;border-radius:4px;
+  background:linear-gradient(158deg, var(--surface) 0%, var(--surface-2) 100%);
+  border:1px solid var(--line-soft);
+  /* deslocamento paralático: cada plano responde ao ambiente com seu próprio peso;
+     a respiração (--btx/--bty/--bsc) é própria de cada placa, assíncrona,
+     com zero rotação e zero overshoot — papel repousando, não cartão flutuando */
+  transform:
+    translate3d(calc(var(--px,0) * var(--depth,1) * 1px), calc(var(--py,0) * var(--depth,1) * 1px), 0)
+    translate(var(--btx,0px), var(--bty,0px))
+    rotateX(calc(var(--py,0) * var(--tilt,1) * -0.035deg))
+    rotateY(calc(var(--px,0) * var(--tilt,1) * 0.045deg))
+    rotate(var(--rot,0deg))
+    scale(calc(1 + var(--bsc,0)));
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+/* sombra de contato: curta, densa, logo abaixo de cada placa — e
+   agora projetada pela janela: desloca-se para o lado oposto ao
+   sol (--lx) e se alonga quando a luz está mais rasante (--ly
+   alto), exatamente como a sombra de um objeto real sob luz
+   direcional — nunca um efeito próprio, só a luz da sala escrita
+   no chão */
+.plate::after{
+  content:"";position:absolute;left:4%;right:4%;bottom:-10px;height:18px;
+  background:radial-gradient(50% 100% at 50% 0%, rgba(15,30,53,.20) 0%, rgba(15,30,53,0) 72%);
+  filter:blur(calc(5px + (var(--ly,0.5) - .5) * 2px));pointer-events:none;
+  opacity:calc(.82 + var(--day,0) * .18 + (var(--ly,0.5) - .5) * .08);
+  transform:
+    translate3d(
+      calc(var(--px,0) * var(--depth,1) * -.35px + (0.5 - var(--lx,0.5)) * 34px),
+      calc((var(--ly,0.5) - .5) * 6px),
+      0)
+    scaleX(calc(1 + var(--day,0) * .02 + (var(--ly,0.5) - .5) * .12));
+}
+
+/* wrapper de posicionamento — só existe pra hospedar a respiração
+   (transform:scale simples, sem nenhuma outra transform concorrendo).
+   O .plate de dentro preenche 100% dele e continua com o transform
+   do JS (paralaxe/tilt/escala) intocado — zero composição entre as
+   duas animações, zero ambiguidade de motor de renderização. */
+.plate-wrap{position:absolute}
+.plate-wrap.back { inset:6% -6% 10% 14%; }
+.plate-wrap.mid  { inset:11% 2% 15% 6%; }
+.plate-wrap.front{ inset:17% 10% 21% -2%; }
+
+.plate.back{
+  --depth:.35; --tilt:.5;
+  /* cada placa respira pela própria corrente — massa individual */
+  --px:var(--pa,0); --py:var(--qa,0);
+  --btx:var(--btx-a,0px); --bty:var(--bty-a,0px); --bsc:var(--bsc-a,0);
+  --rot:var(--rot-a,0deg);
+  opacity:.52;
+  box-shadow:0 40px 80px -50px rgba(15,30,53,.40);
+}
+.plate.mid {
+  --depth:.7; --tilt:.8;
+  --px:var(--pb,0); --py:var(--qb,0);
+  --btx:var(--btx-b,0px); --bty:var(--bty-b,0px); --bsc:var(--bsc-b,0);
+  --rot:var(--rot-b,0deg);
+  opacity:.82;
+  box-shadow:0 56px 100px -56px rgba(15,30,53,.44), inset 0 1px 0 rgba(255,255,255,.7);
+}
+.plate.front{
+  --depth:1.25; --tilt:1.15;
+  --px:var(--pc,0); --py:var(--qc,0);
+  --btx:var(--btx-c,0px); --bty:var(--bty-c,0px); --bsc:var(--bsc-c,0);
+  --rot:var(--rot-c,0deg);
+  box-shadow:
+    var(--shadow-deep),
+    0 12px 28px -14px rgba(15,30,53,.22),
+    0 4px 10px -6px rgba(15,30,53,.16),
+    inset 0 1px 0 rgba(255,255,255,.85),
+    inset 0 -1px 0 rgba(15,30,53,.05);
+  display:grid;place-items:center;overflow:hidden;
+  transition:box-shadow 1.2s var(--ease-soft);
+}
+/* luz da sala atravessando a placa: o ponto de luz segue o sol da sala
+   (--lx/--ly) e o ponto de vista — quando o sol encontra o monograma,
+   a luz se adensa (--anchor) */
+/* luz branca do cartão removida a pedido — o feixe da hero
+   (.hero-beam) já é a única fonte de luz "viva" do site */
+.plate.front::before{display:none}
+/* segundo plano de luz: reflexo raso, mais frio, no sentido contrário */
+.plate.front::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0) 42%, rgba(255,255,255,.6) 50%, rgba(255,255,255,0) 58%),
+    linear-gradient(
+      calc(112deg + var(--day,0) * 8deg),
+      rgba(255,255,255,0) 42%,
+      rgba(255,255,255,.34) 50%,
+      rgba(255,255,255,0) 58%);
+  background-size:280% 280%, 100% 100%;
+  background-position:0% 0%, 0 0;
+  opacity:calc(.22 + var(--day,0) * .2);
+  transform:translate3d(calc(var(--day,0) * 4%),0,0);
+  filter:blur(1px);
+  animation:plate-shine 3.4s ease-in-out infinite;
+}
+
+/* linhas de pauta do campo — a luz da sala também as acende */
+.rules{position:absolute;inset:0;pointer-events:none}
+.rules i{position:absolute;left:0;right:0;height:1px;background:var(--line-soft);display:block}
+.rules i{opacity:calc(.7 + var(--day,0) * .3)}
+
+/* ==========================================================
+   09 · MONOGRAMA
+   ========================================================== */
+
+.mono{position:relative;width:34%;max-width:150px;
+  /* o objeto repousa: micro-deslocamento e sombra que acompanha a luz da sala */
+  transform:translate3d(calc(var(--px,0) * .22px), calc(var(--py,0) * .22px + var(--float,0) * .5px), 0);
+  filter:drop-shadow(
+    calc(var(--day,0) * -3px + 1px) calc(2.5px + var(--float,0) * 1.2px)
+    calc(4px + var(--day,0) * 5px) rgba(15,30,53,calc(.11 + var(--day,0) * .05)));
+  will-change:transform,filter;
+}
+.mono svg{display:block;width:100%;height:auto;overflow:visible}
+.mono .stem{fill:var(--ink);}
+.mono .cross{fill:var(--gold)}
+/* halo removido: o feixe da hero (.hero-beam) já cobre o papel de
+   luz viva por trás da composição — não precisa de um brilho
+   próprio preso ao centro do monograma */
+.mono .halo{display:none}
+
+/* ==========================================================
+   10 · CTA
+   ========================================================== */
+
+/* ——— CTA principal: o ponto mais visível da Hero em repouso —
+   sombra presente, fio dourado permanente, luz que atravessa com
+   um pulso periódico ——— */
+.cta{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--ink);color:var(--paper-high);
+  font-size:14px;letter-spacing:.01em;
+  padding:15px 26px;border-radius:3px;text-decoration:none;
+  box-shadow:0 22px 48px -20px rgba(15,30,53,.38), 0 4px 12px -3px rgba(15,30,53,.14), inset 0 1px 0 rgba(255,255,255,.12);
+  transition:transform .32s var(--ease),box-shadow .32s var(--ease),background .4s var(--ease);
+}
+/* feixe de luz dourado que percorre a borda do botão em volta,
+   contínuo, sem precisar de hover. .cta-ring é o anel: fixo, só
+   recorta o miolo (mask exclui o content-box do border-box) —
+   nunca gira, então o contorno do botão continua reto e alinhado
+   aos cantos. Dentro dele, .cta-ring-spin é um quadrado bem maior
+   que o botão, com um conic-gradient, girando com transform:rotate
+   simples — uma propriedade padrão, interpolada por qualquer motor,
+   sem depender de @property. */
+.cta-ring{
+  position:absolute;inset:0;border-radius:3px;
+  padding:1.5px;overflow:hidden;
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+          mask-composite:exclude;
+  pointer-events:none;
+}
+.cta-ring-spin{
+  position:absolute;top:50%;left:50%;width:260%;aspect-ratio:1;
+  margin-top:-130%;margin-left:-130%;
+  background:conic-gradient(from 0deg,
+    rgba(176,141,62,0) 0deg,
+    rgba(176,141,62,0) 265deg,
+    rgba(255,235,185,.6) 305deg,
+    rgba(255,240,200,1) 330deg,
+    var(--gold) 350deg,
+    rgba(176,141,62,0) 360deg);
+  animation:cta-spin 2.4s linear infinite;
+}
+/* respiro de luz por trás do botão, sincronizado ao feixe — dá
+   peso ao traço sem virar um glow constante */
+.cta{ animation:cta-glow 1.3s linear infinite; }
+/* fio dourado na base — agora visível em repouso, não só no hover:
+   o CTA passou a ser o segundo ponto de ouro deliberado da Hero
+   (o monograma continua sendo o primeiro e o mais intenso) */
+.cta::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+  background:linear-gradient(90deg, rgba(176,141,62,0), var(--gold), rgba(176,141,62,0));
+  transform:scaleX(.55);opacity:.65;transform-origin:center;
+  transition:transform .4s var(--ease),opacity .4s var(--ease);
+}
+.cta:hover{background:var(--ink-2);transform:translateY(-2px);box-shadow:var(--shadow-deep), inset 0 1px 0 rgba(255,255,255,.16)}
+.cta:hover::after{transform:scaleX(1);opacity:1}
+.cta:active{transform:translateY(0);transition-duration:.1s}
+.cta span{color:var(--gold);transition:transform .32s var(--ease)}
+.cta:hover span{transform:translateX(3px)}
+
+.ghost{position:relative;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;transition:color .45s var(--ease),border-color .45s var(--ease)}
+.ghost:hover{color:var(--ink);border-color:var(--ink-faint)}
+
+/* ==========================================================
+   11 · MOTION
+   Keyframes
+   Reduced Motion
+   ========================================================== */
+
+/* ——— revelação única, ease-out, dentro do teto de 600ms ——— */
+.r{opacity:0;transform:translateY(14px);animation:rise .6s var(--ease) forwards}
+.r1{animation-delay:.05s}.r2{animation-delay:.18s}.r3{animation-delay:.30s}
+.r4{animation-delay:.44s}.r5{animation-delay:.24s}.r6{animation-delay:.58s}
+
+/* ——— respiração em cascata das placas: uma onda que atravessa o
+     conjunto, do menor para o maior — back contrai primeiro, mid
+     e front seguem em sequência e expandem mais. É essa defasagem
+     que lê como organismo vivo, não como três cópias piscando juntas.
+
+     Aplicada no .plate-wrap (não no .plate): esse wrapper não tem
+     NENHUM outro transform declarado em lugar nenhum — só existe
+     pra isso. Assim a animação é um `transform:scale()` isolado e
+     comum, sem compor com o transform de 6 funções que o JS já
+     controla no .plate de dentro. Sem @property, sem custom
+     property dentro de calc(), sem propriedade `scale` isolada
+     competindo com preserve-3d — o caso mais simples possível
+     de animação CSS, que todo motor de renderização resolve. ——— */
+.plate-wrap.back  { animation:breathe-in  2.6s linear infinite; }
+.plate-wrap.mid   { animation:breathe-out 2.6s linear infinite; animation-delay:.3s; }
+.plate-wrap.front { animation:breathe-out-strong 2.6s linear infinite; animation-delay:.6s; }
+
+/* ——— pulso do monograma: bate por cima da respiração lenta que o
+     motor já controla via --breath/--anchor, dando um batimento
+     percebível em segundos, não em ~18s ——— */
+.mono .cross{
+  animation:cross-pulse 2.6s ease-in-out infinite;
+}
+
+/* ——— definição de todos os keyframes do website ——— */
+
+@keyframes scroll-hint{
+  0%,100%{transform:scaleY(.72);opacity:.55}
+  50%{transform:scaleY(1);opacity:1}
+}
+
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* pontos amostrados de uma senoide real (sin(t)) em vez de 3
+   waypoints com ease-in-out — ease-in-out desacelera até quase
+   zero em CADA parada (0%, 50%, 100%), então com só 3 pontos a
+   peça "trava" três vezes por ciclo. Com mais amostras + linear
+   entre elas, a curva de velocidade fica contínua: nunca para.
+
+   Só `scale()` — sem translate/rotate. Cada placa cresce a partir
+   do próprio centro, então nunca invade o espaço da placa vizinha,
+   e a amplitude é discreta (1–2%): um "respirar" quase subliminar,
+   não um balanço visível. */
+@keyframes breathe-in{
+  0%    { transform:scale(1);     }
+  16.7% { transform:scale(0.995); }
+  33.3% { transform:scale(0.990); }
+  50%   { transform:scale(0.988); }
+  66.7% { transform:scale(0.990); }
+  83.3% { transform:scale(0.995); }
+  100%  { transform:scale(1);     }
+}
+@keyframes breathe-out{
+  0%    { transform:scale(1);     }
+  16.7% { transform:scale(1.007); }
+  33.3% { transform:scale(1.013); }
+  50%   { transform:scale(1.016); }
+  66.7% { transform:scale(1.013); }
+  83.3% { transform:scale(1.007); }
+  100%  { transform:scale(1);     }
+}
+@keyframes breathe-out-strong{
+  0%    { transform:scale(1);     }
+  16.7% { transform:scale(1.010); }
+  33.3% { transform:scale(1.018); }
+  50%   { transform:scale(1.022); }
+  66.7% { transform:scale(1.018); }
+  83.3% { transform:scale(1.010); }
+  100%  { transform:scale(1);     }
+}
+
+@keyframes cross-pulse{
+  0%,100%{ filter:drop-shadow(0 0 0 rgba(176,141,62,0)); }
+  50%    { filter:drop-shadow(0 0 8px rgba(176,141,62,.65)); }
+}
+@keyframes plate-shine{
+  0%,100%{ background-position:130% -30%, 0 0; }
+  50%{ background-position:-30% 130%, 0 0; }
+}
+
+@keyframes cta-spin{
+  to{ transform:rotate(360deg); }
+}
+@keyframes cta-glow{
+  0%    { filter:drop-shadow(0 0 0    rgba(176,141,62,0));   }
+  16.7% { filter:drop-shadow(0 0 5.5px rgba(176,141,62,.3));  }
+  33.3% { filter:drop-shadow(0 0 9.5px rgba(176,141,62,.52)); }
+  50%   { filter:drop-shadow(0 0 11px  rgba(176,141,62,.6));  }
+  66.7% { filter:drop-shadow(0 0 9.5px rgba(176,141,62,.52)); }
+  83.3% { filter:drop-shadow(0 0 5.5px rgba(176,141,62,.3));  }
+  100%  { filter:drop-shadow(0 0 0    rgba(176,141,62,0));   }
+}
+
+/* ——— reduced motion: um único interruptor, e o site congela ——— */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .r{opacity:1;transform:none}
+}
+
+/* ==========================================================
+   12 · RESPONSIVIDADE
+   ========================================================== */
+
+/* hero e componentes — coluna única, placas depois do texto */
 @media (max-width:960px){
-  .wrap{padding:0 var(--s3)}
+  .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0}
+  .field{min-height:340px;order:2}
+  nav a:nth-child(-n+2){display:none}
+  .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
+}
+
+/* ==========================================================
+   12 · MALHA TRIBUTÁRIA  (fundo vivo da hero)
+   ==========================================================
+   Camada exclusivamente de ambiente: grade documental
+   finíssima em deriva, uma varredura de luz que a atravessa
+   e nós dourados que acendem devagar. Não toca layout,
+   tipografia, placas nem monograma.
+   ========================================================== */
+
+.atmosphere .mesh-grid,
+.atmosphere .mesh-scan,
+.atmosphere .mesh-nodes{position:absolute;inset:0}
+
+/* grade — respiração institucional, seca */
+.atmosphere .mesh-grid{
+  background-image:
+    linear-gradient(to right, rgba(15,30,53,.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15,30,53,.055) 1px, transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(72% 62% at 58% 44%, #000 12%, transparent 82%);
+          mask-image:radial-gradient(72% 62% at 58% 44%, #000 12%, transparent 82%);
+  animation:mesh-drift 120s linear infinite;
+  will-change:transform;
+}
+
+/* varredura — a luz da sala percorrendo a malha */
+.atmosphere .mesh-scan{
+  inset:-30% -40%;
+  background:linear-gradient(118deg,
+    rgba(255,255,255,0) 44%,
+    rgba(255,255,255,.5) 50%,
+    rgba(255,255,255,0) 56%);
+  opacity:0;
+  animation:mesh-scan 42s cubic-bezier(.4,.14,.3,1) infinite;
+  will-change:transform,opacity;
+}
+
+/* nós — pontos de encontro da matéria tributária */
+.atmosphere .mesh-nodes i{
+  position:absolute;width:3px;height:3px;border-radius:50%;
+  background:var(--gold);opacity:.18;
+  animation:mesh-node 16s ease-in-out infinite;
+}
+.atmosphere .mesh-nodes i:nth-child(1){top:22%;left:18%;animation-delay:0s}
+.atmosphere .mesh-nodes i:nth-child(2){top:58%;left:34%;animation-delay:4s}
+.atmosphere .mesh-nodes i:nth-child(3){top:34%;left:74%;animation-delay:8s}
+.atmosphere .mesh-nodes i:nth-child(4){top:78%;left:62%;animation-delay:12s}
+.atmosphere .mesh-nodes i:nth-child(5){top:14%;left:52%;animation-delay:6s}
+
+@keyframes mesh-drift{
+  0%   { transform:translate3d(0,0,0) }
+  100% { transform:translate3d(-64px,-64px,0) }
+}
+@keyframes mesh-scan{
+  0%   { transform:translate3d(-42%,-14%,0); opacity:0 }
+  22%  { opacity:.5 }
+  78%  { opacity:.5 }
+  100% { transform:translate3d(42%,14%,0); opacity:0 }
+}
+@keyframes mesh-node{
+  0%,100% { opacity:.12; transform:scale(1) }
+  50%     { opacity:.72; transform:scale(1.7) }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .atmosphere .mesh-grid,
+  .atmosphere .mesh-scan,
+  .atmosphere .mesh-nodes i{animation:none}
+  .atmosphere .mesh-scan{opacity:.28}
 }
