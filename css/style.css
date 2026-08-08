@@ -234,8 +234,15 @@ body{
 .brand{display:flex;align-items:center;gap:14px}
 .brand svg{display:block;height:26px;width:auto}
 .brand .name{font-family:"Archivo";font-weight:500;font-size:15px;letter-spacing:.01em}
-nav{margin-left:auto;position:relative}
-.nav-track{display:flex;align-items:center;gap:var(--s3)}
+nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3);position:relative}
+/* display:contents por padrão: o wrapper .nav-track fica
+   estruturalmente invisível para o layout — os botões continuam
+   sendo filhos flex diretos de `nav`, exatamente como antes dele
+   existir no HTML. Só dentro do media query mobile (ver seção 12)
+   ele volta a ser um flex container de verdade, para poder rolar
+   na horizontal sem cortar o indicador dourado nem a área de toque
+   dos botões (ver notas naquele bloco). Zero efeito no desktop. */
+.nav-track{display:contents}
 nav button{
   position:relative;
   appearance:none;border:0;background:transparent;font:inherit;cursor:pointer;
@@ -629,9 +636,18 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 
 /* hero e componentes — coluna única, placas depois do texto */
 @media (max-width:960px){
-  .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0;max-width:100%}
+  .hero{grid-template-columns:1fr;gap:var(--s4);padding:var(--s5) 0;max-width:100%}
   .hero > *{max-width:100%}
-  .field{min-height:340px;order:2;overflow:hidden}
+  /* ——— o campo de placas/monograma dominava a tela e encostava
+     nas bordas: em mobile ele vira uma composição menor e
+     centralizada, claramente secundária ao texto/CTA que vêm
+     antes — continua visualmente importante (mesmas placas, mesma
+     respiração), só não tenta mais ocupar a largura inteira da
+     viewport. Nenhuma mudança de order: continua depois dos CTAs. ——— */
+  .field{
+    min-height:0;max-width:260px;margin-inline:auto;
+    order:2;overflow:hidden;
+  }
   /* ——— contenção do campo de placas (W-Mobile): as placas usam
      perspective/preserve-3d + rotateX/rotateY para o tilt de
      paralaxe do desktop. Em WebKit mobile, camadas com transform 3D
@@ -661,23 +677,26 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
      visível — nunca gera overflow da página. ——— */
   .bar{flex-wrap:wrap;row-gap:var(--s2);padding-top:var(--s2);padding-bottom:var(--s2)}
   .brand{flex:1 0 100%}
-  nav{margin-left:0;flex:1 0 100%}
+  nav{margin-left:0;flex:1 0 100%;display:block}
   /* só a FAIXA de botões rola — nav em si nunca ganha overflow,
      então o indicador dourado (bottom:-6px) e a área de toque dos
      botões (que também "vazam" alguns px para fora da caixa) nunca
      são cortados. Sem barra de rolagem visível; some quando os 5
      itens já cabem (a maioria dos aparelhos ≥360px). */
   .nav-track{
+    display:flex;align-items:center;gap:var(--s3);
     justify-content:flex-start;
     flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;-ms-overflow-style:none;
   }
   .nav-track::-webkit-scrollbar{display:none;width:0;height:0}
-  nav button{flex:none;white-space:nowrap}
+  /* área de toque ~44px: padding real (não só o alvo invisível)
+     garante que o botão em si já nasce confortável para o dedo */
+  nav button{flex:none;white-space:nowrap;padding:12px 2px}
   nav button::before{
     content:"";position:absolute;left:50%;top:50%;
-    width:100%;height:32px;transform:translate(-50%,-50%);
+    width:100%;height:44px;transform:translate(-50%,-50%);
   }
 
   /* ——— CTAs da Hero: em telas estreitas a dupla ganha composição
@@ -686,7 +705,13 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
      próprio desenho, só a disposição muda. ——— */
   .actions{flex-direction:column;align-items:stretch;gap:var(--s3)}
   .actions .cta{width:100%;justify-content:center}
-  .actions .ghost{align-self:flex-start}
+  .actions .ghost{align-self:flex-start;position:relative}
+  /* o link secundário é só texto sublinhado — ganha a mesma técnica
+     de alvo invisível dos botões da nav, sem alterar a aparência */
+  .actions .ghost::before{
+    content:"";position:absolute;left:-6px;right:-6px;top:50%;
+    height:44px;transform:translateY(-50%);
+  }
 }
 
 /* ——— telas estreitas (≤480px): a navegação preserva os cinco
@@ -696,7 +721,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
    única original. ——— */
 @media (max-width:480px){
   .app-header .bar,
-  .workspace{padding-left:var(--s2);padding-right:var(--s2)}
+  .workspace{padding-left:20px;padding-right:20px}
   .bar{padding-top:var(--s1);padding-bottom:var(--s1)}
   .brand{gap:10px}
   .brand .name{font-size:14px}
@@ -1417,4 +1442,115 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   .hello-action{margin-top:var(--s4);justify-self:start}
   .hello-contact{margin-top:var(--s5)}
   .hello-close{margin-top:var(--s5);justify-self:start}
+  /* ——— linhas de contato: por padrão um item flex recusa encolher
+     abaixo da largura do próprio texto sem quebra (min-width:auto
+     do flexbox), mesmo o texto sendo "quebrável" — em telas
+     estreitas isso empurra e-mail/LinkedIn/portfólio para fora da
+     viewport. Empilhar rótulo/valor dá à linha inteira de largura
+     para quebrar, sem depender de min-width:0 nem de encolher a
+     fonte. Nenhum dado ou link muda, só a disposição. ——— */
+  .hello-row{
+    flex-direction:column;align-items:flex-start;gap:4px;
+    padding:var(--s2) 0;
+  }
+  .hello-row p,
+  .hello-row a{
+    text-align:left;max-width:100%;
+    word-break:break-word;overflow-wrap:anywhere;
+  }
+}
+
+/* ==========================================================
+   19 · MOBILE — FLUXO NATURAL DO DOCUMENTO  (W-Mobile2)
+   ==========================================================
+   CAUSA RAIZ do "sumiço" da página no iPhone, investigada de ponta
+   a ponta (ViewManager, classes de estado, aria-hidden, overflow,
+   position, stacking context, unidades de viewport, WebKit):
+
+   1) Cada `.view` era position:absolute + inset:0 dentro de um
+      `.workspace` de altura FIXA em unidade de viewport (100vh, e
+      desde a sessão anterior 100svh), que rolava internamente
+      (overflow-y:auto). Em WebKit iOS, um contêiner que rola por
+      conta própria e é dimensionado por uma unidade de viewport
+      DINÂMICA, dentro de um documento com elementos position:fixed,
+      tem um bug de repintura conhecido: a barra de endereço
+      aparece/some NO MEIO do gesto de rolagem, recalculando a
+      altura do contêiner com o dedo ainda na tela — o resultado é
+      um quadro em branco até o repaint seguinte. Não é overflow
+      simples: é a arquitetura de "tela única com rolagem interna"
+      tentando conviver com um viewport que muda de tamanho durante
+      o próprio gesto que o usuário está fazendo.
+
+   2) A navegação mobile de duas linhas (marca + trilha), adicionada
+      na sessão anterior, tornou o cabeçalho mais alto do que os
+      83px fixos em --header-height usados por .workspace{margin-top}.
+      Como o cabeçalho continuava position:fixed, ele passou a
+      SOBREPOR o topo da própria Hero por baixo dele — uma faixa
+      "fantasma" clicável por cima do início do conteúdo. Um toque
+      ali (algo fácil de acontecer ao tentar rolar perto do topo)
+      cai no botão "Home" da navegação, não no conteúdo abaixo:
+      dá exatamente a sensação relatada — o conteúdo "desaparece"
+      (a view anterior sai) e "a Home reaparece" (a navegação real,
+      não espontânea, troca para Home).
+
+   Nenhuma das duas causas depende de altura adivinhada ou de
+   z-index remendado — as duas nascem da MESMA decisão de arquitetura
+   (tela fixa + rolagem interna + cabeçalho fixed por cima). A
+   correção não é outro remendo: é devolver a rolagem para o
+   documento de verdade, só no mobile.
+
+   · O cabeçalho passa de fixed para sticky: continua "colado" no
+     topo durante a rolagem, mas agora dentro do fluxo normal — o
+     navegador reserva o espaço real dele sozinho, então não existe
+     mais um valor de altura para adivinhar nem possibilidade de
+     sobreposição, seja qual for a altura real do cabeçalho em
+     qualquer aparelho, fonte do sistema ou orientação.
+   · .workspace deixa de ter altura fixa; cada view deixa de ser uma
+     "tela" empilhada por z-index e passa a ser um bloco normal do
+     documento — só a view .active é exibida (display:none nas
+     demais), então a altura real da página É a altura real do
+     conteúdo. A Demonstração (única view que já tinha rolagem
+     própria, incondicional — ver seção 15) também vira um bloco
+     normal aqui: com a página inteira rolando, ela não precisa mais
+     de nenhum comportamento especial para continuar sendo "uma
+     página que se percorre".
+   · view.scrollTop = 0 (ViewManager/app.js) foi complementado por
+     window.scrollTo(0,0) a cada troca de view — sem isto, a
+     rolagem antiga (agora da página, não mais de cada view isolada)
+     ficaria "arrastada" de uma view para a próxima.
+   · Como a troca agora usa display:none↔block (que o navegador
+     nunca anima), a transição de opacidade de 250ms entre views
+     deixa de ser visível SÓ no mobile — dado assumido conscientemente:
+     nenhuma outra animação do site muda, e a prioridade era eliminar
+     um bug que quebra a confiança no produto inteiro, não preservar
+     um cross-fade sutil de um quarto de segundo. app.js ganhou uma
+     rede de segurança (setTimeout) para a máquina de estado do
+     ViewManager nunca travar por causa do transitionend que deixa
+     de disparar aqui — ver comentário em app.js/open().
+
+   Nada disto existe fora de @media (max-width:960px): acima de
+   960px o comportamento é exatamente o de antes desta seção. ———
+   ========================================================== */
+@media (max-width:960px){
+  html, body{ height:auto; }
+  body{ overflow-x:hidden; overflow-y:auto; }
+
+  .app-header{ position:sticky; }
+
+  .workspace{
+    margin-top:0;
+    height:auto; min-height:100svh;
+    overflow:visible;
+  }
+
+  .views .view{
+    position:relative; inset:auto;
+    overflow:visible; height:auto; min-height:0;
+  }
+  .views .view:not(.active){ display:none; }
+
+  /* especificidade igual à regra incondicional da seção 15
+     (.views .view.view--demo), e mais tarde no arquivo — por isso
+     vence só dentro deste breakpoint, sem tocar no desktop */
+  .views .view.view--demo{ overflow:visible; }
 }

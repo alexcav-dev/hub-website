@@ -383,6 +383,11 @@ global.HubReveal = { init: init };
     view.classList.add('active');
     view.setAttribute('aria-hidden', 'false');
     view.scrollTop = 0;
+    /* no mobile a rolagem passou a ser da página (ver style.css,
+       seção 19) — sem isto, trocar de view manteria a posição de
+       rolagem anterior. No desktop o body nunca rola, então isto
+       não faz nada (no-op seguro). */
+    if(global.scrollTo) global.scrollTo(0, 0);
     return view;
   }
 
@@ -406,12 +411,15 @@ global.HubReveal = { init: init };
     if(AppState.previousView) AppState.history.push(AppState.previousView);
 
     var done = false;
-    function onEnd(e){
-      if(e.target !== next || e.propertyName !== 'opacity') return;
+    function complete(){
       if(done) return;
       done = true;
       next.removeEventListener('transitionend', onEnd);
       finish(name);
+    }
+    function onEnd(e){
+      if(e.target !== next || e.propertyName !== 'opacity') return;
+      complete();
     }
 
     next.addEventListener('transitionend', onEnd);
@@ -421,8 +429,16 @@ global.HubReveal = { init: init };
     updateNav(name);
 
     if(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches){
-      next.removeEventListener('transitionend', onEnd);
-      finish(name);
+      complete();
+    } else {
+      /* rede de segurança: no mobile a troca de view usa display:none
+         (ver style.css), então a opacidade nunca anima e este evento
+         nunca dispara — sem isto, isTransitioning ficaria travado para
+         sempre depois da primeira troca, e nenhum clique de navegação
+         funcionaria de novo. Idempotente (o `done` acima protege contra
+         chamada dupla), então no desktop — onde o transitionend real
+         continua disparando primeiro — isto nunca tem efeito visível. */
+      global.setTimeout(complete, 260);
     }
   }
 
