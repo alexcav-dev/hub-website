@@ -1655,8 +1655,15 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
    · spin do CTA: quadrado de ~260% girando sem parar (no mobile
      o botão é full-width → camada grande) — parado; o traço
      dourado e o brilho estático permanecem.
-   · revelações/prints: sem promoção permanente após a entrada.
-   ========================================================== */
+    · revelações/prints: sem promoção permanente após a entrada.
+    3.ª auditoria (MEMÓRIA/COMPOSIÇÃO — continuação):
+    · sweep: era a MAIOR textura restante do mobile (inset -40% -60%
+      ≈ 4× a tela, ~47MB de textura num iPhone DPR3) recompondo a
+      60fps (--px por frame) — agora com área real (inset:0, ~12MB),
+      sem o termo --px e sem will-change permanente.
+    · atmosfera: luz/maré/dia gravadas a ~2fps (antes 10fps) —
+      a recomposição das camadas full-screen de ambiente divide por 5.
+    ========================================================== */
 @media (max-width:960px){
   /* ——— malha: estática, sem máscara e sem camada promovida ——— */
   .atmosphere .mesh-grid,
@@ -1669,6 +1676,20 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   .atmosphere .mesh-grid{animation:none}
   .atmosphere .mesh-scan{animation:none;opacity:.28}
   .atmosphere .mesh-nodes i{animation:none}
+  /* ——— sweep (3.ª auditoria): a maior textura restante do mobile.
+     A camada nasce com inset:-40% -60% = ~4× a área da tela (≈47MB
+     de textura num iPhone 12/DPR3) e o transform base usa --px, que
+     o motor grava a CADA frame (60fps) — a maior camada do site
+     recompondo continuamente. No mobile: área real (inset:0 → ~12MB),
+     sem o termo --px (que só existe para a resposta ao olhar, não
+     para a luz), e sem will-change permanente. O movimento da faixa
+     continua — --lx chega em ~2Hz, num ciclo de dezenas de segundos
+     o degrau é imperceptível. ——— */
+  .atmosphere .sweep{
+    inset:0;
+    will-change:auto;
+    transform:translate3d(calc((var(--lx,0.5) - .5) * 120px),0,0);
+  }
   /* poços de luz: camadas full-screen que não animam transform */
   .atmosphere .lift,
   .atmosphere .lift-2{will-change:auto}

@@ -40,12 +40,12 @@
   /* ——— MOBILE PERFORMANCE MODE ———
      No desktop (≥961px, ou com a MQ sem suporte) `perfMobile` é sempre
      false e o update() executa o caminho ORIGINAL, byte a byte.
-     No mobile: o motor básico (energia, cascata, placas) roda igual em
-     60fps, mas as escritas de custom properties são escalonadas:
-       60fps  → olhar/energia/rotações (o que responde ao dedo)
-       ~30fps → leituras de profundidade (--pa..--qc) e deslocamentos
-       ~10fps → ambiente (luz, maré, dia, malha, cta) — ciclos de
-                minutos/segundos, delta por frame é microscópico.
+   No mobile: o motor básico (energia, cascata, placas) roda igual em
+   60fps, mas as escritas de custom properties são escalonadas:
+     60fps  → olhar/energia/rotações (o que responde ao dedo)
+     ~30fps → leituras de profundidade (--pa..--qc) e deslocamentos
+     ~2fps  → ambiente (luz, maré, dia, malha, cta) — ciclos de
+              minutos/segundos, delta por frame é microscópico.
      Nenhum setTimeout: o mesmo rAF do site, só com cadências internas. ——— */
   var mqMobile = null;
   var perfMobile = false;
@@ -310,7 +310,9 @@ envx *= (1 - RoomPhysics.roomSettle);                /* o impulso evapora no ar 
                   microscópico (ciclos de minutos), 10Hz é indistinguível */
       mf++;
       var midHz = (mf & 1) === 0;          /* ~30fps */
-      var lowHz = (mf % 6) === 0;          /* ~10fps */
+      var lowHz = (mf % 30) === 0;         /* ~2fps — ambiente (luz/maré/dia):
+          ciclos de minutos → 2Hz é indistinguível de 10Hz e divide por 5 a
+          recomposição das camadas full-screen de atmosfera (lift/sweep) */
 
       root.style.setProperty('--px',  rmx.toFixed(3));
       root.style.setProperty('--py',  rmy.toFixed(3));
