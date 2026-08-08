@@ -116,8 +116,28 @@ body{
   .app-header .bar,
   .workspace{padding-left:var(--s3);padding-right:var(--s3)}
   /* abaixo de tablet, telas de app costumam admitir rolagem própria:
-     é a exceção deliberada, não a mesma solução paliativa do desktop */
+     é a exceção deliberada, não a mesma solução paliativa do desktop.
+     A Home ENTRA no mesmo fallback aqui (antes só entrava quando a
+     janela era baixa demais — max-height:680px — o que deixava a Hero
+     cortada e inalcançável em celulares altos/retrato, onde a altura
+     costuma passar de 680px). Nenhuma alteração de desktop: a condição
+     é só de largura, nunca disparada acima de 960px. */
+  /* especificidade igual à regra-base de cada caso (line ~112 usa
+     :not(.view--home), então repetimos aqui com :not() e com
+     .view--home separadamente) — assim a ordem no arquivo continua
+     decidindo, em vez de uma seletor mais fraco perder para a
+     regra-base incondicional */
   .views .view:not(.view--home){overflow-y:auto;overflow-x:hidden}
+  .views .view.view--home{overflow-y:auto;overflow-x:hidden}
+  /* 100vh conta com a área atrás da barra de endereço do navegador
+     mobile — 100svh reflete o viewport pequeno (visível de fato),
+     evitando espaço fantasma/corte por causa da UI do navegador.
+     Fallback automático: navegadores sem suporte a svh ignoram esta
+     regra e continuam com o calc(100vh...) da regra base acima. */
+  .workspace{
+    height:calc(100svh - var(--header-height));
+    min-height:calc(100svh - var(--header-height));
+  }
 }
 
 /* janelas muito baixas (desktop com pouca altura) caem no mesmo
@@ -214,7 +234,8 @@ body{
 .brand{display:flex;align-items:center;gap:14px}
 .brand svg{display:block;height:26px;width:auto}
 .brand .name{font-family:"Archivo";font-weight:500;font-size:15px;letter-spacing:.01em}
-nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3);position:relative}
+nav{margin-left:auto;position:relative}
+.nav-track{display:flex;align-items:center;gap:var(--s3)}
 nav button{
   position:relative;
   appearance:none;border:0;background:transparent;font:inherit;cursor:pointer;
@@ -608,32 +629,79 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 
 /* hero e componentes — coluna única, placas depois do texto */
 @media (max-width:960px){
-  .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0}
-  .field{min-height:340px;order:2}
-  nav{gap:var(--s2)}
-  nav button{font-size:12px}
+  .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0;max-width:100%}
+  .hero > *{max-width:100%}
+  .field{min-height:340px;order:2;overflow:hidden}
+  /* ——— contenção do campo de placas (W-Mobile): as placas usam
+     perspective/preserve-3d + rotateX/rotateY para o tilt de
+     paralaxe do desktop. Em WebKit mobile, camadas com transform 3D
+     podem compor FORA do overflow:hidden do próprio ancestral — um
+     comportamento só visível em aparelho real, nunca no simulador
+     de devtools. É a causa mais provável do H1/composição da Hero
+     "vazando" para fora da viewport em celular. A correção fica
+     estritamente aqui: mantém translate/scale (a respiração e o
+     deslocamento continuam), remove só a profundidade 3D — em
+     amplitudes de frações de grau, a diferença visual é imperceptível,
+     e o desktop (fora deste media query) não muda em nada. ——— */
+  .field{perspective:none}
+  .plate{
+    transform:
+      translate3d(calc(var(--px,0) * var(--depth,1) * 1px), calc(var(--py,0) * var(--depth,1) * 1px), 0)
+      translate(var(--btx,0px), var(--bty,0px))
+      rotate(var(--rot,0deg))
+      scale(calc(1 + var(--bsc,0)));
+    transform-style:flat;
+  }
   .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
-}
 
-/* ——— telas estreitas (≤480px): a navegação preserva os cinco
-   itens e os textos — em vez de transbordar a viewport, a nav
-   quebra de linha dentro da própria área. Nada aqui existe fora
-   desta faixa: desktop permanece com a linha única original. ——— */
-@media (max-width:480px){
-  .app-header .bar,
-  .workspace{padding-left:var(--s2);padding-right:var(--s2)}
-  .bar{padding-top:var(--s1);padding-bottom:var(--s1);gap:var(--s2)}
-  .brand{gap:10px}
-  .brand .name{font-size:14px}
-  nav{gap:6px;flex-wrap:wrap}
-  nav button{font-size:11.5px;letter-spacing:.005em}
-  /* área de toque: o alvo cresce sem alterar o desenho do texto —
-     um ::before invisível amplia o alvo para ~28px de altura,
-     mantendo os 15px visuais e o traço dourado na posição de sempre */
+  /* ——— navegação mobile: duas áreas — marca em cima, navegação
+     embaixo, sempre em uma única linha (nunca quebra item isolado).
+     Os 5 itens continuam disponíveis; se não couberem, a própria
+     faixa de navegação rola na horizontal, sem barra de rolagem
+     visível — nunca gera overflow da página. ——— */
+  .bar{flex-wrap:wrap;row-gap:var(--s2);padding-top:var(--s2);padding-bottom:var(--s2)}
+  .brand{flex:1 0 100%}
+  nav{margin-left:0;flex:1 0 100%}
+  /* só a FAIXA de botões rola — nav em si nunca ganha overflow,
+     então o indicador dourado (bottom:-6px) e a área de toque dos
+     botões (que também "vazam" alguns px para fora da caixa) nunca
+     são cortados. Sem barra de rolagem visível; some quando os 5
+     itens já cabem (a maioria dos aparelhos ≥360px). */
+  .nav-track{
+    justify-content:flex-start;
+    flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;
+  }
+  .nav-track::-webkit-scrollbar{display:none;width:0;height:0}
+  nav button{flex:none;white-space:nowrap}
   nav button::before{
     content:"";position:absolute;left:50%;top:50%;
     width:100%;height:32px;transform:translate(-50%,-50%);
   }
+
+  /* ——— CTAs da Hero: em telas estreitas a dupla ganha composição
+     própria, empilhada e com hierarquia clara — sem virar um
+     componente genérico: o CTA principal e o secundário mantêm o
+     próprio desenho, só a disposição muda. ——— */
+  .actions{flex-direction:column;align-items:stretch;gap:var(--s3)}
+  .actions .cta{width:100%;justify-content:center}
+  .actions .ghost{align-self:flex-start}
+}
+
+/* ——— telas estreitas (≤480px): a navegação preserva os cinco
+   itens e os textos com uma rolagem horizontal contida — nunca
+   transborda a viewport nem quebra "Vamos Conversar" isoladamente.
+   Nada aqui existe fora desta faixa: desktop permanece com a linha
+   única original. ——— */
+@media (max-width:480px){
+  .app-header .bar,
+  .workspace{padding-left:var(--s2);padding-right:var(--s2)}
+  .bar{padding-top:var(--s1);padding-bottom:var(--s1)}
+  .brand{gap:10px}
+  .brand .name{font-size:14px}
+  .nav-track{gap:var(--s2)}
+  nav button{font-size:12px;letter-spacing:.005em}
 }
 
 /* CTA do Contato em larguras muito estreitas: nunca encosta nas
@@ -641,7 +709,8 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
    dentro da área; sem toque no CTA desktop */
 @media (max-width:360px){
   .hello-action{justify-self:stretch}
-  .hello-action .cta{max-width:100%;padding:15px 18px;flex-wrap:wrap}
+  .hello-action .cta{max-width:100%;padding:14px 16px;font-size:13px;gap:8px}
+  .actions .cta{padding:14px 18px}
 }
 
 /* ==========================================================

@@ -322,6 +322,7 @@ global.HubReveal = { init: init };
   var viewMap = {};
   var indicator = null;
   var navEl = null;
+  var navTrack = null;
 
   function getView(name){
     return viewMap[name] || null;
@@ -358,7 +359,15 @@ global.HubReveal = { init: init };
       control.setAttribute('aria-selected', isActive ? 'true' : 'false');
       if(isActive) activeControl = control;
     });
-    if(activeControl) moveIndicator(activeControl, true);
+    if(activeControl){
+      moveIndicator(activeControl, true);
+      /* nav mobile pode rolar na horizontal (ver style.css, ≤960px);
+         no desktop a nav nunca transborda, então isto não move nada.
+         block:'nearest' impede qualquer rolagem vertical da página. */
+      if(activeControl.scrollIntoView){
+        activeControl.scrollIntoView({behavior:'smooth', block:'nearest', inline:'nearest'});
+      }
+    }
   }
 
   function deactivate(name){
@@ -419,6 +428,7 @@ global.HubReveal = { init: init };
 
   function init(){
     navEl = document.querySelector('.app-nav');
+    navTrack = navEl ? navEl.querySelector('.nav-track') : null;
     indicator = navEl ? navEl.querySelector('.nav-indicator') : null;
     controls = Array.prototype.slice.call(document.querySelectorAll('.app-nav [data-view]'));
     var views = Array.prototype.slice.call(document.querySelectorAll('.views .view[data-view]'));
@@ -455,6 +465,19 @@ global.HubReveal = { init: init };
       var current = controls.filter(function(c){ return c.classList.contains('active'); })[0];
       if(current) moveIndicator(current, false);
     }, {passive:true});
+
+    /* a FAIXA de botões (.nav-track) rola na horizontal em mobile
+       (≤960px) — getBoundingClientRect é sempre relativo ao
+       viewport, então o traço dourado precisa recalcular a própria
+       posição a cada rolagem manual da faixa, ou fica para trás
+       enquanto o usuário arrasta os itens. Sem custo no desktop:
+       ali a faixa nunca rola. */
+    if(navTrack){
+      navTrack.addEventListener('scroll', function(){
+        var current = controls.filter(function(c){ return c.classList.contains('active'); })[0];
+        if(current) moveIndicator(current, false);
+      }, {passive:true});
+    }
 
     document.addEventListener('click', function(e){
       var link = e.target.closest('[data-view-link]');
