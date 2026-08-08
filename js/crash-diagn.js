@@ -91,9 +91,16 @@
     }
   }catch(e){ TPO = null; }
 
-  var BUF = 48;                    /* anel de eventos */
+  var BUF = 120;                   /* anel de eventos (≈4 min com BEATs de 2s) */
   var prev = null;
   try{ prev = JSON.parse(SS ? SS.getItem(K) : 'null') || null; }catch(e){ prev = null; }
+
+  /* feature detection: document.wasDiscarded (Safari: na maioria não existe) */
+  var SWD = 'unsupported';
+  try{ if('wasDiscarded' in DOC) SWD = DOC.wasDiscarded ? 'true' : 'false'; }catch(e){ SWD = 'unsupported'; }
+
+  /* a sessão rodou com instrumentação? (separar produção normal de ?trace=1) */
+  var TRACE_ON = /[?&]trace=1(?:\b|$)|[?&]perf=[abcd](?:\b|$)/.test(global.location.search);
 
   var n = 1;
   if(prev && typeof prev.n === 'number') n = prev.n + 1;
@@ -109,6 +116,10 @@
     vv: global.innerHeight,
     vw: null,                  /* view ativa (ex.: HOME) */
     vis: DOC.hidden ? 'H' : 'V',
+    vs: (DOC.visibilityState || '?'),   /* visibilityState (visible/hidden/etc.) */
+    swd: SWD,                  /* document.wasDiscarded */
+    tr: TRACE_ON ? 1 : 0,      /* 1 = sessão rodou com ?trace=1 */
+    fsp: null,                 /* persisted do 1º pageshow deste documento */
     nav: navType,
     refer: REFERRER.slice(0, 300),
     href: HREF.slice(0, 400),
@@ -152,6 +163,35 @@
   function fmt(ms){
     if(typeof ms !== 'number' || !isFinite(ms) || ms < 0) return '—';
     return (ms / 1000).toFixed(1).replace('.', ',') + 's';
+  }
+
+  /* ————— formatadores de timeline forense ————— */
+  function p2x(x){ return (x < 10 ? '0' : '') + x; }
+  function fmtClock(ms){
+    var d = new Date(ms);
+    return p2x(d.getHours()) + ':' + p2x(d.getMinutes()) + ':' + p2x(d.getSeconds()) +
+      '.' + (d.getMilliseconds() < 100 ? '0' : '') + (d.getMilliseconds() < 10 ? '0' : '') + d.getMilliseconds();
+  }
+  function tlLine(x){   /* "ev@ts[:extra]" → "14:06:12.340 · ev · extra" */
+    if(typeof x !== 'string') return String(x);
+    var i = x.indexOf('@');
+    if(i <= 0) return x;
+    var ev = x.slice(0, i);
+    var rest = x.slice(i + 1);
+    var c = rest.indexOf(':');
+    var ts = c > 0 ? rest.slice(0, c) : rest;
+    var ex = c > 0 ? rest.slice(c + 1) : '';
+    var t = /^\d+$/.test(ts) ? fmtClock(Number(ts)) : ts;
+    return t + (ex ? ' · ' : '') + ev + (ex ? ' · ' + ex : '');
+  }
+  function firstPageshow(list){
+    if(!list) return null;
+    for(var i = 0; i < list.length; i++){
+      if(list[i].indexOf('pageshow@') === 0){
+        return list[i].indexOf(':P') >= 0 ? 'P' : 'R';
+      }
+    }
+    return null;
   }
 
   /* ————— contadores de INIT por documento —————
@@ -211,12 +251,14 @@
   }, true);
 
   global.addEventListener('pageshow', function(ev){
+    if(state.fsp === null) state.fsp = ev.persisted ? 'P' : 'R';
     mark('pageshow', ev.persisted ? 'P' : 'R');
   }, true);
 
   global.addEventListener('visibilitychange', function(){
     state.vis = DOC.hidden ? 'H' : 'V';
-    mark('vis:' + state.vis, DOC.visibilityState || '');
+    state.vs = (DOC.visibilityState || '?');
+    mark('vis' + ':' + state.vis, state.vs);
   }, true);
 
   /* ciclo de vida puro — feature detection: se o Safari não dispara,
@@ -225,18 +267,23 @@
   try{ global.addEventListener('resume', function(){ mark('resume'); }); }catch(e){}
   try{ global.addEventListener('unload',  function(){ mark('unload');  }); }catch(e){}
 
-  /* resize / visualViewport — dedupe 300ms */
+  /* resize / visualViewport — dedupe 300ms; nomes EXPLÍCITOS no anel
+     (antes: mark(ev,...) gravava "[object Event]" — bug desta sprint). */
   var VVD = 0;
-  function onResize(ev){
+  function onResize(kind){
     var now = Date.now();
     if(now - VVD < 300) return;
     VVD = now;
-    mark(ev, global.innerWidth + 'x' + global.innerHeight);
+    mark(kind, global.innerWidth + 'x' + global.innerHeight +
+      ' · vis=' + DOC.visibilityState +
+      ' · vv=' + (global.visualViewport
+        ? Math.round(global.visualViewport.width) + 'x' + Math.round(global.visualViewport.height)
+        : 'n/a'));
   }
-  global.addEventListener('resize', onResize, true);
+  global.addEventListener('resize', function(){ onResize('resize'); }, true);
   if(global.visualViewport){
-    global.visualViewport.addEventListener('resize', onResize, true);
-    global.visualViewport.addEventListener('scroll', onResize, true);
+    global.visualViewport.addEventListener('resize', function(){ onResize('vvresize'); }, true);
+    global.visualViewport.addEventListener('scroll', function(){ onResize('vvscroll'); }, true);
   }
 
   /* ————— view tracking (SEMPRE LIGADO, leve) —————
@@ -252,6 +299,7 @@
         kind: nb ? 'click:' + nb.getAttribute('data-view')
                  : 'click-link:' + lk.getAttribute('data-view-link')
       };
+      mark('CLICK', lastClick.kind);
     }
   }, true);
 
@@ -279,14 +327,12 @@
     }catch(e){}
   }
 
-  /* ————— heartbeat (2s) ————— */
+  /* ————— heartbeat (2s) — BEATs agora vão para o ANEL, dando a
+     timeline completa até o desaparecimento do documento ————— */
   global.setInterval(function(){
-    state.h = Date.now();
-    state.t = state.h;
-    state.e = 'BEAT';
     var vw = readView();
     if(vw && vw !== state.vw){ state.vw = vw; }
-    save();
+    mark('BEAT', vw || '');
   }, 2000);
 
   /* ————— BOOT: reconstrução da timeline com a sessão anterior ————— */
@@ -316,14 +362,20 @@
       c:      (typeof prev.c === 'number' ? prev.c : -1),
       vw:     prev.vw || null,
       vis:    prev.vis || '?',
+      vs:     prev.vs || null,
+      fsp:    prev.fsp || null,
+      swd:    prev.swd || 'unsupported',
       refer:  prev.refer || '',
       last:   prev.last || []
     };
   }
   var gapMS = (prevReport && prevReport.h) ? TS - prevReport.h : null;
+  var gapES = (prevReport && prevReport.t) ? TS - (prevReport.t || 0) : null;
 
   /* ————— registro do boot (persistido no anel e no arquivo) ————— */
   mark('BOOT_START', '#' + n + '@' + bootId + (prevReport ? ' · prev#' + prevReport.n + '/' + prevReport.id : ' · primeiro documento'));
+  mark('WAS_DISCARDED', SWD);
+  mark('TRACE', TRACE_ON ? '1' : '0');
 
   var navField = '';
   if(NAV){
@@ -412,17 +464,32 @@
       L.push('Referrer: ' + (REFERRER || '(vazio)'));
       L.push('URL: ' + HREF);
       L.push('Storage: ' + (storageWiped ? 'apagado' : 'ok') + ' · Clean exit: ' + (prevReport && prevReport.c === 1 ? 'sim' : 'não'));
-      L.push('Last event: ' + (prevReport ? prevReport.e : '—') + ' · Last heartbeat: ' + (gapMS !== null ? fmt(gapMS) : '—'));
+      L.push('wasDiscarded este doc: ' + SWD + ' · trace: ' + (TRACE_ON ? '1 (instrumentação ativa)' : '0 (produção normal)'));
+      L.push('Gaps desde doc anterior: heartbeat ' + (gapMS !== null ? fmt(gapMS) : '—') +
+        ' · último evento ' + (gapES !== null ? fmt(gapES) : '—'));
+      L.push('Último estado anterior: ev=' + (prevReport ? prevReport.e : '—') +
+        ' · vis=' + (prevReport ? prevReport.vis + (prevReport.vs ? '/' + prevReport.vs : '') : '—') +
+        ' · view=' + (prevReport ? (prevReport.vw || '?') : '—'));
       if(prevReport){
         L.push('Previous boot: #' + prevReport.n + '  id=' + prevReport.id +
           ' · nav=' + prevReport.nav + ' · view=' + (prevReport.vw || '?') +
-          ' · vis=' + prevReport.vis +
+          ' · vis=' + prevReport.vis + (prevReport.vs ? '/' + prevReport.vs : '') +
+          ' · discarded=' + (prevReport.swd || 'unsupported') +
+          ' · 1º pageshow=' + (prevReport.fsp || '?') +
           (prevReport.refer ? ' · referrer="' + prevReport.refer.slice(0, 60) + '"' : ''));
-        if(prevReport.last && prevReport.last.length){
-          L.push('Events (boot anterior):');
-          prevReport.last.slice(-8).forEach(function(x){ L.push('  ' + x); });
-        }
+        var pe = prevReport.last || [];
+        L.push('Timeline (boot anterior, últimos ' + Math.min(16, pe.length) + '):');
+        pe.slice(-16).forEach(function(x){ L.push('  ' + tlLine(x)); });
+        L.push('——— ' + (prevReport.c === 1
+          ? 'SAÍDA LIMPA (beforeunload + pagehide)'
+          : 'SEM EVENTO DE SAÍDA — documento substituído sem aviso') +
+          ' · último: ' + (pe.length ? tlLine(pe[pe.length - 1]) : '—') +
+          ' · depois: ' + fmtClock(TS) + ' (boot #' + n + ') ———');
       }
+      var cs = state.last || [];
+      L.push('Este documento: #' + n + ' · id=' + bootId + ' · iniciou ' + fmtClock(TS) +
+        ' · 1º pageshow=' + (state.fsp || '—'));
+      cs.slice(-6).forEach(function(x){ L.push('  ' + tlLine(x)); });
       var ck = [];
       for(var k in initCounts) ck.push(k + '#' + initCounts[k]);
       if(ck.length) L.push('Entradas de init neste doc: ' + ck.join(' · '));
@@ -445,15 +512,23 @@
     nav: NAV,
     report: function(){
       console.log('[__CRASH] boot #' + state.n + ' id=' + bootId +
-        ' · nav=' + navType + ' · referrer=' + (REFERRER || '(vazio)'));
+        ' · nav=' + navType + ' · referrer=' + (REFERRER || '(vazio)') +
+        ' · trace=' + (TRACE_ON ? 1 : 0) + ' · wasDiscarded=' + SWD);
       if(prevReport){
         console.log('[__CRASH] boot anterior: #' + prevReport.n + ' id=' + prevReport.id +
           ' · último evento=' + prevReport.e + ' · último heartbeat há ' + fmt(gapMS) +
-          ' · vis=' + prevReport.vis + ' · view=' + (prevReport.vw || '?'));
+          ' · último evento há ' + fmt(gapES) +
+          ' · vis=' + prevReport.vis + (prevReport.vs ? '/' + prevReport.vs : '') +
+          ' · view=' + (prevReport.vw || '?') +
+          ' · 1º pageshow=' + (prevReport.fsp || '?') +
+          ' · discarded=' + (prevReport.swd || 'unsupported') +
+          ' · saída limpa=' + (prevReport.c === 1 ? 'sim' : 'não'));
       }
+      console.log('[__CRASH] 1º pageshow DESTE doc: ' + (state.fsp || '— (ainda não disparou)'));
       console.log('[__CRASH] initCounts (este doc):', initCounts);
       console.log('[__CRASH] NAV entry:', NAV);
-      console.table((state.last || []).slice(-20));
+      console.log('[__CRASH] timeline (últimos 20):');
+      (state.last || []).slice(-20).forEach(function(x){ console.log('  ' + tlLine(x)); });
       console.log('[__CRASH] arquivo de boots:');
       console.table(arch.slice(-10));
     },
