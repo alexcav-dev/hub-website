@@ -1634,3 +1634,46 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
      vence só dentro deste breakpoint, sem tocar no desktop */
   .views .view.view--demo{ overflow:visible; }
 }
+
+/* ==========================================================
+   20 · MOBILE PERFORMANCE MODE  (≤960px)
+   ==========================================================
+   Apenas os custos caros e APENAS abaixo de tablet.
+   O desktop (≥961px) não é tocado: nenhuma regra deste bloco
+   existe acima do breakpoint, e nenhuma regra existente é
+   alterada — tudo isto é sobreposto somente aqui.
+
+   · grain: mix-blend-mode:multiply força o compositor a mesclar a
+     tela INTEIRA a cada repintura — a textura é preservada, o modo
+     de mesclagem vira normal (opacidade .05 idêntica).
+   · malha: a deriva agora usa keyframes SEM custom properties
+     (mesh-drift-soft) — o motor não resolve var() no keyframe a
+     cada frame da parede distante; o movimento continua vivo e
+     lento, e o JS do mesh (--mesh-x/--mesh-y) segue os integrators.
+   · plate-shine: animation de background-position é repintura por
+     frame — parada; o reflexo estático da luz continua presente.
+   · CTA: drop-shadow animado re-rasteriza o botão inteiro a cada
+     frame — mantida a identidade completa (anel dourado girando,
+     respiro scale do .breathe-active, fio de ouro estático) com um
+     brilho de ouro ESTÁTICO no lugar do glow animado.
+   ========================================================== */
+@media (max-width:960px){
+  .atmosphere .grain{mix-blend-mode:normal}
+  .atmosphere .mesh-grid{animation:mesh-drift-soft 96s linear infinite}
+  .plate.front::after{animation:none}
+  .cta{animation:none}
+  .cta.breathe-active{animation:cta-breathe 6s var(--ease-soft) infinite}
+  .cta{
+    box-shadow:
+      0 22px 48px -20px rgba(15,30,53,.38),
+      0 4px 12px -3px rgba(15,30,53,.14),
+      inset 0 1px 0 rgba(255,255,255,.12),
+      0 0 18px rgba(176,141,62,.16);
+  }
+}
+/* deriva da malha para o mobile: só transform, sem custom property —
+   o compositor resolve o percurso sozinho, sem custo por frame */
+@keyframes mesh-drift-soft{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(-64px,-64px,0)}
+}

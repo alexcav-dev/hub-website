@@ -39,6 +39,17 @@
      única de acoplamento definida no RoomPhysics (fonte única) */
   var roomPhysics = window.RoomPhysics;
 
+  /* ——— MOBILE PERFORMANCE MODE ———
+     ≤960px: metade das partículas e desenho a cada 2.º frame
+     (~30fps). A FÍSICA continua sendo resolvida a cada frame — a
+     velocidade visual da poeira não muda, só a rasterização é
+     amostrada. No desktop (≥961px) o caminho é idêntico ao original:
+     10+ partículas, 60fps. ——— */
+  var perfMobile = false;
+  var dFrame = 0;
+
+  function isMobile(){ return global.matchMedia && global.matchMedia('(max-width:960px)').matches; }
+
   /* sprite radial: centro denso, borda que desfaz — pó, não ponto */
   var sprInk=null, sprGold=null;
   function spriteDust(rgb){
@@ -58,6 +69,7 @@
     ctx = c.getContext('2d');
     sprInk = spriteDust('rgba(29,53,87,');
     sprGold = spriteDust('rgba(176,141,62,');
+    perfMobile = isMobile();
     resize();
   }
 
@@ -65,8 +77,12 @@
     if(!c) return;
     w = c.clientWidth; h = c.clientHeight;
     c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    /* pouca poeira: densidade baixa */
-    var n = Math.max(10, Math.round((w*h)/62000));
+    /* pouca poeira: densidade baixa — no mobile, metade (suficiente,
+       discreta; o desktop mantém a densidade original) */
+    perfMobile = isMobile();
+    var n = perfMobile
+      ? Math.max(5, Math.round((w*h)/124000))
+      : Math.max(10, Math.round((w*h)/62000));
     p = [];
     for(var i=0;i<n;i++) p.push(makeP());
   }
@@ -105,7 +121,15 @@
 
   function render(env){
     if(!ctx || !w || !h) return;
-    ctx.clearRect(0,0,w,h);
+    /* mobile: a física avança a cada frame; a RASTERIZAÇÃO é amostrada
+       a cada 2 frames (~30fps) — mesmo movimento, metade dos draws,
+       e o canvas antigo permanece até o próximo frame par */
+    var draw = true;
+    if(perfMobile){
+      dFrame++;
+      draw = (dFrame & 1) === 0;
+    }
+    if(draw) ctx.clearRect(0,0,w,h);
     var lux = (env && env.lx !== undefined) ? env.lx : 0.5;
     var tide = (env && env.tide !== undefined) ? env.tide : 0.5;
 
@@ -143,6 +167,7 @@
       /* a poeira vibra um pouco com a maré da sala */
       a *= 0.92 + 0.08*Math.sin(tide*6.283);
       if(a <= 0.004) continue;
+      if(!draw) continue;   /* mobile: física feita, rasterização pulada */
 
       var spr = q.g ? sprGold : sprInk;
       var s = q.r*1.9*(1.3 - q.z*0.35);

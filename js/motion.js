@@ -37,6 +37,20 @@
   var t0 = performance.now();
   var initPh = Math.random()*6.283;
 
+  /* ——— MOBILE PERFORMANCE MODE ———
+     No desktop (≥961px, ou com a MQ sem suporte) `perfMobile` é sempre
+     false e o update() executa o caminho ORIGINAL, byte a byte.
+     No mobile: o motor básico (energia, cascata, placas) roda igual em
+     60fps, mas as escritas de custom properties são escalonadas:
+       60fps  → olhar/energia/rotações (o que responde ao dedo)
+       ~30fps → leituras de profundidade (--pa..--qc) e deslocamentos
+       ~10fps → ambiente (luz, maré, dia, malha, cta) — ciclos de
+                minutos/segundos, delta por frame é microscópico.
+     Nenhum setTimeout: o mesmo rAF do site, só com cadências internas. ——— */
+  var mqMobile = null;
+  var perfMobile = false;
+  var mf = 0;                              /* contador de frames do mobile */
+
   /* ——— referência de calibração (ajuste ao vivo no console) ———
      roomTide   → batimento do ambiente (opacidade das camadas)
      lightWalk  → percurso da luz da sala
@@ -97,7 +111,19 @@ var RoomPhysics = {
 
   /* ——— API do motor ——— */
 
-  function init(){ t0 = performance.now(); }
+  function init(){
+    t0 = performance.now();
+    /* o modo mobile é decidido UMA VEZ pela largura (≤960px) e
+       acompanha mudanças de orientação/redimensionamento. No desktop
+       a MQ nunca casa: perfMobile permanece false e nada muda. */
+    if(global.matchMedia){
+      mqMobile = global.matchMedia('(max-width:960px)');
+      perfMobile = mqMobile.matches;
+      var onMq = function(e){ perfMobile = e.matches; };
+      if(mqMobile.addEventListener) mqMobile.addEventListener('change', onMq);
+      else if(mqMobile.addListener) mqMobile.addListener(onMq);
+    }
+  }
 
   /* o observador desloca minimamente o ponto de vista da sala.
    Sua VELOCIDADE é o único gerador de energia: o impulso que o
@@ -230,51 +256,107 @@ envx *= (1 - RoomPhysics.roomSettle);                /* o impulso evapora no ar 
     meshX += (wx*RoomPhysics.meshGain - meshX)*RoomPhysics.meshMass;
     meshY += (wy*RoomPhysics.meshGain - meshY)*RoomPhysics.meshMass;
 
-    /* ——— aplica o ambiente ——— */
-    root.style.setProperty('--day',    day.toFixed(4));
-    root.style.setProperty('--breath', breath.toFixed(4));
-    root.style.setProperty('--tide',   tide.toFixed(4));
-    root.style.setProperty('--float',  floatY.toFixed(4));
-    root.style.setProperty('--lx',     lx.toFixed(4));
-    root.style.setProperty('--ly',     ly.toFixed(4));
-    root.style.setProperty('--anchor', anchor.toFixed(4));
-    /* a energia da sala alimenta a paralaxe, a sombra de contato, o
-       sweep e o CTA — o mesmo impulso que percorre toda a Hero */
-    root.style.setProperty('--px',     rmx.toFixed(3));
-    root.style.setProperty('--py',     rmy.toFixed(3));
-    /* a parede — o ponto do fluxo que serve o monograma */
-    root.style.setProperty('--pw',     wx.toFixed(3));
-    root.style.setProperty('--qw',     wy.toFixed(3));
+/* ——— aplica o ambiente ——— */
+    if(!perfMobile){
+      root.style.setProperty('--day',    day.toFixed(4));
+      root.style.setProperty('--breath', breath.toFixed(4));
+      root.style.setProperty('--tide',   tide.toFixed(4));
+      root.style.setProperty('--float',  floatY.toFixed(4));
+      root.style.setProperty('--lx',     lx.toFixed(4));
+      root.style.setProperty('--ly',     ly.toFixed(4));
+      root.style.setProperty('--anchor', anchor.toFixed(4));
+      /* a energia da sala alimenta a paralaxe, a sombra de contato, o
+         sweep e o CTA — o mesmo impulso que percorre toda a Hero */
+      root.style.setProperty('--px',     rmx.toFixed(3));
+      root.style.setProperty('--py',     rmy.toFixed(3));
+      /* a parede — o ponto do fluxo que serve o monograma */
+      root.style.setProperty('--pw',     wx.toFixed(3));
+      root.style.setProperty('--qw',     wy.toFixed(3));
 
-    /* malha — a parede distante */
-    root.style.setProperty('--mesh-x', meshX.toFixed(3)+'px');
-    root.style.setProperty('--mesh-y', meshY.toFixed(3)+'px');
+      /* malha — a parede distante */
+      root.style.setProperty('--mesh-x', meshX.toFixed(3)+'px');
+      root.style.setProperty('--mesh-y', meshY.toFixed(3)+'px');
 
-    /* profundidade em 3 tempos de leitura */
-    root.style.setProperty('--pa', (bx + airX*0.4).toFixed(3));
-    root.style.setProperty('--qa', (by + airY*0.4).toFixed(3));
-    root.style.setProperty('--pb', (mx + airX*0.6).toFixed(3));
-    root.style.setProperty('--qb', (my + airY*0.5).toFixed(3));
-    root.style.setProperty('--pc', (dx + airX*0.8).toFixed(3));
-    root.style.setProperty('--qc', (dy + airY*0.7).toFixed(3));
+      /* profundidade em 3 tempos de leitura */
+      root.style.setProperty('--pa', (bx + airX*0.4).toFixed(3));
+      root.style.setProperty('--qa', (by + airY*0.4).toFixed(3));
+      root.style.setProperty('--pb', (mx + airX*0.6).toFixed(3));
+      root.style.setProperty('--qb', (my + airY*0.5).toFixed(3));
+      root.style.setProperty('--pc', (dx + airX*0.8).toFixed(3));
+      root.style.setProperty('--qc', (dy + airY*0.7).toFixed(3));
 
-    /* — placas — deslocamento curto (px), escala (fração), rotação (deg) */
-    root.style.setProperty('--btx-a', plates[0].x.toFixed(2)+'px');
-    root.style.setProperty('--bty-a', plates[0].y.toFixed(2)+'px');
-    root.style.setProperty('--bsc-a', plates[0].z.toFixed(4));
-    root.style.setProperty('--rot-a', plates[0].rz.toFixed(3)+'deg');
-    root.style.setProperty('--btx-b', plates[1].x.toFixed(2)+'px');
-    root.style.setProperty('--bty-b', plates[1].y.toFixed(2)+'px');
-    root.style.setProperty('--bsc-b', plates[1].z.toFixed(4));
-    root.style.setProperty('--rot-b', plates[1].rz.toFixed(3)+'deg');
-    root.style.setProperty('--btx-c', plates[2].x.toFixed(2)+'px');
-    root.style.setProperty('--bty-c', plates[2].y.toFixed(2)+'px');
-    root.style.setProperty('--bsc-c', plates[2].z.toFixed(4));
-    root.style.setProperty('--rot-c', plates[2].rz.toFixed(3)+'deg');
+      /* — placas — deslocamento curto (px), escala (fração), rotação (deg) */
+      root.style.setProperty('--btx-a', plates[0].x.toFixed(2)+'px');
+      root.style.setProperty('--bty-a', plates[0].y.toFixed(2)+'px');
+      root.style.setProperty('--bsc-a', plates[0].z.toFixed(4));
+      root.style.setProperty('--rot-a', plates[0].rz.toFixed(3)+'deg');
+      root.style.setProperty('--btx-b', plates[1].x.toFixed(2)+'px');
+      root.style.setProperty('--bty-b', plates[1].y.toFixed(2)+'px');
+      root.style.setProperty('--bsc-b', plates[1].z.toFixed(4));
+      root.style.setProperty('--rot-b', plates[1].rz.toFixed(3)+'deg');
+      root.style.setProperty('--btx-c', plates[2].x.toFixed(2)+'px');
+      root.style.setProperty('--bty-c', plates[2].y.toFixed(2)+'px');
+      root.style.setProperty('--bsc-c', plates[2].z.toFixed(4));
+      root.style.setProperty('--rot-c', plates[2].rz.toFixed(3)+'deg');
 
-    /* — CTA — a luz da sala passa pelo botão, sem efeito próprio */
-    var ctaX = (lx - 0.5)*46 + px*0.8;
-    root.style.setProperty('--cta-x', ctaX.toFixed(1)+'px');
+      /* — CTA — a luz da sala passa pelo botão, sem efeito próprio */
+      var ctaXr = (lx - 0.5)*46 + px*0.8;
+      root.style.setProperty('--cta-x', ctaXr.toFixed(1)+'px');
+    } else {
+      /* ——— MOBILE: cadências internas no MESMO rAF (sem timers) ———
+         60fps → o que responde ao olhar/dedo (energia, monograma, rotação)
+         ~30fps → profundidade e deslocamento das placas
+         ~10fps → ambiente (luz/maré/dia/malha) — delta por frame é
+                  microscópico (ciclos de minutos), 10Hz é indistinguível */
+      mf++;
+      var midHz = (mf & 1) === 0;          /* ~30fps */
+      var lowHz = (mf % 6) === 0;          /* ~10fps */
+
+      root.style.setProperty('--px',  rmx.toFixed(3));
+      root.style.setProperty('--py',  rmy.toFixed(3));
+      root.style.setProperty('--pw',  wx.toFixed(3));
+      root.style.setProperty('--qw',  wy.toFixed(3));
+      /* rotação das placas a 60fps: é micro (≤0.32°), mas é o que
+         mantém as placas "vivas" sob o dedo — 3 escritas, custo ínfimo */
+      root.style.setProperty('--rot-a', plates[0].rz.toFixed(3)+'deg');
+      root.style.setProperty('--rot-b', plates[1].rz.toFixed(3)+'deg');
+      root.style.setProperty('--rot-c', plates[2].rz.toFixed(3)+'deg');
+
+      if(midHz){
+        /* profundidade em 3 tempos de leitura */
+        root.style.setProperty('--pa', (bx + airX*0.4).toFixed(3));
+        root.style.setProperty('--qa', (by + airY*0.4).toFixed(3));
+        root.style.setProperty('--pb', (mx + airX*0.6).toFixed(3));
+        root.style.setProperty('--qb', (my + airY*0.5).toFixed(3));
+        root.style.setProperty('--pc', (dx + airX*0.8).toFixed(3));
+        root.style.setProperty('--qc', (dy + airY*0.7).toFixed(3));
+        /* — placas — deslocamento curto (px), escala (fração) */
+        root.style.setProperty('--btx-a', plates[0].x.toFixed(2)+'px');
+        root.style.setProperty('--bty-a', plates[0].y.toFixed(2)+'px');
+        root.style.setProperty('--bsc-a', plates[0].z.toFixed(4));
+        root.style.setProperty('--btx-b', plates[1].x.toFixed(2)+'px');
+        root.style.setProperty('--bty-b', plates[1].y.toFixed(2)+'px');
+        root.style.setProperty('--bsc-b', plates[1].z.toFixed(4));
+        root.style.setProperty('--btx-c', plates[2].x.toFixed(2)+'px');
+        root.style.setProperty('--bty-c', plates[2].y.toFixed(2)+'px');
+        root.style.setProperty('--bsc-c', plates[2].z.toFixed(4));
+      }
+
+      if(lowHz){
+        root.style.setProperty('--day',    day.toFixed(4));
+        root.style.setProperty('--breath', breath.toFixed(4));
+        root.style.setProperty('--tide',   tide.toFixed(4));
+        root.style.setProperty('--float',  floatY.toFixed(4));
+        root.style.setProperty('--lx',     lx.toFixed(4));
+        root.style.setProperty('--ly',     ly.toFixed(4));
+        root.style.setProperty('--anchor', anchor.toFixed(4));
+        /* malha — a parede distante */
+        root.style.setProperty('--mesh-x', meshX.toFixed(3)+'px');
+        root.style.setProperty('--mesh-y', meshY.toFixed(3)+'px');
+        /* — CTA — a luz da sala passa pelo botão */
+        root.style.setProperty('--cta-x', ((lx - 0.5)*46 + px*0.8).toFixed(1)+'px');
+      }
+    }
 
     return {
       day:    day,

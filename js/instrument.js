@@ -6,8 +6,18 @@
    REGRAS DESTA CAMADA:
    · NENHUMA mudança de comportamento, layout ou arquitetura.
    · NÃO toca em motion.js / app.js / style.css.
-   · Só ativa com ?trace=1 na URL — visita normal não muda NADA.
+   · Só ativa com ?trace=1 NA URL — visita normal não muda NADA.
    · Reversível: apagar a <script> do index.html + este arquivo.
+
+   DIAGNÓSTICO DE PERFORMANCE (A/B, temporário — NÃO é otimização):
+   · ?perf=a → nada pausado (baseline do TESTE A)
+   · ?perf=b → motion congelado (rAF continua, sem escritas de custom props)
+   · ?perf=c → dust (canvas) congelado
+   · ?perf=d → motion + dust congelados
+   · &anim=1 → animações CSS contínuas pausadas (com css injetado aqui)
+     use junto do perf acima (ex.: ?perf=d&anim=1&trace=1)
+   · Troca em tempo real pelo console: __PERF.set('a'|'b'|'c'|'d')
+   · Nada disso muda produção: sem a flag, os gates não existem.
 
    O que prova cada sequência (ver entrega ao final da sessão):
    reload        → pagehide → pageshow(persisted=false) → load → INIT...
@@ -20,8 +30,19 @@
 (function(global){
   'use strict';
 
-  var ACTIVE = /[?&]trace=1(\b|$)/.test(global.location.search);
+  var ACTIVE = /[?&]trace=1(\b|$)/.test(global.location.search) ||
+               /[?&]perf=[abcd](\b|$)/.test(global.location.search);
   if(!ACTIVE) return; /* carga normal: zero efeito no site */
+
+  var perfRaw = /[?&]perf=([abcd])(\b|$)/.exec(global.location.search);
+  var perf = perfRaw ? {
+    a: {motion:false, dust:false},
+    b: {motion:true,  dust:false},
+    c: {motion:false, dust:true},
+    d: {motion:true,  dust:true}
+  }[perfRaw[1]] : null;
+  var animFreeze = /[?&]anim=1(\b|$)/.test(global.location.search);
+  var perfLastEnv = null;
 
   var doc = document;
   var SK = '__trace';                 /* prefixo do sessionStorage */
@@ -331,7 +352,7 @@
   /* ——————————————————————————————————————————————
      6 · INICIALIZAÇÕES — quantas vezes cada sistema roda
      —————————————————————————————————————————————— */
-  function wrapModule(name, obj, methods){
+  function wrapModule(name, obj, methods, silent){
     var out = {};
     for(var k in obj){ out[k] = obj[k]; }
     methods.forEach(function(m){
@@ -343,10 +364,27 @@
         return obj[m].apply(this, arguments);
       };
     });
+    (silent||[]).forEach(function(m){
+      if(typeof obj[m] !== 'function') return;
+      out[m] = function(){
+        if(name === 'HubMotion' && m === 'update'){
+          if(perf && perf.motion){
+            if(perfLastEnv === null) perfLastEnv = obj[m].apply(this, arguments);
+            return perfLastEnv;   /* cena congelada: nada de custom props */
+          }
+          return obj[m].apply(this, arguments);
+        }
+        if(name === 'HubDust' && m === 'render'){
+          if(perf && perf.dust) return;   /* frame anterior permanece no canvas */
+          return obj[m].apply(this, arguments);
+        }
+        return obj[m].apply(this, arguments);
+      };
+    });
     return out;
   }
 
-  function hookPending(name, methods){
+  function hookPending(name, methods, silent){
     var cur = null, set = false;
     Object.defineProperty(global, name, {
       configurable: true,
@@ -354,18 +392,18 @@
       set: function(v){
         if(set) log('MODULE', name+' REDEFINIDO (2ª definição no mesmo documento)');
         set = true;
-        cur = wrapModule(name, v, methods);
+        cur = wrapModule(name, v, methods, silent);
       }
     });
   }
 
   /* já existentes (vêm do motion.js, carregado antes) */
-  if(global.HubMotion) global.HubMotion = wrapModule('HubMotion', global.HubMotion, ['init','setStatic','setRunning']);
+  if(global.HubMotion) global.HubMotion = wrapModule('HubMotion', global.HubMotion, ['init','setStatic','setRunning'], ['update']);
 
   /* definidos depois deste arquivo rodar (vêm do app.js) — o setter
      intercepta a atribuição e embrulha ANTES do bootstrap chamar init() */
   hookPending('ViewManager', ['init']);
-  hookPending('HubDust', ['init','resize']);
+  hookPending('HubDust', ['init','resize'], ['render']);
   hookPending('HubReveal', ['init']);
   hookPending('HubBreathe', ['init']);
   hookPending('HubLightbox', ['init']);
@@ -488,4 +526,47 @@
   };
 
   log('TRACE_ON', 'instrumentação ativa (remover depois: tag do index.html + js/instrument.js)', {force:true});
+
+  /* ——————————————————————————————————————————————
+     DIAGNÓSTICO DE PERFORMANCE (?perf=a|b|c|d[&anim=1])
+     Pausa temporária de sistemas por comparação A/B.
+     Sem a flag, perf === null e NENHUM gate existe.
+     —————————————————————————————————————————————— */
+  function setPerf(mode){
+    perf = mode ? {
+      a:{motion:false,dust:false},
+      b:{motion:true, dust:false},
+      c:{motion:false,dust:true},
+      d:{motion:true, dust:true}
+    }[mode] : null;
+    log('PERF', 'modo '+mode+' · motion='+(perf&&perf.motion)+' · dust='+(perf&&perf.dust)+' · css='+animFreeze, {force:true});
+  }
+
+  if(perfRaw) setPerf(perfRaw[1]);
+
+  if(animFreeze){
+    doc.documentElement.setAttribute('data-perf','freeze');
+    var st = doc.createElement('style');
+    st.textContent =
+      'html[data-perf] .plate-wrap,'+
+      'html[data-perf] .mono .cross,'+
+      'html[data-perf] .cta,'+
+      'html[data-perf] .cta-ring-spin,'+
+      'html[data-perf] .plate.front::after,'+
+      'html[data-perf] .atmosphere .mesh-grid,'+
+      'html[data-perf] .atmosphere .mesh-scan,'+
+      'html[data-perf] .atmosphere .mesh-nodes i{'+
+      '  animation-play-state:paused!important;'+
+      '}';
+    doc.head.appendChild(st);
+  }
+
+  global.__PERF = {
+    set: function(mode){ setPerf(mode); },
+    get: function(){ return perf ? (perf.motion&&perf.dust?'d':perf.motion?'b':perf.dust?'c':'a') : null; }
+  };
+
+  if(perfRaw || animFreeze){
+    log('PERF_ON', 'diagnóstico de performance ativo (temporário) — remover: apagar o bloco PERF de js/instrument.js', {force:true});
+  }
 })(window);
