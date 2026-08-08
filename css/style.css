@@ -638,15 +638,16 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 @media (max-width:960px){
   .hero{grid-template-columns:1fr;gap:var(--s4);padding:var(--s5) 0;max-width:100%}
   .hero > *{max-width:100%}
-  /* ——— o campo de placas/monograma dominava a tela e encostava
-     nas bordas: em mobile ele vira uma composição menor e
-     centralizada, claramente secundária ao texto/CTA que vêm
-     antes — continua visualmente importante (mesmas placas, mesma
-     respiração), só não tenta mais ocupar a largura inteira da
-     viewport. Nenhuma mudança de order: continua depois dos CTAs. ——— */
+  /* ——— composição mobile da Hero (spec mobile): a página abre com o
+     monograma, não com o texto — Navegação ↓ Monograma ↓ Kicker ↓
+     Título ↓ Descrição ↓ CTA. `order:-1` posiciona o campo antes do
+     bloco de texto SEM tocar no DOM nem no desktop: em coluna única
+     (grid 1fr), o campo sobe e o conteúdo do texto desce. O campo
+     continua menor e centralizado (mesmas placas, mesma respiração),
+     só muda de lugar na leitura da página. ——— */
   .field{
     min-height:0;max-width:260px;margin-inline:auto;
-    order:2;overflow:hidden;
+    order:-1;overflow:hidden;
   }
   /* ——— contenção do campo de placas (W-Mobile): as placas usam
      perspective/preserve-3d + rotateX/rotateY para o tilt de
@@ -1188,8 +1189,13 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 @media (max-width:960px){
   .showcase-module,
   .showcase-module.flip{grid-template-columns:1fr;gap:var(--s3)}
-  .showcase-module.flip .showcase-media,
-  .showcase-module.flip .showcase-trio-wrap{order:-1}
+  /* ——— leitura mobile de TODOS os módulos, inclusive os .flip:
+     Módulo ↓ Texto explicativo ↓ Screenshots (spec mobile). No
+     desktop os .flip invertem (imagem ao lado oposto); em coluna
+     única o texto precisa liderar a leitura também nos flip, então
+     o bloco de copy ganha order:-1 — nenhuma mudança de DOM, e
+     nada disto existe fora deste media query. ——— */
+  .showcase-module.flip .showcase-copy{order:-1}
   .showcase-trio{grid-template-columns:1fr;gap:var(--s3)}
   .showcase-trio.duo{grid-template-columns:1fr;max-width:100%}
 }
