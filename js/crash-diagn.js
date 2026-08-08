@@ -62,7 +62,6 @@
 
   /* ————— view atual: lida do DOM (0 custo: 1 query a cada batimento
      + MutationObserver de classe no container de views) ————— */
-  var currentView = null;
   function readView(){
     try{
       var el = DOC.querySelector('.views .view.active[data-view]');
@@ -143,7 +142,8 @@
     state.h = Date.now();
     state.t = state.h;
     state.e = 'BEAT';
-    if(state.vw !== currentView){ state.vw = currentView || readView(); }
+    var vw = readView();
+    if(vw && vw !== state.vw){ state.vw = vw; }
     save();
   }, 2000);
 
