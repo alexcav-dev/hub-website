@@ -684,6 +684,24 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   }
   .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
 
+  /* ——— sombra da placa do monograma (mobile): o monograma vive na
+     placa FRONTAL (.plate.front) — a única que carrega uma pilha de
+     sombras fortes (--shadow-deep de 70px + duas camadas justas à
+     borda, 28px e 10px de blur com spread curto). Em um campo móvel
+     de ~260px o espelho dessas camadas justas "fecha" sobre as
+     arestas do retângulo e lê como caixa elevada, não como
+     superfície integrada. Correção cirúrgica SÓ aqui, no mobile: a
+     pilha inteira é substituída por UMA sombra difusa (blur grande,
+     spread largo, alfa baixo — sem pontas), preservando as duas
+     hairline internas que dão a profundidade mínima. Nenhum outro
+     seletor muda; back/mid/::after ficam como estão. ——— */
+  .plate.front{
+    box-shadow:
+      0 34px 68px -42px rgba(15,30,53,.28),
+      inset 0 1px 0 rgba(255,255,255,.85),
+      inset 0 -1px 0 rgba(15,30,53,.05);
+  }
+
   /* ——— navegação mobile: duas áreas — marca em cima, navegação
      embaixo, sempre em uma única linha (nunca quebra item isolado).
      Os 5 itens continuam disponíveis; se não couberem, a própria
