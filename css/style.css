@@ -125,6 +125,12 @@ body{
    mais adiante, reaproveitado via seletor combinado */
 @media (max-height:680px){
   .views .view:not(.view--home){overflow-y:auto;overflow-x:hidden}
+  /* a Home entra no mesmo fallback SOMENTE quando a janela é baixa
+     demais (ex.: landscape mobile): o Hero é preservado intacto e o
+     que não coube vira alcançável por rolagem própria. A regra
+     depende de max-height, então nenhuma janela alta de desktop é
+     afetada pelo bloco. */
+  .views .view.view--home{overflow-y:auto;overflow-x:hidden}
 }
 
 /* ==========================================================
@@ -607,6 +613,35 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   nav{gap:var(--s2)}
   nav button{font-size:12px}
   .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
+}
+
+/* ——— telas estreitas (≤480px): a navegação preserva os cinco
+   itens e os textos — em vez de transbordar a viewport, a nav
+   quebra de linha dentro da própria área. Nada aqui existe fora
+   desta faixa: desktop permanece com a linha única original. ——— */
+@media (max-width:480px){
+  .app-header .bar,
+  .workspace{padding-left:var(--s2);padding-right:var(--s2)}
+  .bar{padding-top:var(--s1);padding-bottom:var(--s1);gap:var(--s2)}
+  .brand{gap:10px}
+  .brand .name{font-size:14px}
+  nav{gap:6px;flex-wrap:wrap}
+  nav button{font-size:11.5px;letter-spacing:.005em}
+  /* área de toque: o alvo cresce sem alterar o desenho do texto —
+     um ::before invisível amplia o alvo para ~28px de altura,
+     mantendo os 15px visuais e o traço dourado na posição de sempre */
+  nav button::before{
+    content:"";position:absolute;left:50%;top:50%;
+    width:100%;height:32px;transform:translate(-50%,-50%);
+  }
+}
+
+/* CTA do Contato em larguras muito estreitas: nunca encosta nas
+   bordas da tela (≤360px) — o botão encolhe com max-width e alinha
+   dentro da área; sem toque no CTA desktop */
+@media (max-width:360px){
+  .hello-action{justify-self:stretch}
+  .hello-action .cta{max-width:100%;padding:15px 18px;flex-wrap:wrap}
 }
 
 /* ==========================================================

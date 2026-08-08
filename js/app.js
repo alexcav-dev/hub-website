@@ -232,6 +232,29 @@
         });
       }, {threshold:.22, rootMargin:'0px 0px -20% 0px'});
       els.forEach(function(el){ io.observe(el); });
+
+      /* telas baixas (landscape mobile e janelas curtas): a zona morta
+         do rootMargin pode prender o CTA final da Demonstração em
+         opacity:0 quando o fim do scroll é alcançado. Ao atingir o fim
+         da view, qualquer .rev ainda pendente entra de uma vez — o
+         conteúdo final da vitrine nunca fica invisível. A rota só
+         dispara dentro de (max-height:680px); no desktop de altura
+         normal o IntersectionObserver continua sendo o único dono. */
+      if(global.matchMedia && global.matchMedia('(max-height:680px)').matches){
+        var demo = document.querySelector('.view.view--demo');
+        if(demo){
+          var forceAtEnd = function(){
+            if(demo.scrollTop + demo.clientHeight >= demo.scrollHeight - 2){
+              els.forEach(function(el){
+                if(!el.classList.contains('in')) el.classList.add('in');
+              });
+              demo.removeEventListener('scroll', forceAtEnd);
+            }
+          };
+          demo.addEventListener('scroll', forceAtEnd, {passive:true});
+          forceAtEnd();
+        }
+      }
     }catch(e){
       els.forEach(function(el){ el.classList.add('in'); });
     }
