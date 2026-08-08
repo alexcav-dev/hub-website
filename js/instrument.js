@@ -30,9 +30,134 @@
 (function(global){
   'use strict';
 
-  var ACTIVE = /[?&]trace=1(\b|$)/.test(global.location.search) ||
-               /[?&]perf=[abcd](\b|$)/.test(global.location.search);
+  var TRACE_FLAG = /[?&]trace=1(\b|$)/.test(global.location.search);
+  var PERF_FLAG  = /[?&]perf=[abcd](\b|$)/.test(global.location.search);
+  var ISOLATE = (function(){
+    var m = /[?&]isolate=(atmosphere|motion|dust|images)(\b|$)/.exec(global.location.search);
+    return m ? m[1] : null;
+  })();
+  var ACTIVE = TRACE_FLAG || PERF_FLAG || !!ISOLATE;
   if(!ACTIVE) return; /* carga normal: zero efeito no site */
+
+  /* ——— ISOLAMENTO CONTROLADO (?isolate=…) — teste de causa, reversível.
+     Um subsistema por vez, mobile-only (regras dentro de @media
+     max-width:960px). Nenhum arquivo de produção é alterado: quem
+     decide é a URL. Se não houver trace/perf, sai daqui sem ouvir
+     nada da instrumentação normal. ——— */
+  if(ISOLATE) applyIsolation();
+  if(!(TRACE_FLAG || PERF_FLAG)) return;
+
+  /* ——— modos de isolamento ——— */
+  function applyIsolation(){
+    var st = document.createElement('style');
+    var rules = [];
+    var mq = '@media (max-width:960px){';
+
+    if(ISOLATE === 'atmosphere'){
+      /* camadas full-screen do ambiente (malha, varredura, nós, poços
+         de luz, sweep, grain, vinheta) — o bloco .atmosphere inteiro.
+         Placas, monograma, CTA, nav e conteúdo permanecem. */
+      rules.push('.atmosphere{display:none!important;}');
+    }
+    else if(ISOLATE === 'motion'){
+      /* congela o que o motor move continuamente (HubMotion é travado
+         via wrap abaixo) e as respirações CSS do ambiente; a entrada
+         (reveals .rev) e a interação continuam funcionando */
+      rules.push(
+        '.plate-wrap{animation:none!important;}',
+        '.mono .cross{animation:none!important;}',
+        '.cta.breathe-active{animation:none!important;}'
+      );
+    }
+    else if(ISOLATE === 'dust'){
+      rules.push('#dust{display:none!important;}');
+    }
+    /* images: manipulação via JS (placeholders leves), sem CSS */
+
+    if(rules.length){
+      st.textContent = mq + rules.join('') + '}';
+      try{ (document.head || document.documentElement).appendChild(st); }catch(e){}
+    }
+
+    if(ISOLATE === 'motion')      freezeMotion();
+    else if(ISOLATE === 'dust')   noopDust();
+    else if(ISOLATE === 'images') neutralizeImages();
+
+    global.__ISOLATE = {
+      mode: ISOLATE,
+      report: function(){
+        /* console: conferência manual no aparelho */
+        console.log('[ISOLATE] modo="' + ISOLATE + '" (reversível: retire ?isolate= do URL)');
+      },
+      restoreImages: (ISOLATE === 'images') ? restoreImages : undefined
+    };
+  }
+
+  /* TESTE C — congelar o HubMotion (física + escrita de custom
+     properties contínua). O rAF continua (navegação/scroll/UI vivas),
+     mas update() devolve um snapshot fixo e não escreve nada no DOM. */
+  function freezeMotion(){
+    var base = { speed:.5, tide:.5, airX:0, airY:0, lx:.5, anchor:0, rmx:0, rmy:0 };
+    var frozen = null;
+    var hm = global.HubMotion;
+    if(hm && typeof hm.update === 'function'){
+      try{ frozen = hm.update(global.performance.now()); if(hm.setStatic) hm.setStatic(); }catch(e){ frozen = null; }
+      hm.update = function(){ return frozen || base; };
+      return;
+    }
+    /* motion.js nunca vem depois de instrument.js — guarda defensiva */
+    var cur = null, done = false;
+    Object.defineProperty(global, 'HubMotion', {
+      configurable: true,
+      get: function(){ return cur; },
+      set: function(v){
+        cur = v;
+        if(done || !v || typeof v.update !== 'function') return;
+        done = true;
+        try{ frozen = v.update(global.performance.now()); if(v.setStatic) v.setStatic(); }catch(e){ frozen = null; }
+        v.update = function(){ return frozen || base; };
+      }
+    });
+  }
+
+  /* TESTE D — desliga o canvas e o draw do dust (elemento permanece) */
+  function noopDust(){
+    var hd = global.HubDust;
+    if(hd){
+      if(hd.init)   hd.init   = function(){};
+      if(hd.render) hd.render = function(){};
+    }
+    Object.defineProperty(global, 'HubDust', {
+      configurable: true,
+      get: function(){ return hd; },
+      set: function(v){
+        hd = v;
+        if(v){
+          if(v.init)   v.init   = function(){};
+          if(v.render) v.render = function(){};
+        }
+      }
+    });
+  }
+
+  /* TESTE E — placeholders leves (1×1 transparente) nos prints;
+     o src original é preservado no atributo data-iso-orig — só o
+     diagnóstico troca. Nada é alterado nos arquivos de mídia. */
+  var PH_GIF = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  function neutralizeImages(){
+    var imgs = document.querySelectorAll('.showcase-media img, .showcase-trio img');
+    for(var i=0;i<imgs.length;i++){
+      var el = imgs[i];
+      if(!el.getAttribute('data-orig')) el.setAttribute('data-orig', el.currentSrc || el.src);
+      el.src = PH_GIF;
+      el.decoding = 'async';
+    }
+    console.log('[ISOLATE] ' + imgs.length + ' imagens da Demonstração por placeholders (originais em data-orig)');
+  }
+  function restoreImages(){
+    var imgs = doc.querySelectorAll('[data-orig]');
+    for(var i=0;i<imgs.length;i++){ imgs[i].src = imgs[i].getAttribute('data-orig'); }
+  }
 
   var perfRaw = /[?&]perf=([abcd])(\b|$)/.exec(global.location.search);
   var perf = perfRaw ? {
