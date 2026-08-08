@@ -1643,23 +1643,44 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
    existe acima do breakpoint, e nenhuma regra existente é
    alterada — tudo isto é sobreposto somente aqui.
 
-   · grain: mix-blend-mode:multiply força o compositor a mesclar a
-     tela INTEIRA a cada repintura — a textura é preservada, o modo
-     de mesclagem vira normal (opacidade .05 idêntica).
-   · malha: a deriva agora usa keyframes SEM custom properties
-     (mesh-drift-soft) — o motor não resolve var() no keyframe a
-     cada frame da parede distante; o movimento continua vivo e
-     lento, e o JS do mesh (--mesh-x/--mesh-y) segue os integrators.
-   · plate-shine: animation de background-position é repintura por
-     frame — parada; o reflexo estático da luz continua presente.
-   · CTA: drop-shadow animado re-rasteriza o botão inteiro a cada
-     frame — mantida a identidade completa (anel dourado girando,
-     respiro scale do .breathe-active, fio de ouro estático) com um
-     brilho de ouro ESTÁTICO no lugar do glow animado.
+   1.ª auditoria (CPU): cadências JS + grain + CTA glow + plate-shine.
+   2.ª auditoria (MEMÓRIA/COMPOSIÇÃO — reload "problema" no iOS):
+   · camada full-screen com -webkit-mask-image = 2 texturas de tela
+     inteira; com animação infinita ela fica PROMOVIDA para sempre.
+     Só a malha (grid+scan+nodes) custava ~70MB de GPU num iPhone
+     (DPR 3). No mobile a malha vira camada estática — a sala
+     continua viva no sweep, placas, monograma e luz (JS 10Hz).
+   · will-change de camadas que não precisam de camada: cada uma
+     era 1 textura de tela inteira reservada o tempo todo.
+   · spin do CTA: quadrado de ~260% girando sem parar (no mobile
+     o botão é full-width → camada grande) — parado; o traço
+     dourado e o brilho estático permanecem.
+   · revelações/prints: sem promoção permanente após a entrada.
    ========================================================== */
 @media (max-width:960px){
+  /* ——— malha: estática, sem máscara e sem camada promovida ——— */
+  .atmosphere .mesh-grid,
+  .atmosphere .mesh-scan,
+  .atmosphere .mesh-nodes{
+    -webkit-mask-image:none;
+            mask-image:none;
+    will-change:auto;
+  }
+  .atmosphere .mesh-grid{animation:none}
+  .atmosphere .mesh-scan{animation:none;opacity:.28}
+  .atmosphere .mesh-nodes i{animation:none}
+  /* poços de luz: camadas full-screen que não animam transform */
+  .atmosphere .lift,
+  .atmosphere .lift-2{will-change:auto}
+  /* anel dourado do CTA: girava como camada gigante — agora estático */
+  .cta-ring-spin{animation:none}
+  /* revelações no scroll e prints: sem camada permanente pós-entrada */
+  .rev,
+  .rev--media,
+  .showcase-media,
+  .showcase-trio img{will-change:auto}
+  /* ——— 1.ª auditoria (CPU) ——— */
   .atmosphere .grain{mix-blend-mode:normal}
-  .atmosphere .mesh-grid{animation:mesh-drift-soft 96s linear infinite}
   .plate.front::after{animation:none}
   .cta{animation:none}
   .cta.breathe-active{animation:cta-breathe 6s var(--ease-soft) infinite}
@@ -1672,7 +1693,9 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   }
 }
 /* deriva da malha para o mobile: só transform, sem custom property —
-   o compositor resolve o percurso sozinho, sem custo por frame */
+   o compositor resolve o percurso sozinho, sem custo por frame
+   (não usado mais após a 2.ª auditoria — a malha é estática no
+   mobile; mantido apenas como referência/compatibilidade) */
 @keyframes mesh-drift-soft{
   from{transform:translate3d(0,0,0)}
   to{transform:translate3d(-64px,-64px,0)}

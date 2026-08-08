@@ -33,6 +33,11 @@
   'use strict';
 
   var c, ctx;
+  /* DPR do canvas: no mobile limitado a 1 — as partículas são
+     sprites suaves de ~5px com alfa baixo: a textura em 1× mantém o
+     aspecto idêntico e corta a memória de GPU do canvas para ~1/4
+     (5MB → 1.3MB no iPhone 12), aliviando a pressão do renderer.
+     No desktop permanece o teto 2× original. */
   var dpr = Math.min(window.devicePixelRatio||1, 2);
   var w=0, h=0, p=[];
   /* a poeira pertence à mesma corrente de ar da sala — usa a massa
@@ -76,10 +81,9 @@
   function resize(){
     if(!c) return;
     w = c.clientWidth; h = c.clientHeight;
-    c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-    /* pouca poeira: densidade baixa — no mobile, metade (suficiente,
-       discreta; o desktop mantém a densidade original) */
     perfMobile = isMobile();
+    dpr = perfMobile ? 1 : Math.min(window.devicePixelRatio||1, 2);
+    c.width = w*dpr; c.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
     var n = perfMobile
       ? Math.max(5, Math.round((w*h)/124000))
       : Math.max(10, Math.round((w*h)/62000));
