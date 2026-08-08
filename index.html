@@ -4,7 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Hub Tributário — Organização tributária, sob controle</title>
+<title>Hub Tributário — Organização tributária, sob controle</title>
 <meta name="description" content="O Hub Tributário reúne estados, municípios e obrigações em um único ambiente organizado, preciso e estável." />
+<meta name="theme-color" content="#c7d4e9" />
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Hub Tributário" />
+<meta property="og:title" content="Hub Tributário — Organização tributária, sob controle" />
+<meta property="og:description" content="O Hub Tributário reúne estados, municípios e obrigações em um único ambiente organizado, preciso e estável." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -26,8 +34,8 @@
   <div class="vignette"></div>
 </div>
 
-<div class="wrap">
-  <header>
+<div class="app-shell">
+  <header class="app-header">
     <div class="bar r r1">
       <div class="brand">
         <svg viewBox="0 0 78 100" aria-hidden="true">
@@ -37,57 +45,405 @@
         </svg>
         <span class="name">Hub Tributário</span>
       </div>
-      <nav>
-        <a href="#">O Hub</a>
-        <a href="#">Inteligência</a>
-        <a href="#">Demonstração</a>
+      <nav class="app-nav" aria-label="Navegação principal">
+        <button type="button" class="active" data-view="home" aria-selected="true" aria-controls="view-home">Home</button>
+        <button type="button" data-view="hub" aria-selected="false" aria-controls="view-hub">Hub</button>
+        <button type="button" data-view="intelligence" aria-selected="false" aria-controls="view-intelligence">Inteligência</button>
+        <button type="button" data-view="demo" aria-selected="false" aria-controls="view-demo">Demonstração</button>
+        <button type="button" data-view="contact" aria-selected="false" aria-controls="view-contact">Vamos Conversar</button>
+        <span class="nav-indicator" aria-hidden="true"></span>
       </nav>
     </div>
   </header>
 
-  <main class="hero">
-    <div>
-      <div class="eyebrow r r2"><i></i> Organização · Agilidade · Eficiência</div>
-      <h1 class="r r3">Toda a matéria tributária <em>sob controle</em>.</h1>
-      <p class="lede r r4">
-        Estados, municípios, serviços e obrigações reunidos em um único ambiente —
-        organizado com precisão, mantido com estabilidade e conduzido por quem
-        entende o que está em jogo.
-      </p>
-      <div class="actions r r6">
-        <a class="cta" href="#"><span class="cta-ring" aria-hidden="true"><span class="cta-ring-spin"></span></span>Solicitar demonstração <span>→</span></a>
-        <a class="ghost" href="#">Conhecer o Hub</a>
-      </div>
-    </div>
+  <main class="workspace views" aria-live="polite">
+    <section class="view view--home active" id="view-home" data-view="home" aria-hidden="false" aria-labelledby="home-title">
+      <div class="hero">
+        <div>
+          <div class="eyebrow r r2"><i></i> Organização · Agilidade · Eficiência</div>
+          <h1 id="home-title" class="r r3">Toda a matéria tributária <em>sob controle</em>.</h1>
+          <p class="lede r r4">
+            Estados, municípios, serviços e obrigações reunidos em um único ambiente —
+            organizado com precisão, mantido com estabilidade e conduzido por quem
+            entende o que está em jogo.
+          </p>
+          <div class="actions r r6">
+            <a class="cta" href="#" data-view-link="contact"><span class="cta-ring" aria-hidden="true"><span class="cta-ring-spin"></span></span>Solicitar demonstração <span>→</span></a>
+            <a class="ghost" href="#" data-view-link="hub">Conhecer o Hub</a>
+          </div>
+        </div>
 
-    <div class="field r r5">
-      <div class="rules" aria-hidden="true">
-        <i style="top:26%"></i><i style="top:50%"></i><i style="top:74%"></i>
-      </div>
-      <div class="plate-wrap back"><div class="plate back"></div></div>
-      <div class="plate-wrap mid"><div class="plate mid"></div></div>
-      <div class="plate-wrap front">
-        <div class="plate front">
-          <div class="mono">
-            <div class="halo"></div>
-            <svg viewBox="0 0 78 100" aria-label="Monograma Hub Tributário">
-              <path class="stem" d="M0 0 L14 0 L14 40 L28 40 L28 0 L42 0 L42 100 L28 100 L28 54 L14 54 L14 100 L0 100 Z"/>
-              <rect class="stem" x="50" y="0" width="14" height="100"/>
-              <rect class="cross" x="36" y="43" width="42" height="14"/>
-            </svg>
+        <div class="field r r5">
+          <div class="rules" aria-hidden="true">
+            <i style="top:26%"></i><i style="top:50%"></i><i style="top:74%"></i>
+          </div>
+          <div class="plate-wrap back"><div class="plate back"></div></div>
+          <div class="plate-wrap mid"><div class="plate mid"></div></div>
+          <div class="plate-wrap front">
+            <div class="plate front">
+              <div class="mono">
+                <div class="halo"></div>
+                <svg viewBox="0 0 78 100" aria-label="Monograma Hub Tributário">
+                  <path class="stem" d="M0 0 L14 0 L14 40 L28 40 L28 0 L42 0 L42 100 L28 100 L28 54 L14 54 L14 100 L0 100 Z"/>
+                  <rect class="stem" x="50" y="0" width="14" height="100"/>
+                  <rect class="cross" x="36" y="43" width="42" height="14"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
+    </section>
 
-  <div class="fold r r6">
-    <div class="statement">
-      <i></i>
-      Um ambiente único para toda a matéria tributária — construído para crescer
-      com a operação, sem perder precisão nem estabilidade.
-    </div>
-    <div class="scroll"><i></i> Continue</div>
+    <section class="view view--hub" id="view-hub" data-view="hub" aria-hidden="true" aria-labelledby="hub-title">
+      <div class="hub" id="hub">
+        <div class="hub-head rev">
+          <p class="eyebrow"><i></i> O Hub</p>
+          <h2 id="hub-title" class="hub-title">
+            Toda a matéria <em>sob um mesmo teto</em>.
+          </h2>
+          <p class="lede">
+            Estados, municípios, serviços e obrigações deixam de viver em sistemas
+            separados e passam a conviver no mesmo documento vivo — com dono, prazo
+            e rastro para cada movimento.
+          </p>
+        </div>
+
+        <div class="hub-rule rev" aria-hidden="true"></div>
+
+        <div class="hub-operational rev">
+          <div class="hub-op-copy">
+            <p class="hub-kicker"><i></i> Estrutura Operacional</p>
+            <p>
+              O Hub funciona como uma linha única de acesso: parte da jurisdição,
+              passa pela obrigação concreta e chega ao portal oficial sem quebrar o
+              contexto de consulta.
+            </p>
+          </div>
+          <ol class="hub-flow" aria-label="Fluxo operacional do Hub">
+            <li><span>HUB</span></li>
+            <li><span>Estados</span></li>
+            <li><span>Municípios</span></li>
+            <li><span>Serviços</span></li>
+            <li><span>Portais Oficiais</span></li>
+            <li><span>Acesso Centralizado</span></li>
+          </ol>
+        </div>
+
+        <div class="hub-rule hub-rule-soft rev" aria-hidden="true"></div>
+
+        <div class="hub-evidence rev" aria-labelledby="hub-evidence-title">
+          <p id="hub-evidence-title" class="hub-kicker"><i></i> Como o Hub se constrói</p>
+          <div class="hub-pillars">
+            <div>
+              <b>Cadastro Progressivo</b>
+              <span>A base cresce conforme a operação exige — nada é cadastrado antes de ser necessário.</span>
+            </div>
+            <div>
+              <b>Organização Centralizada</b>
+              <span>Estados, municípios e serviços convivem no mesmo documento, sem sistemas paralelos.</span>
+            </div>
+            <div>
+              <b>Fonte Oficial</b>
+              <span>Cada acesso aponta para o portal original — o Hub organiza, nunca substitui.</span>
+            </div>
+            <div>
+              <b>Governança</b>
+              <span>Toda ação tem dono, prazo e rastro — nada se move sem deixar registro.</span>
+            </div>
+            <div>
+              <b>Documento Vivo</b>
+              <span>A estrutura é revisada e atualizada junto com a realidade tributária.</span>
+            </div>
+            <div>
+              <b>Crescimento Real</b>
+              <span>O ritmo é o da contabilidade, não o de uma base importada de uma vez.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hub-foot rev">
+          <p>
+            Organização não é apenas reunir informações. É permitir encontrá-las
+            quando realmente importam.
+          </p>
+          <i aria-hidden="true"></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="view view--intelligence" id="view-intelligence" data-view="intelligence" aria-hidden="true" aria-labelledby="intelligence-title">
+      <div class="intel">
+
+        <!-- BLOCO 01 · HERO — não se vende inteligência de máquina:
+             a eficiência nasce da organização da informação -->
+        <div class="intel-head rev">
+          <p class="eyebrow"><i></i> Inteligência</p>
+          <h2 id="intelligence-title" class="hub-title">Inteligência Operacional.</h2>
+          <p class="intel-sub">A eficiência não nasce de mais informações.<br>Ela nasce da forma como elas são organizadas.</p>
+          <p class="lede">
+            O Hub Tributário centraliza Estados, Municípios, Serviços, Portais Oficiais e regras
+            operacionais em uma única estrutura organizada, permitindo que a equipe encontre
+            rapidamente o caminho correto — sem depender de buscas dispersas.
+          </p>
+        </div>
+
+        <!-- BLOCO 02 · FLUXO — a mesma trilha do Hub (hub-flow), em
+             leitura vertical: da estrutura até a execução -->
+        <div class="intel-flow rev">
+          <p class="hub-kicker"><i></i> Como a operação funciona</p>
+          <ol class="hub-flow" aria-label="Fluxo operacional da Inteligência do Hub">
+            <li><span>Estado</span></li>
+            <li><span>Município</span></li>
+            <li><span>Serviço</span></li>
+            <li><span>Portal Oficial</span></li>
+            <li><span>Execução</span></li>
+          </ol>
+          <p class="intel-note">O Hub reduz etapas e elimina buscas desnecessárias.<br>A inteligência está na estrutura construída.</p>
+        </div>
+
+        <div class="hub-rule rev" aria-hidden="true"></div>
+
+        <!-- BLOCO 03 · BENEFÍCIOS — mesma pauta editorial dos pilares
+             do Hub: conceitos, nenhum número, nenhuma estatística -->
+        <div class="intel-benefits rev" aria-labelledby="intel-benefits-title">
+          <p id="intel-benefits-title" class="hub-kicker"><i></i> Benefícios Operacionais</p>
+          <div class="hub-pillars intel-pillars">
+            <div>
+              <b>Organização Centralizada</b>
+              <span>Toda a operação reunida em um único ambiente.</span>
+            </div>
+            <div>
+              <b>Padronização</b>
+              <span>Todos seguem o mesmo processo.</span>
+            </div>
+            <div>
+              <b>Rastreabilidade</b>
+              <span>Cada informação possui origem conhecida.</span>
+            </div>
+            <div>
+              <b>Agilidade</b>
+              <span>Menos tempo procurando. Mais tempo executando.</span>
+            </div>
+            <div>
+              <b>Confiabilidade</b>
+              <span>Sempre direcionando para fontes oficiais.</span>
+            </div>
+            <div>
+              <b>Governança</b>
+              <span>Processos organizados e sustentáveis.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOCO 04 · FILOSOFIA — fecho institucional: a tecnologia
+             serve à rotina, o conhecimento permanece com as pessoas -->
+        <div class="intel-foot rev">
+          <div class="intel-foot-copy">
+            <p class="hub-kicker"><i></i> Filosofia do Hub</p>
+            <h3 class="showcase-title">A inteligência está na <em>estrutura</em>.</h3>
+            <p class="lede">
+              O Hub não responde pelo profissional. Ele organiza o caminho até a informação
+              correta. Quando Estados, Municípios, Serviços e Portais Oficiais passam a fazer parte
+              de uma única estrutura, toda a operação torna-se mais consistente, rastreável e eficiente.
+            </p>
+            <p class="intel-note">A tecnologia existe para simplificar a rotina operacional, preservando sempre a consulta às fontes oficiais.</p>
+          </div>
+          <div class="intel-impact">
+            <i aria-hidden="true"></i>
+            <p>O conhecimento permanece com as pessoas.<br>O Hub organiza o caminho até ele.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="view view--demo" id="view-demo" data-view="demo" aria-hidden="true" aria-labelledby="demo-title">
+      <div class="showcase">
+
+        <div class="showcase-head">
+          <p class="eyebrow rev"><i></i> Demonstração</p>
+          <h2 id="demo-title" class="hub-title rev rev--title">Veja o Hub em operação.</h2>
+          <p class="lede rev rev--text">Um percurso guiado: da consulta do dia a dia à administração que sustenta a operação por trás dela.</p>
+        </div>
+
+        <div class="hub-rule rev" aria-hidden="true"></div>
+
+        <!-- 01 · Dashboard — texto entra primeiro, a imagem 80ms depois -->
+        <article class="showcase-module">
+          <div class="showcase-copy rev rev--first">
+            <p class="hub-kicker"><i></i> Módulo 01 · Dashboard</p>
+            <h3 class="showcase-title">Toda a operação, num único painel.</h3>
+            <p>O ponto de partida do dia a dia: acesso rápido a estados e municípios, favoritos marcados pela equipe e histórico do que foi consultado recentemente — nada se perde entre uma tarefa e outra.</p>
+          </div>
+          <figure class="showcase-media rev rev--media rev--after">
+            <img src="assets/landing/hub-dashboard-principal.webp" alt="Dashboard do Hub Tributário, com favoritos, histórico e lista de estados e municípios." loading="lazy" width="1600" height="900">
+          </figure>
+        </article>
+
+        <!-- 02 · Consulta Tributária — invertido: a imagem entra primeiro
+             (é a primeira no documento nos módulos .flip), o texto 80ms
+             depois. É essa alternância que cria o ritmo de leitura.
+             Duas capturas lado a lado, na ordem da própria jornada:
+             cada uma com seu identificador abaixo, como na vitrine
+             Usuários/Auditoria do Painel Master. -->
+        <article class="showcase-module flip">
+          <div class="showcase-trio-wrap">
+            <div class="showcase-trio duo stagger">
+              <figure class="rev rev--media">
+                <img src="assets/landing/hub-destino-estado.webp" alt="Página de destino de um Estado, com os serviços tributários disponíveis e status de cada portal." loading="lazy" width="1600" height="900">
+                <figcaption>Estado</figcaption>
+              </figure>
+              <figure class="rev rev--media">
+                <img src="assets/landing/hub-destino-municipio.webp" alt="Página de destino de um Município, com os serviços tributários disponíveis e status de cada portal." loading="lazy" width="1600" height="900">
+                <figcaption>Município</figcaption>
+              </figure>
+            </div>
+          </div>
+          <div class="showcase-copy rev rev--after">
+            <p class="hub-kicker"><i></i> Módulo 02 · Consulta Tributária</p>
+            <h3 class="showcase-title">Da jurisdição ao portal oficial, sem quebrar o contexto.</h3>
+            <p>Ao entrar em um estado ou município, o Hub apresenta os serviços tributários daquela jurisdição — CND, DIFAL/ST, dívida ativa, NF-e — cada um com o status da última validação, antes de levar ao portal oficial correspondente.</p>
+          </div>
+        </article>
+
+        <!-- 03 · Personalização — texto primeiro, imagem 80ms depois -->
+        <article class="showcase-module">
+          <div class="showcase-copy rev rev--first">
+            <p class="hub-kicker"><i></i> Módulo 03 · Personalização</p>
+            <h3 class="showcase-title">O ambiente se adapta a quem trabalha nele.</h3>
+            <p>Tema e tamanho inicial do workspace ficam a critério de cada equipe — um ajuste simples, pensado para quem passa o dia todo dentro do Hub.</p>
+          </div>
+          <figure class="showcase-media rev rev--media rev--after">
+            <img src="assets/landing/hub-dashboard-configuracoes.webp" alt="Painel de configurações do Hub Tributário, com opções de tema e tamanho do workspace." loading="lazy" width="1600" height="900">
+          </figure>
+        </article>
+
+        <!-- 04 · Painel Master — invertido de novo: trio primeiro, texto
+             80ms depois. Os dois prints do trio são "cards": stagger
+             de 80ms entre eles via .stagger, nunca aparecem juntos. -->
+        <article class="showcase-module flip">
+          <div class="showcase-trio-wrap">
+            <div class="showcase-trio duo stagger">
+              <figure class="rev rev--media">
+                <img src="assets/landing/admin-usuarios.webp" alt="Gerenciamento de Usuários no Painel Master." loading="lazy" width="900" height="600">
+                <figcaption>Usuários</figcaption>
+              </figure>
+              <figure class="rev rev--media">
+                <img src="assets/landing/admin-auditoria.webp" alt="Trilha de Auditoria administrativa no Painel Master." loading="lazy" width="900" height="600">
+                <figcaption>Auditoria</figcaption>
+              </figure>
+            </div>
+          </div>
+          <div class="showcase-copy rev rev--after">
+            <p class="hub-kicker"><i></i> Módulo 04 · Painel Master</p>
+            <h3 class="showcase-title">Uma administração à altura da operação.</h3>
+            <p>Por trás da consulta simples existe um painel dedicado: perfis de acesso definidos em Usuários e uma trilha de auditoria para toda ação administrativa — cada movimento com dono, prazo e rastro.</p>
+          </div>
+        </article>
+
+        <!-- 05 · Sistema — texto primeiro, imagem 80ms depois -->
+        <article class="showcase-module">
+          <div class="showcase-copy rev rev--first">
+            <p class="hub-kicker"><i></i> Módulo 05 · Sistema</p>
+            <h3 class="showcase-title">Segurança e manutenção, num só lugar.</h3>
+            <p>A central técnica do Hub concentra segurança, integrações, APIs, snapshots de dados mestres, manutenção preventiva e informações da aplicação — tudo num único módulo administrativo, fora do alcance de quem apenas consulta.</p>
+          </div>
+          <figure class="showcase-media rev rev--media rev--after">
+            <img src="assets/landing/admin-sistema-seguranca.webp" alt="Módulo Sistema do Hub Tributário, com políticas de segurança, MFA e autenticação." loading="lazy" width="1600" height="900">
+          </figure>
+        </article>
+
+        <div class="hub-rule hub-rule-soft rev" aria-hidden="true"></div>
+
+        <!-- revela o bloco inteiro de uma vez (título + botão sobem
+             juntos); o <a class="cta"> em si fica de fora do seletor
+             .rev de propósito — ele já tem seu próprio `transition`
+             para hover (transform/box-shadow/background) e para a
+             respiração (ver .breathe-active); somar um segundo dono
+             da propriedade `transition` no mesmo elemento apagaria
+             um dos dois conjuntos de regras. -->
+        <div class="showcase-cta rev">
+          <p class="hub-title showcase-cta-title">Pronto para organizar a matéria tributária da sua contabilidade?</p>
+          <a class="cta" href="#" data-view-link="contact"><span class="cta-ring" aria-hidden="true"><span class="cta-ring-spin"></span></span>Solicitar demonstração <span>→</span></a>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="view view--contact" id="view-contact" data-view="contact" aria-hidden="true" aria-labelledby="contact-title">
+      <div class="hello">
+
+        <!-- BLOCO 01 · APRESENTAÇÃO — convite institucional, sem
+             nenhum apelo comercial: apenas a oferta da conversa -->
+        <div class="hello-head rev">
+          <p class="eyebrow"><i></i> Vamos Conversar</p>
+          <h2 id="contact-title" class="hub-title">Conheça o Hub Tributário.</h2>
+          <p class="lede">
+            Se você acredita que o Hub pode contribuir para a organização da operação tributária
+            da sua empresa, será um prazer apresentar a plataforma.
+          </p>
+          <p class="lede">
+            A demonstração é conduzida pessoalmente, mostrando a estrutura do sistema, sua arquitetura
+            e como ele pode ser adaptado à realidade operacional de cada organização.
+          </p>
+          <div class="hub-rule" aria-hidden="true"></div>
+        </div>
+
+        <!-- BLOCO 02 · PRÓXIMO PASSO — o único convite, no componente
+             CTA já existente (respiração e hover do sistema) -->
+        <div class="hello-action rev">
+          <a class="cta" href="https://wa.me/5511930141234?text=Ol%C3%A1%20Alex.%20Conheci%20o%20Hub%20Tribut%C3%A1rio%20pelo%20site%20e%20gostaria%20de%20agendar%20uma%20demonstra%C3%A7%C3%A3o." target="_blank" rel="noopener">
+            <span class="cta-ring" aria-hidden="true"><span class="cta-ring-spin"></span></span>Agendar demonstração pelo WhatsApp <span>→</span>
+          </a>
+        </div>
+
+        <!-- BLOCO 03 · CONTATO — pauta editorial: somente tipografia,
+             espaçamento e hairlines, no mesmo padrão do restante do site -->
+        <div class="hello-contact rev" aria-labelledby="hello-contact-title">
+          <p id="hello-contact-title" class="hub-kicker"><i></i> Contato</p>
+          <div class="hello-row">
+            <b>Desenvolvedor</b>
+            <p>Alex Cavalcante Costa</p>
+          </div>
+          <div class="hello-row">
+            <b>WhatsApp</b>
+            <a href="https://wa.me/5511930141234" target="_blank" rel="noopener">(11) 93014-1234</a>
+          </div>
+          <div class="hello-row">
+            <b>E-mail</b>
+            <a href="mailto:alexcavalcante1800@gmail.com">alexcavalcante1800@gmail.com</a>
+          </div>
+          <div class="hello-row">
+            <b>LinkedIn</b>
+            <a href="https://www.linkedin.com/in/alex-cavalcante-costa-276483197/" target="_blank" rel="noopener">linkedin.com/in/alex-cavalcante-costa</a>
+          </div>
+          <div class="hello-row">
+            <b>Portfólio</b>
+            <a href="https://alexcaval-portfolio.vercel.app" target="_blank" rel="noopener">alexcaval-portfolio.vercel.app</a>
+          </div>
+        </div>
+
+        <!-- BLOCO 04 · FECHAMENTO — obrigado + linha dourada curta -->
+        <div class="hello-close rev">
+          <h3 class="showcase-title">Obrigado pela visita.</h3>
+          <p class="lede">
+            O Hub Tributário nasceu com o propósito de organizar informações, padronizar processos
+            e simplificar a rotina operacional das equipes que trabalham diariamente com a área tributária.
+          </p>
+          <p class="lede">Este é apenas o começo da plataforma.</p>
+          <i class="hello-gold" aria-hidden="true"></i>
+        </div>
+
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-frame">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Fechar imagem">&times;</button>
+    <img id="lightbox-img" src="" alt="">
   </div>
 </div>
 

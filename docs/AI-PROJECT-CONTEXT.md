@@ -41,6 +41,8 @@ O Website **não vende sozinho**: constrói confiança antes de qualquer pedido.
 - **Fora de escopo:** blog, área do cliente, login, admin, múltiplas páginas, documentação técnica.
 - Repositório separado do núcleo do Hub.
 
+> **Estado v1.0 (implementado):** a Landing foi entregue em **cinco telas** — Home, Hub, Inteligência Operacional, Demonstração e Vamos Conversar — mantendo a jornada narrativa e o tom editorial definidos por esta arquitetura de conteúdo. Detalhes de implementação em `README.md`.
+
 ## 5. Filosofia de Engenharia
 
 - **Performance percebida é identidade** (lição Vercel/Apple): página leve, carregamento rápido, sem splashes nem animações decorativas de loading.

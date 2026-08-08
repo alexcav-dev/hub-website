@@ -28,6 +28,11 @@
   var day=0.5, breath=0, floatY=0;         /* ciclo claro, respiro do monograma */
   var tide=0.5, lx=0.5, ly=0.5, anchor=0.32;    /* AMBIENTE, LUZ, luz no monograma — já presentes na chegada */
   var airX=0, airY=0;                      /* corrente lenta da sala */
+  var meshX=0, meshY=0;                    /* malha: a parede mais distante lê o mundo por último */
+  var rmx=0, rmy=0;                        /* ENERGIA da sala — o impulso único que a atravessa */
+  var envx=0, envy=0;                      /* velocidade do olhar (eventos do cursor, suavizada) */
+  var lastNX=0, lastNY=0;                  /* último ponto normalizado do cursor */
+  var wx=0, wy=0;                          /* parede — 4.º ponto do fluxo, entre traseira e malha */
   var dx=0, dy=0, mx=0, my=0, bx=0, by=0;  /* 3 tempos de leitura (profundidade) */
   var t0 = performance.now();
   var initPh = Math.random()*6.283;
@@ -44,6 +49,25 @@
     anchorGlow: 1.0
   };
   global.MotionCalibration = MotionCalibration;
+
+  /* ——— FÍSICA DA SALA (W10.5) ——— fonte única de verdade desta sprint.
+     Uma única energia alimenta toda a Hero; cada ponto do fluxo difere
+     apenas por massa (M) — quanto menor o valor, mais pesado e mais
+     lento o elemento. O ar (roomDecay) absorve a energia devagar.
+     Nenhuma constante desta física vive fora daqui. ——— */
+var RoomPhysics = {
+    roomGain: 2.4,    /* energia retida por px de velocidade do olhar (escala) */
+    roomDecay: 0.025,  /* o sopro de energia: devolvido ao ar devagar, até a parede */
+    roomSettle:0.3,   /* a velocidade instantânea evapora rápido quando o cursor para */
+    frontMass: 0.140,  /* dx  — placa frontal  (leve) */
+    midMass:   0.085,  /* mx  — placa média    */
+    backMass:  0.055,  /* bx  — placa traseira (pesada) */
+    wallMass:  0.030,  /* wx  — a parede: monograma e porta da malha */
+    meshMass:  0.020,  /* meshX — integrador da malha (a mais pesada) */
+    meshGain:  0.40,   /* fração da parede que a malha converte em movimento */
+    dustMass:  0.0035  /* acoplamento da poeira à mesma corrente de ar */
+  };
+  global.RoomPhysics = RoomPhysics;
 
   /* ruído de valor — corpo irregular: a sala varia, nunca “balança” */
   function vnoise(x){
@@ -75,12 +99,19 @@
 
   function init(){ t0 = performance.now(); }
 
-  /* o observador desloca minimamente o ponto de vista da sala */
+  /* o observador desloca minimamente o ponto de vista da sala.
+   Sua VELOCIDADE é o único gerador de energia: o impulso que o
+   olhar deixa no ar. Cursor parado → nenhum novo impulso. */
   function setPointer(cx, cy){
-    var x = (cx / window.innerWidth  - 0.5) * 2;
-    var y = (cy / window.innerHeight - 0.5) * 2;
-    tpx = Math.max(-1,Math.min(1,x)) * 9;   /* amplitude curta no plano frontal */
-    tpy = Math.max(-1,Math.min(1,y)) * 6;
+    var nx = (cx / window.innerWidth  - 0.5) * 2;
+    var ny = (cy / window.innerHeight - 0.5) * 2;
+    var dx = Math.max(-2, Math.min(2, nx - lastNX));
+    var dy = Math.max(-2, Math.min(2, ny - lastNY));
+    lastNX = nx; lastNY = ny;
+    envx += (dx*9 - envx)*0.55;   /* velocidade instantânea, em px do domínio */
+    envy += (dy*6 - envy)*0.55;
+    tpx = Math.max(-1,Math.min(1,nx)) * 9;   /* amplitude curta no plano frontal */
+    tpy = Math.max(-1,Math.min(1,ny)) * 6;
   }
 
   function releasePointer(){ tpx = 0; tpy = 0; }
@@ -127,15 +158,36 @@
     breath = 0.5 + 0.5*Math.sin(t*0.34);
     floatY = Math.sin(t*0.30 + 1.7);
 
-    /* 3 — PROFUNDIDADE por tempo: cada camada lê o mundo em seu
-       próprio ritmo. A frente responde primeiro, o fundo por último —
-       a distância é a diferença de tempo. */
-    dx += (px - dx)*0.14;  dy += (py - dy)*0.14;   /* frontal — lê primeiro */
-    mx += (px - mx)*0.085; my += (py - my)*0.085;  /* centro */
-    bx += (px - bx)*0.055; by += (py - by)*0.055;  /* fundo — mal percebe */
+    /* 3 — ENERGIA. O ambiente nunca persegue a posição do cursor:
+       ele apenas absorve o impulso do olhar. O olho segue a posição
+       (inércia própria); a VELOCIDADE do olhar (envx/envy, medida nos
+       eventos) é a única fonte de energia. Movimento lento → pouca;
+       rápido → muita; cursor parado → nenhuma energia nova. */
+    var dpx = (tpx - px)*0.08, dpy = (tpy - py)*0.08;   /* olhar — o observador */
+    px += dpx; py += dpy;
 
-    /* 4 — PLACAS: objetos repousando sobre a mesa, cada um com seu
-       peso. Sua própria corrente (pulso), mais a leitura do mundo
+envx *= (1 - RoomPhysics.roomSettle);                /* o impulso evapora no ar */
+    envy *= (1 - RoomPhysics.roomSettle);
+    rmx += envx*RoomPhysics.roomGain;                    /* a energia da sala */
+    rmy += envy*RoomPhysics.roomGain;
+    rmx *= (1 - RoomPhysics.roomDecay);
+    rmy *= (1 - RoomPhysics.roomDecay);
+    /* o impulso herda o teto do próprio olhar (±9/±6): a energia
+       jamais empurra mais do que o plano perceptivo aprovado */
+    rmx = Math.max(-9, Math.min(9, rmx));
+    rmy = Math.max(-6, Math.min(6, rmy));
+
+    /* 4 — CASCATA: um único fluxo, cada ponto mais pesado que o
+       anterior. Todos perseguem a MESMA energia — a diferença entre
+       eles é apenas a massa. A frente sente primeiro, a parede por
+       último; nunca começam ou terminam juntos. */
+    dx += (rmx - dx)*RoomPhysics.frontMass;  dy += (rmy - dy)*RoomPhysics.frontMass;
+    mx += (rmx - mx)*RoomPhysics.midMass;    my += (rmy - my)*RoomPhysics.midMass;
+    bx += (rmx - bx)*RoomPhysics.backMass;   by += (rmy - by)*RoomPhysics.backMass;
+    wx += (rmx - wx)*RoomPhysics.wallMass;   wy += (rmy - wy)*RoomPhysics.wallMass;
+
+    /* 5 — PLACAS: objetos repousando sobre a mesa, cada um com seu
+       peso. Sua própria corrente (pulso), mais a leitura da energia
        com peso e tempo próprios. Fases nunca simultâneas, nunca um
        ciclo fechado. */
     for(var i=0;i<plates.length;i++){
@@ -171,6 +223,13 @@
       p.rz = bX*p.rot;
     }
 
+    /* 6 — MALHA: a parede mais distante da sala. Absorve a energia
+       pelo ponto mais fundo do fluxo (wx) e com a maior massa de
+       todas — responde por último, continua deslizando quando o
+       cursor para e repousa devagar. Amplitude máxima ±1.6px/±1.3px. */
+    meshX += (wx*RoomPhysics.meshGain - meshX)*RoomPhysics.meshMass;
+    meshY += (wy*RoomPhysics.meshGain - meshY)*RoomPhysics.meshMass;
+
     /* ——— aplica o ambiente ——— */
     root.style.setProperty('--day',    day.toFixed(4));
     root.style.setProperty('--breath', breath.toFixed(4));
@@ -179,8 +238,17 @@
     root.style.setProperty('--lx',     lx.toFixed(4));
     root.style.setProperty('--ly',     ly.toFixed(4));
     root.style.setProperty('--anchor', anchor.toFixed(4));
-    root.style.setProperty('--px',     px.toFixed(3));
-    root.style.setProperty('--py',     py.toFixed(3));
+    /* a energia da sala alimenta a paralaxe, a sombra de contato, o
+       sweep e o CTA — o mesmo impulso que percorre toda a Hero */
+    root.style.setProperty('--px',     rmx.toFixed(3));
+    root.style.setProperty('--py',     rmy.toFixed(3));
+    /* a parede — o ponto do fluxo que serve o monograma */
+    root.style.setProperty('--pw',     wx.toFixed(3));
+    root.style.setProperty('--qw',     wy.toFixed(3));
+
+    /* malha — a parede distante */
+    root.style.setProperty('--mesh-x', meshX.toFixed(3)+'px');
+    root.style.setProperty('--mesh-y', meshY.toFixed(3)+'px');
 
     /* profundidade em 3 tempos de leitura */
     root.style.setProperty('--pa', (bx + airX*0.4).toFixed(3));
@@ -214,7 +282,9 @@
       airX:   airX,
       airY:   airY,
       lx:     lx,
-      anchor: anchor
+      anchor: anchor,
+      rmx:    rmx,
+      rmy:    rmy
     };
   }
 
@@ -228,6 +298,10 @@
     root.style.setProperty('--anchor', '0.32');
     root.style.setProperty('--px',     '0');
     root.style.setProperty('--py',     '0');
+    root.style.setProperty('--pw',     '0');
+    root.style.setProperty('--qw',     '0');
+    root.style.setProperty('--mesh-x','0px');
+    root.style.setProperty('--mesh-y','0px');
   }
 
   global.HubMotion = {

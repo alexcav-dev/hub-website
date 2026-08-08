@@ -1,0 +1,27 @@
+# ── Sistema operacional ──────────────────────────────
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ── Editores / IDE ───────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Logs e temporários ───────────────────────────────
+*.log
+*.tmp
+*.bak
+
+# ── Ambiente e credenciais ───────────────────────────
+.env
+.env.*
+*.pem
+*.key
+
+# ── Artefatos de build (usuais) ─────────────────────
+node_modules/
+dist/
+build/
+*.zip

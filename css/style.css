@@ -49,9 +49,22 @@
   --shadow-rest:  0 18px 40px -24px rgba(15,30,53,.30), 0 2px 6px rgba(15,30,53,.05);
   --shadow-deep:  0 70px 130px -64px rgba(15,30,53,.46);
 
+  --header-height: 83px;
   --s1: 8px; --s2: 16px; --s3: 28px; --s4: 48px; --s5: 80px; --s6: 128px;
   --ease: cubic-bezier(.22,.61,.36,1);
   --ease-soft: cubic-bezier(.4,.14,.3,1);
+
+  /* ——— camada de Motion Design (W-Motion) ———
+     Uma única curva, um único teto de duração para toda
+     revelação de conteúdo — Apple/Linear/Stripe, não jogo.
+     Nada de bounce, nada de overshoot: sempre ease-out puro. */
+  --ease-premium:  cubic-bezier(.22,1,.36,1);
+  --dur-reveal:    700ms;
+  --dur-hover-img: 300ms;
+  --dur-hover-btn: 220ms;
+  --delay-title:   100ms;
+  --delay-text:    160ms;
+  --stagger-step:  80ms;
 }
 
 /* ==========================================================
@@ -59,7 +72,7 @@
    ========================================================== */
 
 *{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 
 /* ==========================================================
    03 · BODY
@@ -70,32 +83,49 @@ body{
   color:var(--ink);
   background:var(--paper);
   min-height:100vh;
-  overflow-x:hidden;
+  overflow:hidden;
 }
 
 /* ==========================================================
    04 · LAYOUT
    ========================================================== */
 
-.wrap{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 var(--s4)}
+.app-shell{position:relative;z-index:1}
+.app-header .bar,
+.workspace{max-width:1240px;margin:0 auto;padding-left:var(--s4);padding-right:var(--s4)}
+.workspace{
+  position:relative;isolation:isolate;overflow:hidden;
+  height:calc(100vh - var(--header-height));
+  min-height:calc(100vh - var(--header-height));
+  margin-top:var(--header-height);
+}
+.views .view{
+  position:absolute;inset:0;z-index:0;
+  opacity:0;visibility:hidden;pointer-events:none;
+  overflow:hidden;overscroll-behavior:contain;
+  transition:opacity .24s var(--ease);
+}
+.views .view.active{z-index:1;opacity:1;visibility:visible;pointer-events:auto}
+/* cada View é uma tela, não uma página: o conteúdo é dimensionado
+   para caber em height:100%, o overflow:hidden aqui é só uma rede
+   de segurança — nunca a estratégia de layout */
+.views .view:not(.view--home){overflow:hidden}
+.view--home .hero{min-height:100%}
 
 @media (max-width:960px){
-  .wrap{padding:0 var(--s3)}
+  .app-header .bar,
+  .workspace{padding-left:var(--s3);padding-right:var(--s3)}
+  /* abaixo de tablet, telas de app costumam admitir rolagem própria:
+     é a exceção deliberada, não a mesma solução paliativa do desktop */
+  .views .view:not(.view--home){overflow-y:auto;overflow-x:hidden}
 }
 
-/* ——— rodapé da dobra ——— */
-.fold{
-  display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
-  padding-bottom:var(--s5);border-top:1px solid var(--line-soft);padding-top:var(--s3);
+/* janelas muito baixas (desktop com pouca altura) caem no mesmo
+   fallback do mobile abaixo — ver bloco @media(max-width:960px)
+   mais adiante, reaproveitado via seletor combinado */
+@media (max-height:680px){
+  .views .view:not(.view--home){overflow-y:auto;overflow-x:hidden}
 }
-.statement{
-  display:flex;align-items:center;gap:16px;
-  font-size:13.5px;font-weight:300;line-height:1.6;color:var(--ink-soft);max-width:62ch;
-}
-.statement i{display:block;width:26px;height:1px;background:var(--gold-soft);opacity:.6;flex:none;font-style:normal}
-.scroll{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);display:flex;align-items:center;gap:10px;flex:none}
-.scroll i{display:block;width:1px;height:26px;background:linear-gradient(var(--ink-faint),rgba(133,147,167,0));
-  animation:scroll-hint 6s var(--ease-soft) infinite;transform-origin:top;will-change:transform,opacity}
 
 /* ==========================================================
    05 · ATMOSFERA
@@ -170,7 +200,7 @@ body{
    06 · HEADER
    ========================================================== */
 
-header{position:relative;z-index:2}
+.app-header{position:fixed;top:0;left:0;right:0;z-index:10}
 .bar{
   display:flex;align-items:center;gap:var(--s3);
   padding:var(--s3) 0;border-bottom:1px solid var(--line-soft);
@@ -178,19 +208,39 @@ header{position:relative;z-index:2}
 .brand{display:flex;align-items:center;gap:14px}
 .brand svg{display:block;height:26px;width:auto}
 .brand .name{font-family:"Archivo";font-weight:500;font-size:15px;letter-spacing:.01em}
-nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3)}
-nav a{
+nav{margin-left:auto;display:flex;align-items:center;gap:var(--s3);position:relative}
+nav button{
   position:relative;
+  appearance:none;border:0;background:transparent;font:inherit;cursor:pointer;
   font-size:13.5px;color:var(--ink-soft);text-decoration:none;letter-spacing:.01em;
   transition:color .45s var(--ease);
 }
-nav a::after{
+/* traço por botão: só o HOVER, rápido e local — o estado ATIVO
+   passou a ser responsabilidade do .nav-indicator (abaixo), que
+   desliza de um item a outro em vez de trocar instantaneamente */
+nav button::after{
   content:"";position:absolute;left:0;right:0;bottom:-6px;height:1px;
   background:var(--gold);transform:scaleX(0);transform-origin:left;
   opacity:.7;transition:transform .55s var(--ease);
 }
-nav a:hover{color:var(--ink)}
-nav a:hover::after{transform:scaleX(1)}
+nav button:hover{color:var(--ink)}
+nav button.active{color:var(--ink)}
+nav button:hover::after{transform:scaleX(1)}
+
+/* ——— indicador de menu: uma linha só, que desliza (translateX)
+   e se estica (scaleX) até o botão ativo. Base de 1px de largura
+   estática — nunca anima `width` ou `left`, só transform, então
+   o troca de view não custa reflow algum. JS (ViewManager) só
+   escreve --nav-x/--nav-w; quem anima é o CSS. ——— */
+.nav-indicator{
+  position:absolute;left:0;bottom:-6px;height:1px;width:1px;
+  background:var(--gold);opacity:0;pointer-events:none;
+  transform-origin:left center;
+  transform:translateX(var(--nav-x,0px)) scaleX(var(--nav-w,0));
+  transition:transform .45s var(--ease-premium), opacity .3s var(--ease);
+  will-change:transform;
+}
+.nav-indicator.is-ready{opacity:.7}
 
 /* ==========================================================
    07 · HERO
@@ -339,8 +389,10 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
    ========================================================== */
 
 .mono{position:relative;width:34%;max-width:150px;
-  /* o objeto repousa: micro-deslocamento e sombra que acompanha a luz da sala */
-  transform:translate3d(calc(var(--px,0) * .22px), calc(var(--py,0) * .22px + var(--float,0) * .5px), 0);
+  /* o objeto repousa: micro-deslocamento e sombra que acompanha a luz da sala.
+     Lê a parede (--pw/--qw): o ponto do fluxo mais pesado que as placas,
+     servido pela mesma energia que atravessa toda a Hero */
+  transform:translate3d(calc(var(--pw,0) * .22px), calc(var(--qw,0) * .22px + var(--float,0) * .5px), 0);
   filter:drop-shadow(
     calc(var(--day,0) * -3px + 1px) calc(2.5px + var(--float,0) * 1.2px)
     calc(4px + var(--day,0) * 5px) rgba(15,30,53,calc(.11 + var(--day,0) * .05)));
@@ -416,8 +468,27 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 .cta span{color:var(--gold);transition:transform .32s var(--ease)}
 .cta:hover span{transform:translateX(3px)}
 
-.ghost{position:relative;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;transition:color .45s var(--ease),border-color .45s var(--ease)}
-.ghost:hover{color:var(--ink);border-color:var(--ink-faint)}
+/* ——— respiração do CTA: só liga enquanto o botão está visível
+   (classe .breathe-active, ligada/desligada pelo IntersectionObserver
+   em HubBreathe/app.js). Amplitude quase subliminar — 1.5% — e só
+   `transform:scale`, nunca some com o hover: ao passar o mouse, a
+   respiração devolve o controle do transform ao hover trocando para
+   uma única animação (cta-glow, que só mexe em filter, não em
+   transform), então o translateY(-2px) do :hover nunca é disputado. ——— */
+.cta.breathe-active{
+  animation:cta-glow 1.3s linear infinite, cta-breathe 6s var(--ease-soft) infinite;
+}
+.cta.breathe-active:hover{
+  animation:cta-glow 1.3s linear infinite;
+}
+@keyframes cta-breathe{
+  0%,100%{ transform:scale(1); }
+  50%    { transform:scale(1.015); }
+}
+
+.ghost{position:relative;font-size:14px;color:var(--ink-soft);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:3px;
+  transition:color .45s var(--ease),border-color .45s var(--ease),transform var(--dur-hover-btn) var(--ease-premium)}
+.ghost:hover{color:var(--ink);border-color:var(--ink-faint);transform:translateY(-1px)}
 
 /* ==========================================================
    11 · MOTION
@@ -455,11 +526,6 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 }
 
 /* ——— definição de todos os keyframes do website ——— */
-
-@keyframes scroll-hint{
-  0%,100%{transform:scaleY(.72);opacity:.55}
-  50%{transform:scaleY(1);opacity:1}
-}
 
 @keyframes rise{to{opacity:1;transform:none}}
 
@@ -527,6 +593,7 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   .r{opacity:1;transform:none}
+  .views .view{transition:none}
 }
 
 /* ==========================================================
@@ -537,31 +604,47 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 @media (max-width:960px){
   .hero{grid-template-columns:1fr;gap:var(--s5);padding:var(--s5) 0}
   .field{min-height:340px;order:2}
-  nav a:nth-child(-n+2){display:none}
+  nav{gap:var(--s2)}
+  nav button{font-size:12px}
   .fold{flex-direction:column;align-items:flex-start;gap:var(--s3)}
 }
 
 /* ==========================================================
-   12 · MALHA TRIBUTÁRIA  (fundo vivo da hero)
+   13 · MALHA TRIBUTÁRIA  (fundo vivo da hero)
    ==========================================================
-   Camada exclusivamente de ambiente: grade documental
-   finíssima em deriva, uma varredura de luz que a atravessa
-   e nós dourados que acendem devagar. Não toca layout,
-   tipografia, placas nem monograma.
-   ========================================================== */
+   Camada exclusivamente de ambiente: a parede mais distante da sala —
+   grade documental finíssima em deriva, uma varredura de luz que a
+   atravessa e nós dourados que acendem devagar. Nasce junto com o
+   fundo, morre na vinheta e lê o mundo por último (--mesh-x/--mesh-y,
+   do motor). Não toca layout, tipografia, placas nem monograma.
+   (W10.5A) Delimitação recalibrada: a curva da máscara foi suavizada
+   sem mudar a geometria — o header permanece limpo, mas o respiro não
+   é mais vazio; a grade entra com intensidade mínima já junto ao
+   header e cresce até a intensidade de sempre na Hero. Continuidade
+   absoluta, sem linha visível de separação.
+   ============================================================ */
 
 .atmosphere .mesh-grid,
 .atmosphere .mesh-scan,
 .atmosphere .mesh-nodes{position:absolute;inset:0}
 
-/* grade — respiração institucional, seca */
+/* grade — respiração institucional, seca.
+   A malha nasce no centro com a mesma densidade de sempre, perde a
+   voz já a partir da metade da tela e desaparece por completo bem
+   antes das extremidades — sem linha de término: é a máscara que
+   morre, não a textura. A vinheta absorve a transição.
+   (W10.5A) Recalibração fina da máscara: a geometria (núcleo, raios)
+   permanece; só a curva de fade foi suavizada. O topo já não é um
+   vazio — a grade existe em intensidade muito baixa atrás do header,
+   entra em cena gradualmente logo abaixo dele e morre do mesmo jeito
+   que sempre morreu nas laterais e na base. Continuidade, nunca corte. */
 .atmosphere .mesh-grid{
   background-image:
     linear-gradient(to right, rgba(15,30,53,.055) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(15,30,53,.055) 1px, transparent 1px);
   background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(72% 62% at 58% 44%, #000 12%, transparent 82%);
-          mask-image:radial-gradient(72% 62% at 58% 44%, #000 12%, transparent 82%);
+  -webkit-mask-image:radial-gradient(94% 56% at 52% 60%, #000 0%, #000 50%, rgba(0,0,0,.35) 71%, rgba(0,0,0,.16) 90%, transparent 100%);
+          mask-image:radial-gradient(94% 56% at 52% 60%, #000 0%, #000 50%, rgba(0,0,0,.35) 71%, rgba(0,0,0,.16) 90%, transparent 100%);
   animation:mesh-drift 120s linear infinite;
   will-change:transform;
 }
@@ -578,7 +661,13 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   will-change:transform,opacity;
 }
 
-/* nós — pontos de encontro da matéria tributária */
+/* nós — pontos de encontro da matéria tributária.
+   Morrem junto com a malha — a mesma dissolução, para nenhum ponto
+   acender numa zona onde a parede já não existe */
+.atmosphere .mesh-nodes{
+  -webkit-mask-image:radial-gradient(94% 56% at 52% 60%, #000 0%, #000 50%, rgba(0,0,0,.35) 71%, rgba(0,0,0,.16) 90%, transparent 100%);
+          mask-image:radial-gradient(94% 56% at 52% 60%, #000 0%, #000 50%, rgba(0,0,0,.35) 71%, rgba(0,0,0,.16) 90%, transparent 100%);
+}
 .atmosphere .mesh-nodes i{
   position:absolute;width:3px;height:3px;border-radius:50%;
   background:var(--gold);opacity:.18;
@@ -591,8 +680,8 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 .atmosphere .mesh-nodes i:nth-child(5){top:14%;left:52%;animation-delay:6s}
 
 @keyframes mesh-drift{
-  0%   { transform:translate3d(0,0,0) }
-  100% { transform:translate3d(-64px,-64px,0) }
+  0%   { transform:translate3d(calc(var(--mesh-x,0px)), calc(var(--mesh-y,0px)), 0) }
+  100% { transform:translate3d(calc(var(--mesh-x,0px) - 64px), calc(var(--mesh-y,0px) - 64px), 0) }
 }
 @keyframes mesh-scan{
   0%   { transform:translate3d(-42%,-14%,0); opacity:0 }
@@ -606,8 +695,622 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
 }
 
 @media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
   .atmosphere .mesh-grid,
   .atmosphere .mesh-scan,
   .atmosphere .mesh-nodes i{animation:none}
   .atmosphere .mesh-scan{opacity:.28}
+  /* revelação no scroll desligada: conteúdo imediato, sem jelly.
+     !important porque .rev--media/--title/--text (definidos mais
+     abaixo no arquivo, fora de media query) têm a mesma
+     especificidade e viriam depois na cascata — sem isto, um
+     usuário com reduced-motion veria imagens presas em scale(.985) */
+  .rev,
+  .rev--media,
+  .rev--title,
+  .rev--text{opacity:1!important;transform:none!important;transition:none!important}
+}
+
+/* ==========================================================
+   14 · SEÇÃO O HUB  (editorial — continuação natural da hero)
+   ==========================================================
+   Não é uma prateleira de cartões: é uma pauta documental.
+   As mesmas hairlines horizontais que a hero costuma usar como
+   fundo das placas (.rules) são trazidas para a camada da
+   tipografia — separadores, números de referência e métricas
+   vivem em linha, sem nenhuma caixa. A atmosfera (poeira, malha,
+   luz, vinheta) é position:fixed e já continua viva por trás
+   desta seção: o usuário desce dentro do mesmo ambiente.
+   ============================================================ */
+
+/* ——— o Hub é uma tela, não uma página: grid de altura total.
+   A linha "oper" recebe 1fr — absorve toda a folga entre o
+   cabeçalho e o rodapé, então nunca há conteúdo sobrando para
+   rolar. Cada elemento mantém a classe e a posição no DOM;
+   só o local visual dele muda, via grid-area. ——— */
+.hub{
+  position:relative;z-index:1;
+  height:100%;
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.35fr);
+  grid-template-rows:auto auto 1fr auto auto;
+  column-gap:var(--s6);row-gap:var(--s3);
+  padding:var(--s4) 0;
+  grid-template-areas:
+    "head evid"
+    "rule rule"
+    "oper oper"
+    "rsoft rsoft"
+    "foot foot";
+}
+.hub .lede{margin-top:var(--s2);max-width:44ch}
+
+.hub-head{grid-area:head}
+
+/* títulos da pauta — a mesma voz do h1 da hero, um tom abaixo */
+.hub-title{
+  font-family:"Archivo";font-weight:500;
+  font-size:clamp(28px,3.6vw,44px);line-height:1.08;letter-spacing:-.022em;
+  margin-top:var(--s2);max-width:16ch;
+}
+.hub-title em{font-style:normal;color:var(--ink-2)}
+
+/* hairlines editoriais: separam momentos, nunca formam caixas */
+.hub-rule{grid-area:rule;height:1px;background:var(--line-soft)}
+.hub-rule-soft{grid-area:rsoft;height:1px;background:var(--gold-soft);opacity:.62}
+
+/* ——— momento 2: estrutura operacional, agora lida da esquerda
+   para a direita — copy explica, a trilha mostra o percurso.
+   Ocupa a linha 1fr inteira e centraliza dentro dela. ——— */
+.hub-operational{
+  grid-area:oper;
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1fr);
+  gap:var(--s6);align-items:center;
+  min-height:0; /* permite a linha 1fr encolher; abaixo de 680px de
+    altura o breakpoint acima assume e volta a empilhar com rolagem,
+    então este grid nunca precisa cortar o próprio conteúdo */
+}
+.hub-kicker{
+  display:flex;align-items:center;gap:12px;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-faint);
+}
+.hub-kicker i{display:block;width:26px;height:1px;background:var(--gold-soft);font-style:normal}
+.hub-op-copy p:not(.hub-kicker){
+  margin-top:var(--s2);max-width:46ch;
+  font-size:clamp(13px,1.7vh,14.5px);line-height:1.6;font-weight:300;color:var(--ink-soft);
+}
+
+/* trilha operacional: de lista vertical para pauta horizontal —
+   os mesmos pontos e hairline da versão anterior, só deitados.
+   Lê-se como um percurso: HUB → ... → Acesso Centralizado. */
+.hub-flow{
+  position:relative;list-style:none;
+  display:flex;justify-content:space-between;gap:var(--s2);
+  margin:0;padding:26px 0 0;
+}
+.hub-flow::before{
+  content:"";position:absolute;left:2px;right:2px;top:4px;height:1px;
+  background:linear-gradient(90deg, rgba(15,30,53,0), var(--line-soft) 6%, var(--line-soft) 94%, rgba(15,30,53,0));
+}
+.hub-flow li{
+  position:relative;flex:1;padding-top:14px;text-align:center;
+  font-family:"Archivo";font-weight:500;
+  font-size:clamp(12.5px,1.05vw,15px);letter-spacing:-.005em;
+  color:var(--ink-soft);
+}
+.hub-flow li::before{
+  content:"";position:absolute;left:50%;top:0;width:3px;height:3px;
+  border-radius:50%;background:var(--line-soft);
+  transform:translate(-50%,-50%);
+}
+.hub-flow li:first-child{color:var(--ink-2);text-align:left}
+.hub-flow li:first-child::before{left:0;width:5px;height:5px;background:var(--gold);transform:translateY(-50%)}
+.hub-flow li:last-child{text-align:right}
+.hub-flow li:last-child::before{left:auto;right:0;transform:translate(50%,-50%)}
+
+/* ——— momento 3: evidências documentais, ao lado do título —
+   lê como um resumo executivo, não como um rodapé de métricas ——— */
+.hub-evidence{grid-area:evid;align-self:end}
+
+/* ——— pilares institucionais: mesma pauta editorial das antigas
+   métricas, sem nenhum número — cada item é um conceito, não uma
+   contagem da base ——— */
+.hub-pillars{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:var(--s3) var(--s4);margin-top:var(--s3);
+}
+.hub-pillars > div{padding-top:var(--s2);border-top:1px solid var(--line-soft)}
+.hub-pillars b{
+  display:block;font-family:"Archivo";font-weight:500;
+  font-size:14px;letter-spacing:-.01em;color:var(--ink-2);
+}
+.hub-pillars span{
+  display:block;margin-top:8px;font-size:12px;line-height:1.55;
+  font-weight:300;color:var(--ink-soft);
+}
+
+/* ——— fecho: frase institucional + linha dourada para Inteligência ——— */
+.hub-foot{grid-area:foot;display:flex;align-items:center;gap:var(--s4)}
+.hub-foot p{font-size:14.5px;line-height:1.5;font-weight:300;color:var(--ink-soft);max-width:58ch}
+.hub-foot i{display:block;width:46px;height:1px;background:var(--gold-soft);flex:none;font-style:normal}
+
+/* ——— revelação no scroll — soleira da porta, a mesma curva em
+   toda a Landing. Dispara uma única vez (ver HubReveal em app.js:
+   unobserve após entrar ~20–25% da viewport) e nunca repete ao
+   voltar o scroll. Respeita o teto de 700ms e o prefers-reduced-motion.
+
+   Arquitetura de delay em duas camadas, ambas custom properties
+   herdadas em cascata — nenhum JS calcula tempo, só alterna .in:
+     --rd      → delay do GRUPO (a seção/bloco a que o elemento
+                 pertence). Definido no contêiner, herdado pelos
+                 filhos .rev por herança normal de custom property.
+     --rd-role → delay do PAPEL do elemento dentro do grupo (título
+                 sai primeiro, texto 160ms depois, imagem 80ms
+                 depois do texto que a acompanha, cada card do
+                 stagger 80ms depois do anterior). Somados: o
+                 título de uma seção nunca esbarra no texto da
+                 seção seguinte, e a leitura sempre guia o olhar
+                 do mais importante para o detalhe. ——— */
+.rev{
+  opacity:0;transform:translateY(32px);
+  transition:opacity var(--dur-reveal) var(--ease-premium),
+             transform var(--dur-reveal) var(--ease-premium);
+  transition-delay:calc(var(--rd,0s) + var(--rd-role,0s));
+  will-change:opacity,transform;
+}
+.rev.in{opacity:1;transform:none}
+
+/* papéis — título antes do texto, dentro do mesmo grupo */
+.rev--title{--rd-role:var(--delay-title)}
+.rev--text{--rd-role:var(--delay-text)}
+
+/* imagens "assentam": além de subir, chegam ligeiramente maiores
+   e reduzem para o tamanho final — o scale nunca deve ser
+   percebido como zoom, por isso a amplitude é mínima (1.5%).
+
+   `transition` é redeclarado por inteiro aqui (não só `transform`)
+   de propósito: é a ÚNICA regra deste documento que define
+   transition para .showcase-media/.showcase-trio figure, incluindo
+   o box-shadow do hover. Se o hover declarasse seu próprio
+   `transition` em outra regra, uma das duas apagaria a outra por
+   completo — shorthand não soma entre regras, substitui. */
+.rev--media{
+  transform:translateY(24px) scale(.985);
+  transition:opacity var(--dur-reveal) var(--ease-premium),
+             transform var(--dur-reveal) var(--ease-premium),
+             box-shadow var(--dur-hover-img) var(--ease-premium);
+}
+
+/* alternância texto ↔ imagem: quem entra primeiro no grupo tem
+   --rd-role:0; o parceiro entra 80ms depois. A ordem no DOM já
+   inverte entre módulo normal e .flip (ver HTML/showcase), então
+   os dois papéis abaixo servem os dois sentidos sem duplicar CSS */
+.rev--first{--rd-role:0ms}
+.rev--after{--rd-role:var(--stagger-step)}
+
+/* stagger de cards institucionais — nunca todos juntos, sempre em
+   onda: primeiro card, 80ms, segundo, 80ms... até 6 itens, o
+   suficiente para qualquer grade de pilares/prints do site */
+.stagger > *:nth-child(1){--rd-role:0ms}
+.stagger > *:nth-child(2){--rd-role:80ms}
+.stagger > *:nth-child(3){--rd-role:160ms}
+.stagger > *:nth-child(4){--rd-role:240ms}
+.stagger > *:nth-child(5){--rd-role:320ms}
+.stagger > *:nth-child(6){--rd-role:400ms}
+
+/* delays de grupo — definidos no contêiner (não precisa mais da
+   classe .rev nele: --rd é uma custom property comum, herdada por
+   qualquer .rev descendente, esteja o contêiner revelando a si
+   mesmo ou não) */
+.hub-head{--rd:.05s}
+.hub-rule{--rd:.18s}
+.hub-operational{--rd:.30s}
+.hub-rule-soft{--rd:.42s}
+.hub-evidence{--rd:.54s}
+.hub-foot{--rd:.66s}
+/* as views trocam por clique (tab), não por rolagem: Home, Hub e
+   Inteligência aparecem inteiras de uma vez (a própria .view já
+   tem sua transição de opacidade), então qualquer .rev dentro
+   delas fica estático — sem isso, o IntersectionObserver revelaria
+   tudo de antemão, já que a tela toda "intersecta" a viewport
+   assim que fica visível. A Demonstração é a ÚNICA exceção: é uma
+   página real, com rolagem própria (ver .view--demo), então é nela
+   que o reveal por scroll deste documento realmente se aplica. */
+.views .view:not(.view--demo) .rev{opacity:1;transform:none;transition:none}
+
+@media (max-width:960px), (max-height:680px){
+  /* abaixo de tablet — ou numa janela desktop baixa demais para a
+     trilha horizontal caber sem espremer o texto — a tela vira
+     página com rolagem própria (ver overflow-y acima) em vez de
+     cortar conteúdo com overflow:hidden. É o fallback consciente,
+     não a mesma gambiarra: só entra em cena no caso extremo. */
+  .hub{
+    display:block;height:auto;min-height:100%;
+    padding:var(--s5) 0;
+  }
+  .hub-rule{margin-top:var(--s4)}
+  .hub-rule-soft{margin-top:var(--s5)}
+  .hub-evidence{margin-top:var(--s4);align-self:auto}
+  .hub-operational{
+    display:grid;grid-template-columns:1fr;gap:var(--s4);
+    margin-top:var(--s4);align-items:start;
+  }
+  .hub-flow{
+    display:block;padding:0 0 0 var(--s3);margin-top:0;
+  }
+  .hub-flow::before{
+    left:4px;right:auto;top:11px;bottom:12px;width:1px;height:auto;
+    background:linear-gradient(rgba(15,30,53,0), var(--line-soft) 10%, var(--line-soft) 90%, rgba(15,30,53,0));
+  }
+  .hub-flow li{
+    padding:14px 0 14px var(--s3);text-align:left;flex:none;
+  }
+  .hub-flow li::before{left:-25px;transform:translateY(-50%)}
+  .hub-flow li:first-child{padding-top:0}
+  .hub-flow li:first-child::before{left:-26px}
+  .hub-flow li:last-child{text-align:left}
+  .hub-flow li:last-child::before{left:-25px;right:auto;transform:translateY(-50%)}
+  .hub-pillars{grid-template-columns:1fr 1fr;gap:var(--s3)}
+  .hub-foot{margin-top:var(--s5);flex-direction:column;align-items:flex-start;gap:var(--s3)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .rev,
+  .rev--media,
+  .rev--title,
+  .rev--text{opacity:1!important;transform:none!important;transition:none!important}
+}
+
+/* ==========================================================
+   15 · VITRINE DO PRODUTO  (view Demonstração)
+   ==========================================================
+   Ao contrário das demais views (tela única, sem rolagem), a
+   Demonstração é deliberadamente uma página que se percorre: uma
+   jornada editorial por módulos, não uma galeria de prints em
+   sequência. Reaproveita a tipografia e os espaçamentos já
+   definidos (.hub-kicker, .hub-title, .hub-rule, .cta) — nenhum
+   token novo, nenhuma dependência nova.
+   ============================================================ */
+
+/* esta view, e só ela, tem altura de conteúdo real: rola por
+   dentro do workspace em vez de recortar o que não coube.
+   Especificidade igual à regra-base (.views .view:not(.view--home)),
+   então a ordem no arquivo é quem decide — e esta vem depois. */
+.views .view.view--demo{
+  overflow-y:auto;overflow-x:hidden;
+  scrollbar-width:none;       /* firefox */
+  -ms-overflow-style:none;    /* legado edge/ie */
+}
+.views .view.view--demo::-webkit-scrollbar{display:none;width:0;height:0}
+
+.showcase{position:relative;z-index:1;padding:var(--s5) 0 var(--s6);max-width:1180px;margin:0 auto}
+.showcase-head{max-width:640px}
+.showcase-head .lede{margin-top:var(--s2)}
+
+.showcase-module{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);
+  gap:var(--s5) var(--s6);align-items:center;
+  padding:var(--s5) 0;border-top:1px solid var(--line-soft);
+}
+/* módulos de mídia dupla ("flip") invertem a leitura — imagem à
+   esquerda, texto à direita — pelo simples reposicionamento no
+   DOM (ver HTML), sem order/flex-direction concorrendo com nada */
+
+.showcase-title{
+  font-family:"Archivo";font-weight:500;
+  font-size:clamp(20px,2.4vw,27px);line-height:1.16;letter-spacing:-.018em;
+  margin-top:var(--s2);max-width:20ch;
+}
+.showcase-copy p:not(.hub-kicker){
+  margin-top:var(--s2);max-width:46ch;
+  font-size:14.5px;line-height:1.65;font-weight:300;color:var(--ink-soft);
+}
+
+.showcase-media{
+  border:1px solid var(--line);border-radius:4px;overflow:hidden;
+  background:var(--surface);box-shadow:var(--shadow-rest);
+  /* transition fica só em .rev--media (ver seção de Motion) —
+     este elemento é sempre também .rev--media no HTML; declarar
+     `transition` de novo aqui apagaria aquela regra por inteiro */
+  will-change:transform;
+}
+.showcase-media img{display:block;width:100%;height:auto}
+/* hover: só sobe (translateY), sombra ganha presença — sem scale,
+   sem rotate, do jeito que um print "levanta" sobre a mesa */
+.showcase-media:hover{transform:translateY(-4px);box-shadow:var(--shadow-deep)}
+
+/* ——— composição do módulo Consulta Tributária: duas capturas lado a
+   lado, na ordem da própria jornada (Estado → Município), cada print
+   com seu identificador abaixo — a mesmíssima composição da vitrine
+   Usuários/Auditoria do Painel Master. Sem moldura nova: só as bordas,
+   sombras e o radius que a vitrine já usa. ——— */
+
+/* duo: a vitrine encolhe com a tela; o par segue lado a lado
+   enquanto houver espaço */
+@media (max-width:1280px){
+  .showcase{max-width:1060px}
+}
+
+/* duo: dois recortes lado a lado — mesma composição da vitrine
+   Usuários/Auditoria: cada print com seu identificador abaixo */
+.showcase-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s2)}
+.showcase-trio.duo{grid-template-columns:repeat(2,1fr);max-width:92%;margin-inline:auto}
+.showcase-trio figure{margin:0}
+.showcase-trio img{
+  display:block;width:100%;height:auto;border-radius:4px;
+  border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow-near);
+  transition:transform var(--dur-hover-img) var(--ease-premium),
+             box-shadow var(--dur-hover-img) var(--ease-premium),
+             filter var(--dur-hover-img) var(--ease-premium);
+  will-change:transform;
+}
+.showcase-trio figure:hover img{transform:translateY(-4px);box-shadow:var(--shadow-rest)}
+.showcase-trio figcaption{
+  margin-top:8px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);text-align:center;
+}
+
+.showcase-cta{
+  padding-top:var(--s5);display:flex;flex-direction:column;
+  align-items:flex-start;gap:var(--s4);
+}
+.showcase-cta-title{max-width:20ch}
+
+@media (max-width:960px){
+  .showcase-module,
+  .showcase-module.flip{grid-template-columns:1fr;gap:var(--s3)}
+  .showcase-module.flip .showcase-media,
+  .showcase-module.flip .showcase-trio-wrap{order:-1}
+  .showcase-trio{grid-template-columns:1fr;gap:var(--s3)}
+  .showcase-trio.duo{grid-template-columns:1fr;max-width:100%}
+}
+
+/* ==========================================================
+   16 · LIGHTBOX  (abrir print em destaque)
+   ==========================================================
+   Os prints da Demonstração nascem pequenos de propósito — a
+   leitura é editorial, não uma prancha de imagens em tamanho
+   real. Quem quiser examinar um print de perto, clica: abre em
+   camada própria, centralizado, numa proporção controlada (nunca
+   a imagem "crua" em resolução total) e fecha pelo X ou clicando
+   fora dela. Sem dependência nova — só o motor de views já existente.
+   ============================================================ */
+
+.showcase-media img,
+.showcase-trio img{cursor:zoom-in}
+.showcase-media img:hover,
+.showcase-trio img:hover{filter:brightness(1.03)}
+
+.lightbox{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--s5);
+  background:rgba(15,30,53,.78);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .28s var(--ease);
+}
+.lightbox.is-open{opacity:1;visibility:visible;pointer-events:auto}
+
+.lightbox-frame{
+  position:relative;max-width:min(1655px,95.5vw);max-height:95.5vh;
+  border-radius:4px;overflow:hidden;
+  background:var(--surface);
+  box-shadow:var(--shadow-deep);
+  transform:translateY(10px) scale(.98);
+  transition:transform .32s var(--ease);
+}
+.lightbox.is-open .lightbox-frame{transform:none}
+
+.lightbox-frame img{
+  display:block;max-width:min(1655px,95.5vw);max-height:95.5vh;
+  width:auto;height:auto;cursor:default;
+}
+
+.lightbox-close{
+  position:absolute;top:10px;right:10px;
+  width:32px;height:32px;border-radius:50%;border:0;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--ink);color:var(--paper-high);
+  font-size:17px;line-height:1;cursor:pointer;
+  box-shadow:0 8px 20px -8px rgba(15,30,53,.5);
+  transition:transform .25s var(--ease),background .25s var(--ease);
+}
+.lightbox-close:hover{background:var(--ink-2);transform:scale(1.08)}
+
+@media (max-width:600px){
+  .lightbox{padding:var(--s3)}
+  .lightbox-close{top:6px;right:6px;width:28px;height:28px;font-size:15px}
+}
+
+/* ==========================================================
+   17 · INTELIGÊNCIA OPERACIONAL  (view Inteligência)
+   ==========================================================
+   Reposicionamento: não se vende inteligência de máquina; a
+   eficiência nasce da estrutura que organiza a informação.
+   Mesma arquitetura do Hub (.intel é uma tela, não uma página:
+   grid de altura total, rolagem própria só no fallback abaixo
+   de tablet / janelas baixas). Reaproveita kicker, títulos,
+   trilha (.hub-flow) e pilares (.hub-pillars) — nenhum componente
+   novo, nenhuma estatística, nenhum número.
+   ============================================================ */
+
+.intel{
+  position:relative;z-index:1;
+  height:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1.18fr) minmax(0,.92fr);
+  grid-template-rows:auto auto auto 1fr;
+  column-gap:var(--s6);row-gap:var(--s1);
+  padding:var(--s2) 0 var(--s3);
+  grid-template-areas:
+    "head flow"
+    "rule rule"
+    "bens bens"
+    "creed creed";
+}
+
+.intel-head{grid-area:head;align-self:start}
+/* o título herda o hub-title (clamp 28–44); na coluna de Inteligência
+   ele cabe em uma linha e o teto alto sobraria — teto próprio, mesma
+   árvore tipográfica */
+.intel-head .hub-title{
+  margin-top:var(--s1);max-width:20ch;
+  font-size:clamp(22px,2.6vw,34px);line-height:1.1;
+}
+.intel-head .lede{margin-top:var(--s1);max-width:46ch;font-size:13.5px;line-height:1.55}
+.intel-foot-copy .lede{margin-top:var(--s1);max-width:52ch;font-size:13px;line-height:1.5}
+
+/* tese do herói: a frase-afirmação que reposiciona a inteligência */
+.intel-sub{
+  margin-top:var(--s1);max-width:40ch;
+  font-family:"Archivo";font-weight:500;
+  font-size:clamp(14.5px,1.6vw,18px);line-height:1.4;letter-spacing:-.012em;
+  color:var(--ink-2);
+}
+
+/* ——— trilha vertical da operação: a mesma linguagem do
+   percurso horizontal do O Hub (pontos + hairline), deitada:
+   a leitura desce da estrutura até a execução ——— */
+.intel-flow{grid-area:flow;align-self:start}
+.intel-flow .hub-flow{
+  display:block;margin:var(--s1) 0;padding:0 0 0 var(--s3);
+}
+.intel-flow .hub-flow::before{
+  left:2px;right:auto;top:4px;bottom:4px;width:1px;height:auto;
+  background:linear-gradient(rgba(15,30,53,0), var(--line-soft) 12%, var(--line-soft) 88%, rgba(15,30,53,0));
+}
+.intel-flow .hub-flow li{
+  flex:none;padding:6px 0 6px var(--s3);text-align:left;
+}
+.intel-flow .hub-flow li::before{
+  left:-25px;top:50%;transform:translateY(-50%);
+}
+.intel-flow .hub-flow li:first-child{color:var(--ink-2)}
+.intel-flow .hub-flow li:first-child::before{
+  left:-26px;width:5px;height:5px;background:var(--gold);
+}
+.intel-flow .hub-flow li:last-child{text-align:left}
+.intel-flow .hub-flow li:last-child::before{left:-25px;right:auto}
+.intel-note{
+  font-size:12px;line-height:1.55;font-weight:300;color:var(--ink-soft);
+  max-width:32ch;padding-top:var(--s1);border-top:1px solid var(--line-soft);
+  margin-top:var(--s1);
+}
+
+/* benefícios: pilares institucionais — conceitos, sem números */
+.intel-benefits{grid-area:bens;margin-top:var(--s2)}
+.intel-pillars{margin-top:var(--s2)}
+
+/* fecho institucional: a filosofia à esquerda, a frase de impacto
+   à direita, com a mesma linha dourada do fecho do Hub */
+.intel-foot{
+  grid-area:creed;
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:var(--s6);align-items:end;align-content:end;
+}
+.intel-foot .showcase-title{margin-top:var(--s1)}
+.intel-foot .showcase-title em{font-style:normal;color:var(--ink-2)}
+.intel-impact{
+  display:flex;align-items:flex-start;gap:16px;justify-self:end;
+  max-width:34ch;padding-bottom:var(--s1);
+}
+.intel-impact i{
+  display:block;width:46px;height:1px;background:var(--gold-soft);
+  flex:none;margin-top:8px;font-style:normal;
+}
+.intel-impact p{
+  font-family:"Archivo";font-weight:500;
+  font-size:clamp(14.5px,1.45vw,16.5px);line-height:1.42;letter-spacing:-.012em;
+  color:var(--ink-2);
+}
+
+/* abaixo de tablet — ou numa janela desktop baixa demais — a tela
+   vira página com rolagem própria, no mesmo fallback do O Hub */
+@media (max-width:960px), (max-height:680px){
+  .intel{display:block;height:auto;min-height:100%;padding:var(--s4) 0}
+  .intel-flow{margin-top:var(--s4)}
+  .intel-benefits{margin-top:var(--s3)}
+  .intel-foot{
+    display:block;margin-top:var(--s5);
+  }
+  .intel-impact{margin-top:var(--s4);justify-self:start;max-width:none}
+}
+
+/* janelas desktop de meia altura (entre os dois breakpoints): só as
+   views de Inteligência e de Contact viram páginas roláveis — Home,
+   Hub e Demo não mudam o comportamento delas */
+@media (max-height:860px) and (min-height:681px){
+  .views .view.view--intelligence,
+  .views .view.view--contact{overflow-y:auto;overflow-x:hidden}
+}
+
+/* ==========================================================
+   18 · VAMOS CONVERSAR  (view Contact — fechamento da Landing)
+   ==========================================================
+   Última view da v1.0: nenhum formulário, nenhum apelo comercial —
+   apenas o convite à conversa. Mesma arquitetura das demais telas
+   (grid de altura total, centralizado no espaço da sala), mesmos
+   componentes: eyebrow, hub-title, lede, hub-kicker, hub-rule, cta
+   e as hairlines editoriais de sempre. Nada de caixas, nada de
+   ícones — tipografia, espaçamento e dourado.
+   ============================================================ */
+
+.hello{
+  position:relative;z-index:1;
+  height:100%;
+  display:grid;
+  grid-template-columns:minmax(0,1.18fr) minmax(0,1fr);
+  grid-template-rows:auto auto;
+  column-gap:var(--s6);row-gap:var(--s5);
+  padding:var(--s4) 0;
+  align-content:center;
+  grid-template-areas:
+    "head act"
+    "cont close";
+}
+
+.hello-head{grid-area:head}
+.hello-head .lede{margin-top:var(--s2);max-width:46ch}
+.hello-head .hub-rule{margin-top:var(--s3)}
+
+/* bloco 02 — o único convite, no componente CTA já existente */
+.hello-action{grid-area:act;align-self:end;justify-self:end}
+
+/* bloco 03 — contato como pauta editorial: rótulo à esquerda,
+   valor à direita, separados por hairlines — sem caixas */
+.hello-contact{grid-area:cont}
+.hello-contact .hub-kicker{margin-bottom:var(--s2)}
+.hello-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:var(--s3);
+  padding:var(--s2) 0;
+  border-top:1px solid var(--line-soft);
+}
+.hello-row:last-child{border-bottom:1px solid var(--line-soft)}
+.hello-row b{
+  font-family:"Archivo";font-weight:500;
+  font-size:12px;letter-spacing:.02em;color:var(--ink-2);flex:none;
+}
+.hello-row p,
+.hello-row a{
+  font-size:13px;font-weight:300;color:var(--ink-soft);
+  text-decoration:none;text-align:right;
+}
+.hello-row a:hover{color:var(--ink-2)}
+
+/* bloco 04 — fechamento: agradecimento + linha dourada curta */
+.hello-close{grid-area:close;align-self:end;justify-self:end;max-width:40ch}
+.hello-close .showcase-title{font-size:clamp(17px,1.9vw,22px)}
+.hello-close .lede{margin-top:var(--s2);font-size:13px;line-height:1.6}
+.hello-gold{
+  display:block;width:46px;height:1px;
+  background:var(--gold-soft);margin-top:var(--s3);
+}
+
+/* abaixo de tablet — ou numa janela desktop baixa demais — a tela
+   vira página com rolagem própria, no mesmo fallback das demais */
+@media (max-width:960px), (max-height:680px){
+  .hello{display:block;height:auto;min-height:100%;padding:var(--s5) 0}
+  .hello-action{margin-top:var(--s4);justify-self:start}
+  .hello-contact{margin-top:var(--s5)}
+  .hello-close{margin-top:var(--s5);justify-self:start}
 }
