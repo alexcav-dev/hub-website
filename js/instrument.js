@@ -293,6 +293,27 @@
       log('VV_RESIZE', 'visualViewport.height='+global.visualViewport.height+' (Δ '+(lastVP&&lastVP.vh!=null?d.vh:'?')+') · scrollTo='+global.scrollY);
       lastVP = {ih: global.innerHeight, vh: global.visualViewport.height, ch: doc.documentElement.clientHeight};
     });
+
+    /* ——— barra de endereço do Safari: a animação de colapsar/expandir
+       é visível por ESTE evento (visualViewport.scroll, com offsetTop
+       variando), que pode disparar sozinho — sem resize — em iOS 16+.
+       Throttling: no máximo 1 log a cada 300ms; só loga quando a
+       posição realmente mudou (offsetTop ou offsetLeft). offsetTop
+       negativo = barra colapsada; 0 = barra expandida. Só o
+       instrument.js escuta isto — nenhum código de produção. ——— */
+    var lastVV = {ot: null, ol: null};
+    var lastVVLog = 0;
+    global.visualViewport.addEventListener('scroll', function(){
+      var vv = global.visualViewport;
+      var now = performance.now();
+      var changed = vv.offsetTop !== lastVV.ot || vv.offsetLeft !== lastVV.ol;
+      lastVV = {ot: vv.offsetTop, ol: vv.offsetLeft};
+      if(!changed) return;
+      if(now - lastVVLog < 300) return;
+      lastVVLog = now;
+      log('VV_SCROLL', 'offsetTop='+vv.offsetTop.toFixed(1)+' · offsetLeft='+vv.offsetLeft.toFixed(1)+' · height='+vv.height.toFixed(1)
+        + (vv.offsetTop < 0 ? '  ← barra colapsada (viewport maior que a área visível)' : ''));
+    }, {passive:true});
   }
 
   /* ——————————————————————————————————————————————
