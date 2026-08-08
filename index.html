@@ -46,7 +46,15 @@
         <span class="name">Hub Tributário</span>
       </div>
       <nav class="app-nav" aria-label="Navegação principal">
-        <div class="nav-track">
+        <button type="button" class="nav-toggle" id="mobile-nav-toggle" aria-expanded="false" aria-controls="mobile-nav" aria-label="Abrir menu de navegação">
+          <svg class="icon-burger" viewBox="0 0 22 14" aria-hidden="true">
+            <path d="M1 1h20M1 7h20M1 13h20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <svg class="icon-close" viewBox="0 0 22 22" aria-hidden="true">
+            <path d="M4.5 4.5l13 13M17.5 4.5l-13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="nav-track" id="mobile-nav">
           <button type="button" class="active" data-view="home" aria-selected="true" aria-controls="view-home">Home</button>
           <button type="button" data-view="hub" aria-selected="false" aria-controls="view-hub">Hub</button>
           <button type="button" data-view="intelligence" aria-selected="false" aria-controls="view-intelligence">Inteligência</button>
@@ -453,6 +461,7 @@
 <!-- INSTRUMENTAÇÃO TEMPORÁRIA (TRACE): remova esta linha + js/instrument.js depois do diagnóstico -->
 <script src="js/instrument.js"></script>
 <script src="js/app.js"></script>
+<script src="js/nav-toggle.js"></script>
 
 </body>
 </html>

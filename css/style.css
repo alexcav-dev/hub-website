@@ -276,6 +276,12 @@ nav button:hover::after{transform:scaleX(1)}
 }
 .nav-indicator.is-ready{opacity:.7}
 
+/* ——— botão de menu mobile (☰): invisível no desktop — a navegação
+   lá é a linha única original. Só aparece dentro do breakpoint
+   (ver seção RESPONSIVIDADE). Nenhuma regra desktop é tocada; é um
+   elemento novo, apto a nascer oculto. ——— */
+.nav-toggle{display:none}
+
 /* ==========================================================
    07 · HERO
    ========================================================== */
@@ -697,39 +703,79 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
      seletor muda; back/mid/::after ficam como estão. ——— */
   .plate.front{
     box-shadow:
-      0 34px 68px -42px rgba(15,30,53,.28),
+      0 10px 26px -20px rgba(15,30,53,.16),
       inset 0 1px 0 rgba(255,255,255,.85),
       inset 0 -1px 0 rgba(15,30,53,.05);
   }
 
-  /* ——— navegação mobile: duas áreas — marca em cima, navegação
-     embaixo, sempre em uma única linha (nunca quebra item isolado).
-     Os 5 itens continuam disponíveis; se não couberem, a própria
-     faixa de navegação rola na horizontal, sem barra de rolagem
-     visível — nunca gera overflow da página. ——— */
-  .bar{flex-wrap:wrap;row-gap:var(--s2);padding-top:var(--s2);padding-bottom:var(--s2)}
-  .brand{flex:1 0 100%}
-  nav{margin-left:0;flex:1 0 100%;display:block}
-  /* só a FAIXA de botões rola — nav em si nunca ganha overflow,
-     então o indicador dourado (bottom:-6px) e a área de toque dos
-     botões (que também "vazam" alguns px para fora da caixa) nunca
-     são cortados. Sem barra de rolagem visível; some quando os 5
-     itens já cabem (a maioria dos aparelhos ≥360px). */
+  /* ——— navegação mobile (menu ☰): A faixa horizontal arrastável
+     (.nav-track) deixa de existir como trilho rolável e vira um
+     painel vertical suspenso abaixo do header, aberto pelo botão
+     .nav-toggle (☰/×). Os MESMOS <button data-view> da navegação
+     viram as opções do menu — o ViewManager não muda nem duplica,
+     os itens continuam dentro de .app-nav. Eixo horizontal travado:
+     nenhum container da nav rola lateralmente (o painel só ganha
+     rolagem VERTICAL em telas muito baixas, via overflow-y). O
+     indicador dourado (--nav-indicator) é do desktop e some aqui. ——— */
+  .bar{flex-wrap:nowrap;padding-top:var(--s2);padding-bottom:var(--s2)}
+  .brand{flex:1 1 auto;min-width:0}
+  nav{margin-left:0;flex:none;display:block;position:relative}
+  /* ——— botão ☰/×: alvo de toque ~44px, ícone próprio em SVG inline
+     (nada de glyph dependente de fonte), transição discreta dos dois
+     estados com base no estado .nav-open do header ——— */
+  .nav-toggle{
+    display:flex;align-items:center;justify-content:center;
+    width:42px;height:42px;margin-left:var(--s2);
+    border:1px solid var(--line-soft);border-radius:4px;
+    background:transparent;color:var(--ink-soft);cursor:pointer;
+    transition:color .18s var(--ease),border-color .18s var(--ease);
+  }
+  .nav-toggle:hover{color:var(--ink-2);border-color:var(--line)}
+  .nav-toggle svg{
+    position:absolute;inset:0;margin:auto;width:21px;height:21px;
+    transition:opacity .14s var(--ease),transform .14s var(--ease);
+  }
+  .nav-toggle .icon-close{opacity:0;transform:rotate(-90deg)}
+  .app-header.nav-open .nav-toggle .icon-burger{opacity:0;transform:rotate(90deg)}
+  .app-header.nav-open .nav-toggle .icon-close{opacity:1;transform:none}
+  /* ——— painel do menu: colado abaixo do header (top:100%), alinhado
+     à direita, fundo da superfície da sala com leve atmosfera
+     (translúcido), hairlines reais entre itens, cantos em 4px, sombra
+     discreta. Fechado = invisível + sem interação; aberto = fade/slide
+     de 160ms. horizontal limitado; nada aqui cria scroll horizontal. ——— */
   .nav-track{
-    display:flex;align-items:center;gap:var(--s3);
-    justify-content:flex-start;
-    flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
-    -webkit-overflow-scrolling:touch;
-    scrollbar-width:none;-ms-overflow-style:none;
+    display:flex;flex-direction:column;gap:0;
+    position:absolute;top:calc(100% + 6px);right:0;
+    min-width:230px;max-width:calc(100vw - 40px);
+    padding:var(--s1) 0;
+    background:rgba(212,220,243,.97);
+    border:1px solid var(--line);border-radius:4px;
+    box-shadow:var(--shadow-near),0 24px 48px -42px rgba(15,30,53,.4);
+    opacity:0;visibility:hidden;transform:translateY(-6px);pointer-events:none;
+    transition:opacity .16s var(--ease),transform .16s var(--ease),visibility .16s;
+    overflow-y:auto;overflow-x:hidden;
+    max-height:calc(100vh - 118px);           /* fallback */
+    max-height:calc(100dvh - 118px);          /* safari moderna */
+    z-index:60;
   }
-  .nav-track::-webkit-scrollbar{display:none;width:0;height:0}
-  /* área de toque ~44px: padding real (não só o alvo invisível)
-     garante que o botão em si já nasce confortável para o dedo */
-  nav button{flex:none;white-space:nowrap;padding:12px 2px}
-  nav button::before{
-    content:"";position:absolute;left:50%;top:50%;
-    width:100%;height:44px;transform:translate(-50%,-50%);
+  .app-header.nav-open .nav-track{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+  /* ——— itens do menu: sempre presentes .active por ViewManager,
+     hairlines horizontais de separação (→ i), toque confortável por
+     padding real (44px) e o traço dourado do item ativo à esquerda ——— */
+  nav button{
+    flex:none;display:block;width:100%;text-align:left;
+    white-space:nowrap;padding:14px 20px;font-size:13.5px;
   }
+  nav button + button{border-top:1px solid var(--line-soft)}
+  nav button:hover{color:var(--ink);background:rgba(15,30,53,.045)}
+  nav button.active{color:var(--ink)}
+  nav button.active::before{
+    content:"";position:absolute;left:0;top:50%;
+    width:3px;height:15px;background:var(--gold);
+    transform:translateY(-50%);
+  }
+  nav button::after{display:none}
+  .nav-indicator{display:none}
 
   /* ——— CTAs da Hero: em telas estreitas a dupla ganha composição
      própria, empilhada e com hierarquia clara — sem virar um
@@ -746,18 +792,15 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
   }
 }
 
-/* ——— telas estreitas (≤480px): a navegação preserva os cinco
-   itens e os textos com uma rolagem horizontal contida — nunca
-   transborda a viewport nem quebra "Vamos Conversar" isoladamente.
-   Nada aqui existe fora desta faixa: desktop permanece com a linha
-   única original. ——— */
+/* ——— telas estreitas (≤480px): o menu ☰ encolhe um pouco o botão e
+   a tipografia — nada de rolagem horizontal em nenhum ponto. ——— */
 @media (max-width:480px){
   .app-header .bar,
   .workspace{padding-left:20px;padding-right:20px}
   .bar{padding-top:var(--s1);padding-bottom:var(--s1)}
   .brand{gap:10px}
   .brand .name{font-size:14px}
-  .nav-track{gap:var(--s2)}
+  .nav-toggle{width:40px;height:40px}
   nav button{font-size:12px;letter-spacing:.005em}
 }
 
