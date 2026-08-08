@@ -644,9 +644,22 @@ h1 em{font-style:normal;color:var(--ink-2);position:relative}
      bloco de texto SEM tocar no DOM nem no desktop: em coluna única
      (grid 1fr), o campo sobe e o conteúdo do texto desce. O campo
      continua menor e centralizado (mesmas placas, mesma respiração),
-     só muda de lugar na leitura da página. ——— */
+     só muda de lugar na leitura da página.
+
+     ALTURA EXPLÍCITA — causa do "sumiço" no mobile: todas as placas
+     (.plate-wrap/.plate) são position:absolute e NÃO geram altura
+     própria; no desktop a altura vem de aspect-ratio + min-height:420px,
+     mas este bloco anulava o min-height e ficava só com o aspect-ratio —
+     em qualquer motor sem suporte a aspect-ratio (WebKit mobile antigo),
+     a altura virava 0 e o campo inteiro sumia por underflow no
+     overflow:hidden, deixando um vazio no topo da Home. `height`
+     explícita em vw elimina a dependência de aspect-ratio com a mesma
+     proporção (campo ~1:1.02, ~62vw, teto 262px), sempre dentro da
+     viewport, sem tocar no desktop. ——— */
   .field{
-    min-height:0;max-width:260px;margin-inline:auto;
+    min-height:0;max-width:260px;
+    height:min(62vw,262px);
+    margin-inline:auto;
     order:-1;overflow:hidden;
   }
   /* ——— contenção do campo de placas (W-Mobile): as placas usam
